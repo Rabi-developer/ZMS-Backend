@@ -24,4 +24,4 @@ namespace IMS.DataAccess.Repositories
             return await DbContext.CapitalAccounts.Where(p => p.Id == id).ToListAsync();
         }
     }
-    }
+ }

@@ -14,43 +14,41 @@ using System.Net;
 
 namespace IMS.Business.Services;
 
-public interface ICapitalAccountService : IBaseService<CapitalAccountReq, CapitalAccountRes, CapitalAccount>
+public interface IRevenueService : IBaseService<RevenueReq, RevenueRes, Revenue>
 {
-    Task<IList<CapitalAccount>> GetByParent (Guid ParentId);
-    Task<Response<IList<CapitalAccountRes>>> GetAllHierarchy();
-
+    Task<IList<Revenue>> GetByParent(Guid ParentId);
 }
-public class CapitalAccountService : BaseService<CapitalAccountReq, CapitalAccountRes, CapitalAccountRepository, CapitalAccount>, ICapitalAccountService
+public class RevenueService : BaseService<RevenueReq, RevenueRes, RevenueRepository, Revenue>, IRevenueService
 {
     private readonly ApplicationDbContext _context;
-    private readonly ICapitalAccountRepository _repository;
+    private readonly IRevenueRepository _repository;
     protected readonly IUnitOfWork UnitOfWork;
-  
 
-    public CapitalAccountService(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
+
+    public RevenueService(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
     {
         _context = dbContext;
         UnitOfWork = unitOfWork;
-        _repository = UnitOfWork.GetRepository<CapitalAccountRepository>();
-       
+        _repository = UnitOfWork.GetRepository<RevenueRepository>();
+
     }
 
-    
 
-    public async Task<IList<CapitalAccount>> GetByParent(Guid ParentId)
+
+    public async Task<IList<Revenue>> GetByParent(Guid ParentId)
     {
         return await Repository.GetByParent(ParentId);
     }
 
-    public async override Task<Response<Guid>> Add(CapitalAccountReq reqModel)
+    public async override Task<Response<Guid>> Add(RevenueReq reqModel)
     {
         try
         {
             // Fetch the parent account if ParentAccountId is provided
-            CapitalAccount parentAccount = null;
+            Revenue parentAccount = null;
             if (reqModel.ParentAccountId.HasValue)
             {
-                parentAccount = await _context.CapitalAccounts
+                parentAccount = await _context.Revenues
                     .FirstOrDefaultAsync(p => p.Id == reqModel.ParentAccountId.Value);
             }
 
@@ -59,15 +57,13 @@ public class CapitalAccountService : BaseService<CapitalAccountReq, CapitalAccou
             if (parentAccount == null)
             {
                 // If no parent, this is a top-level account
-                var topLevelAccounts = await _context.CapitalAccounts
-                    .Where(p => p.ParentAccountId == null)
-                    .ToListAsync();
-                listId = (topLevelAccounts.Count + 1).ToString(); // Top-level: 1, 2, 3, etc.
+                // Hardcode the top-level ListId to "2"
+                listId = "5";
             }
             else
             {
                 // If there is a parent, generate the ListId based on the parent's ListId
-                var siblings = await _context.CapitalAccounts
+                var siblings = await _context.Revenues
                     .Where(p => p.ParentAccountId == reqModel.ParentAccountId)
                     .ToListAsync();
 
@@ -130,17 +126,17 @@ public class CapitalAccountService : BaseService<CapitalAccountReq, CapitalAccou
             }
 
             // Map the request model to the entity
-            var entity = reqModel.Adapt<CapitalAccount>();
+            var entity = reqModel.Adapt<Revenue>();
             entity.Listid = listId;
 
             // Add the entity to the repository
-            var ss = await Repository.Add((CapitalAccount)(entity as IMinBase ??
+            var ss = await Repository.Add((Revenue)(entity as IMinBase ??
             throw new InvalidOperationException("Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
             await UnitOfWork.SaveAsync();
 
             return new Response<Guid>
             {
-                
+
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };
@@ -155,27 +151,27 @@ public class CapitalAccountService : BaseService<CapitalAccountReq, CapitalAccou
         }
     }
 
-    public override async Task<Response<IList<CapitalAccountRes>>> GetAll(Pagination? paginate)
+    public override async Task<Response<IList<RevenueRes>>> GetAll(Pagination? paginate)
     {
         try
         {
             var pagination = paginate ?? new Pagination();
 
-            // Include CapitalAccountProducts in the query
-              var (pag, data) = await Repository.GetAll(
-             pagination,
-             query => query.Include(x => x.ParentAccount)
-             .AsNoTracking()
-             .OrderBy(x => x.Id)
- );
+            // Include RevenueProducts in the query
+            var (pag, data) = await Repository.GetAll(
+           pagination,
+           query => query.Include(x => x.ParentAccount)
+           .AsNoTracking()
+           .OrderBy(x => x.Id)
+);
 
             Console.WriteLine($"Fetched {data.Count} records");
 
             if (!data.Any())
             {
-                return new Response<IList<CapitalAccountRes>>
+                return new Response<IList<RevenueRes>>
                 {
-                    Data = new List<CapitalAccountRes>(),
+                    Data = new List<RevenueRes>(),
                     Misc = pag,
                     StatusMessage = "No records found",
                     StatusCode = HttpStatusCode.NoContent
@@ -184,16 +180,16 @@ public class CapitalAccountService : BaseService<CapitalAccountReq, CapitalAccou
 
 
             // Map the data to the response DTO
-            var CapitalAccountResList = data.Adapt<List<CapitalAccountRes>>();
+            var RevenueResList = data.Adapt<List<RevenueRes>>();
 
-            //// Manually map CapitalAccountProducts to Products in the response
-            //foreach (var CapitalAccountRes in CapitalAccountResList)
+            //// Manually map RevenueProducts to Products in the response
+            //foreach (var RevenueRes in RevenueResList)
             //{
-            //    var CapitalAccount = data.FirstOrDefault(t => t.Id == CapitalAccountRes.Id);
-            //    if (CapitalAccount != null)
+            //    var Revenue = data.FirstOrDefault(t => t.Id == RevenueRes.Id);
+            //    if (Revenue != null)
             //    {
-            //        CapitalAccountRes.Products = CapitalAccount.CapitalAccountProducts
-            //            .Select(tp => new CapitalAccountProductRes
+            //        RevenueRes.Products = Revenue.RevenueProducts
+            //            .Select(tp => new RevenueProductRes
             //            {
             //                ProductId = tp.ProductId,
             //                Quantity = tp.Quantity,
@@ -203,9 +199,9 @@ public class CapitalAccountService : BaseService<CapitalAccountReq, CapitalAccou
             //    }
             //}
 
-            return new Response<IList<CapitalAccountRes>>
+            return new Response<IList<RevenueRes>>
             {
-                Data = CapitalAccountResList,
+                Data = RevenueResList,
                 Misc = pag,
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
@@ -213,60 +209,11 @@ public class CapitalAccountService : BaseService<CapitalAccountReq, CapitalAccou
         }
         catch (Exception e)
         {
-            return new Response<IList<CapitalAccountRes>>
+            return new Response<IList<RevenueRes>>
             {
                 StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
-
-    public async Task<Response<IList<CapitalAccountRes>>> GetAllHierarchy()
-    {
-        try
-        {
-            var hierarchy = await _repository.GetAllHierarchy();
-            return MapHierarchyResponse(hierarchy);
-        }
-        catch (Exception ex)
-        {
-            return new Response<IList<CapitalAccountRes>>
-            {
-                StatusMessage = ex.Message,
-                StatusCode = HttpStatusCode.InternalServerError
-            };
-        }
-    }
-
-    private Response<IList<CapitalAccountRes>> MapHierarchyResponse(IList<CapitalAccount> hierarchy)
-    {
-        CapitalAccountRes MapAccount(CapitalAccount account)
-        {
-            return new CapitalAccountRes
-            {
-                Id = account.Id,
-                Listid = account.Listid,
-                Description = account.Description,
-                ParentAccountId = account.ParentAccountId,
-
-                Children = account.Children
-                    ?.OrderBy(c => c.Listid)
-                    .Select(MapAccount)
-                    .ToList()
-                    ?? new List<CapitalAccountRes>()
-            };
-        }
-
-        var result = hierarchy
-            .OrderBy(h => h.Listid)  
-            .Select(MapAccount)
-            .ToList();
-
-        return new Response<IList<CapitalAccountRes>>
-        {
-            Data = result,
-            StatusMessage = "Hierarchy fetched successfully",
-            StatusCode = HttpStatusCode.OK
-        };
     }
 }

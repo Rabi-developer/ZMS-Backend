@@ -34,7 +34,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<ProjectTarget> ProjectTargets { get; set; }    
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<Customer> Customers { get; set; }
-    public DbSet<CapitalAccount> CapitalAccounts { get; set; }              
+    public DbSet<CapitalAccount> CapitalAccounts { get; set; }   
+    public DbSet<Liabilities> Liabilities { get; set; }
+    public DbSet<Assets> Assets { get; set; }   
+    public DbSet<Expense> Expenses { get; set; }
+    public DbSet<Revenue> Revenues {  get; set; }   
+
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
         // var userId = HttpContextAccessor.HttpContext.GetUserId();

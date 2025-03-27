@@ -11,10 +11,10 @@ namespace IMS.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
-public class CapitalAccountController : BaseController<CapitalAccountController, ICapitalAccountService, CapitalAccountReq, CapitalAccountRes, CapitalAccount>
+public class LiabilitiesController : BaseController<LiabilitiesController, ILiabilitiesService, LiabilitiesReq, LiabilitiesRes, Liabilities>
 {
     /// <inheritdoc />
-    public CapitalAccountController(ILogger<CapitalAccountController> logger, ICapitalAccountService service) : base(logger, service)
+    public LiabilitiesController(ILogger<LiabilitiesController> logger, ILiabilitiesService service) : base(logger, service)
     {
     }
     [HttpGet("Parent/{ParentId}")]
@@ -27,11 +27,5 @@ public class CapitalAccountController : BaseController<CapitalAccountController,
             return Ok(data);
         }
         return BadRequest();
-    }
-    [HttpGet("allhierarchy")]
-    public async Task<IActionResult> GetAllHierarchy()
-    {
-        var response = await Service.GetAllHierarchy();
-        return StatusCode((int)response.StatusCode, response);
     }
 }

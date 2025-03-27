@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250321222411_newreturnint")]
+    partial class newreturnint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "269318c5-f729-4cbd-8410-91d71e924171",
+                            ConcurrencyStamp = "8549828c-3311-434c-bb15-e8a61ffeaa4f",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -276,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEINyB2DOaWKd2bAHaSKUDJZy8CHqFr0P15hJM7UAOM6Wzvnidm3H90mbRgVz+pBQpg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEA1RtkiuQovVr6gGAT8J4jXExqS2dgPtbL8sWgBvo9+2TwRGN0usNkVE7GDouSSjdw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -533,6 +536,9 @@ namespace IMS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AssetsId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -542,11 +548,17 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ExpenseId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("LiabilitiesId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Listid")
                         .HasColumnType("nvarchar(max)");
@@ -560,9 +572,20 @@ namespace IMS.Domain.Migrations
                     b.Property<Guid?>("ParentAccountId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("RevenueId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("AssetsId");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.HasIndex("LiabilitiesId");
+
                     b.HasIndex("ParentAccountId");
+
+                    b.HasIndex("RevenueId");
 
                     b.ToTable("CapitalAccounts");
                 });
@@ -1996,8 +2019,8 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Assets", b =>
                 {
-                    b.HasOne("IMS.Domain.Entities.Assets", "ParentAccount")
-                        .WithMany("Children")
+                    b.HasOne("IMS.Domain.Entities.CapitalAccount", "ParentAccount")
+                        .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -2043,9 +2066,29 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.CapitalAccount", b =>
                 {
+                    b.HasOne("IMS.Domain.Entities.Assets", null)
+                        .WithMany("Children")
+                        .HasForeignKey("AssetsId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("IMS.Domain.Entities.Expense", null)
+                        .WithMany("Children")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("IMS.Domain.Entities.Liabilities", null)
+                        .WithMany("Children")
+                        .HasForeignKey("LiabilitiesId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("IMS.Domain.Entities.CapitalAccount", "ParentAccount")
                         .WithMany("Children")
                         .HasForeignKey("ParentAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("IMS.Domain.Entities.Revenue", null)
+                        .WithMany("Children")
+                        .HasForeignKey("RevenueId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ParentAccount");
@@ -2080,8 +2123,8 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Expense", b =>
                 {
-                    b.HasOne("IMS.Domain.Entities.Expense", "ParentAccount")
-                        .WithMany("Children")
+                    b.HasOne("IMS.Domain.Entities.CapitalAccount", "ParentAccount")
+                        .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -2107,8 +2150,8 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Liabilities", b =>
                 {
-                    b.HasOne("IMS.Domain.Entities.Liabilities", "ParentAccount")
-                        .WithMany("Children")
+                    b.HasOne("IMS.Domain.Entities.CapitalAccount", "ParentAccount")
+                        .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -2209,8 +2252,8 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Revenue", b =>
                 {
-                    b.HasOne("IMS.Domain.Entities.Revenue", "ParentAccount")
-                        .WithMany("Children")
+                    b.HasOne("IMS.Domain.Entities.CapitalAccount", "ParentAccount")
+                        .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 

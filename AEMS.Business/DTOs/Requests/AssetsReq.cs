@@ -2,7 +2,7 @@
 
 namespace IMS.Business.DTOs.Requests
 {
-    public class CapitalAccountRes
+    public class AssetsReq
     {
         public Guid? Id { get; set; }
 
@@ -13,7 +13,8 @@ namespace IMS.Business.DTOs.Requests
 
         public Guid? ParentAccountId { get; set; }
 
-        public ICollection<CapitalAccountRes>? Children { get; set; } = new List<CapitalAccountRes>();
-   
+
+
+        public ICollection<Assets>? Children { get; set; } = new List<Assets>();
     }
 }

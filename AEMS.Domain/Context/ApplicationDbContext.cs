@@ -39,7 +39,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<Assets> Assets { get; set; }   
     public DbSet<Expense> Expenses { get; set; }
     public DbSet<Revenue> Revenues {  get; set; }   
-
+    public DbSet<AccountId> AccountIds { get; set; }
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
         // var userId = HttpContextAccessor.HttpContext.GetUserId();

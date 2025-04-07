@@ -12,7 +12,7 @@ namespace IMS.Business.DTOs.Requests
         // public ICollection<CapitalAccount>? Children { get; set; } = new List<CapitalAccount>();
         public string Description { get; set; }
         public Guid? ParentAccountId { get; set; }
-        public AccountType AccountType { get; set; }
+      //  public AccountType AccountType { get; set; }
 
     }
 }

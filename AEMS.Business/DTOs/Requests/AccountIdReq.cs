@@ -6,6 +6,6 @@ namespace IMS.Business.DTOs.Requests
     {
         public string Description { get; set; }
         public Guid? ParentAccountId { get; set; }
-        public AccountType AccountType { get; set; }
+    //    public AccountType AccountType { get; set; }
     }
 }

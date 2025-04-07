@@ -15,6 +15,7 @@ public interface IBaseService<in TDto, TResp, T>
     public Task<Response<Guid>> Add(TDto model);
     public Task<Response<TResp>> Update(TDto model);
     public Task<Response<bool>> Delete(Guid id);
+    Task<Response<bool>> Delete(string listid);
 }
 
 public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, T>
@@ -161,5 +162,10 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
+    }
+
+    public Task<Response<bool>> Delete(string listid)
+    {
+        throw new NotImplementedException();
     }
 }

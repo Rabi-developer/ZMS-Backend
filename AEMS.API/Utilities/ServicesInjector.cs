@@ -59,6 +59,10 @@ public static class ServicesInjector
         builder.Services.AddTransient<IAssetsService, AssetsService>();
         builder.Services.AddTransient<IExpenseService, ExpenseService>();
         builder.Services.AddTransient<IRevenueService, RevenueService>();   
+        builder.Services.AddTransient<IDescriptionService, DescriptionService>();
+        builder.Services.AddTransient<IStuffService,StuffService>();
+        builder.Services.AddTransient<IBlendRatioService, BlendRatioService>();
+
         #endregion
 
         builder.Services.AddIdentity<ApplicationUser, AppRole>().AddEntityFrameworkStores<ApplicationDbContext>()

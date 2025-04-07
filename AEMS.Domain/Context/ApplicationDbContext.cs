@@ -1,5 +1,6 @@
 ﻿using IMS.Domain.Base;
 using IMS.Domain.Entities;
+using IMS.Domain.Migrations.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +40,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<Assets> Assets { get; set; }   
     public DbSet<Expense> Expenses { get; set; }
     public DbSet<Revenue> Revenues {  get; set; }   
+    public DbSet<Description> Descriptions { get; set; } 
+    public DbSet<Stuff> Stuffs { get; set; }
+    public DbSet<BlendRatio> BlendRatio { get; set; }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {

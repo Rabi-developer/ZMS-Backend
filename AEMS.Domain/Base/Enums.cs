@@ -67,3 +67,11 @@ public enum ReorderStatus
     Ordered,
     Received
 }
+public enum AccountType
+{
+    Capital = 1,  
+    Liability = 2,
+    Asset = 3,
+    Expense = 4,
+    Revenue = 5
+}

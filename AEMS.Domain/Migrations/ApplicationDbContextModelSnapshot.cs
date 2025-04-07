@@ -22,6 +22,51 @@ namespace IMS.Domain.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("IMS.Domain.Entities.AccountId", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AccountType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Listid")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ParentAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentAccountId");
+
+                    b.ToTable("AccountIds");
+                });
+
             modelBuilder.Entity("IMS.Domain.Entities.Address", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2075,6 +2120,16 @@ namespace IMS.Domain.Migrations
                     b.HasDiscriminator().HasValue("AppRoleClaim");
                 });
 
+            modelBuilder.Entity("IMS.Domain.Entities.AccountId", b =>
+                {
+                    b.HasOne("IMS.Domain.Entities.AccountId", "ParentAccount")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentAccount");
+                });
+
             modelBuilder.Entity("IMS.Domain.Entities.Address", b =>
                 {
                     b.HasOne("IMS.Domain.Entities.Branch", "Branch")
@@ -2430,6 +2485,11 @@ namespace IMS.Domain.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("IMS.Domain.Entities.AccountId", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("IMS.Domain.Entities.Assets", b =>

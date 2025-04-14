@@ -1,6 +1,5 @@
 ﻿using IMS.Domain.Base;
 using IMS.Domain.Entities;
-using IMS.Domain.Migrations.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,6 +42,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<Description> Descriptions { get; set; } 
     public DbSet<Stuff> Stuffs { get; set; }
     public DbSet<BlendRatio> BlendRatio { get; set; }
+    public DbSet<WrapYarnType> WrapYarnTypes { get; set; }
+    public DbSet<WeftYarnType> WeftYarnTypes { get; set; }
+    public DbSet<Weaves> Weaves { get; set; }
+    public DbSet<PickInsertion> PickInsertion { get; set; }
+    public DbSet<Final> Finals { get; set; }    
+    public DbSet<Selvege> Selveges { get; set; }
+
+
+
+
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {

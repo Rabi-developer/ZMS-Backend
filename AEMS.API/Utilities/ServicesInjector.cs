@@ -62,7 +62,11 @@ public static class ServicesInjector
         builder.Services.AddTransient<IDescriptionService, DescriptionService>();
         builder.Services.AddTransient<IStuffService,StuffService>();
         builder.Services.AddTransient<IBlendRatioService, BlendRatioService>();
-
+        builder.Services.AddTransient<IWeftYarnTypeService, WeftYarnTypeService>();
+        builder.Services.AddTransient<IWeavesService, WeavesService>();
+        builder.Services.AddTransient<IPickInsertionService, PickInsertionService>();
+        builder.Services.AddTransient<IFinalService, FinalService>();
+        builder.Services.AddTransient<ISelvegeService,ISelvegeService>();
         #endregion
 
         builder.Services.AddIdentity<ApplicationUser, AppRole>().AddEntityFrameworkStores<ApplicationDbContext>()

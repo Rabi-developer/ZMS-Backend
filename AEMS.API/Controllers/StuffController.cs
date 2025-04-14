@@ -5,7 +5,6 @@ using IMS.Business.DTOs.Responses;
 using IMS.Business.Services;
 using IMS.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using IMS.Domain.Migrations.Entities;
 
 namespace IMS.API.Controllers
 {

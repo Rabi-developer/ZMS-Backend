@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IMS.DataAccess.Repositories
 {
-    public interface IWrapYarnTypeRepository
+    public interface IPickInsertionRepository
     {
         // No additional methods needed for basic CRUD
     }
 
-    public class WrapYarnTypeRepository : BaseRepository<WrapYarnType>, IWrapYarnTypeRepository
+    public class PickInsertionRepository : BaseRepository<PickInsertion>, IPickInsertionRepository
     {
-        public WrapYarnTypeRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public PickInsertionRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
     }

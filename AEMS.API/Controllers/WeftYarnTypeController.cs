@@ -11,10 +11,10 @@ namespace IMS.API.Controllers;
 
 [Route("api/[controller]")]
 [AllowAnonymous]
-public class BlendRatioController : BaseController<BlendRatioController, IBlendRatioService, BlendRatioReq, BlendRatioRes, BlendRatio>
+public class WeftYarnTypeController : BaseController<WeftYarnTypeController, IWeftYarnTypeService, WeftYarnTypeReq, WeftYarnTypeRes, WeftYarnType>
 {
     /// <inheritdoc />
-    public BlendRatioController(ILogger<BlendRatioController> logger, IBlendRatioService service) : base(logger, service)
+    public WeftYarnTypeController(ILogger<WeftYarnTypeController> logger, IWeftYarnTypeService service) : base(logger, service)
     {
     }
 

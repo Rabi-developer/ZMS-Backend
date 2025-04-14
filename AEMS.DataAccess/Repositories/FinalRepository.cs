@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IMS.DataAccess.Repositories
 {
-    public interface IWrapYarnTypeRepository
+    public interface IFinalRepository
     {
         // No additional methods needed for basic CRUD
     }
 
-    public class WrapYarnTypeRepository : BaseRepository<WrapYarnType>, IWrapYarnTypeRepository
+    public class FinalRepository : BaseRepository<Final>, IFinalRepository
     {
-        public WrapYarnTypeRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public FinalRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
     }

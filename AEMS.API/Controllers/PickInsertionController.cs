@@ -11,10 +11,10 @@ namespace IMS.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
-public class WrapYarnTypeController : BaseController<WrapYarnTypeController, IWrapYarnTypeService, WrapYarnTypeReq, WrapYarnTypeRes, WrapYarnType>
+public class PickInsertionController : BaseController<PickInsertionController, IPickInsertionService, PickInsertionReq, PickInsertionRes, PickInsertion>
 {
     /// <inheritdoc />
-    public WrapYarnTypeController(ILogger<WrapYarnTypeController> logger, IWrapYarnTypeService service) : base(logger, service)
+    public PickInsertionController(ILogger<PickInsertionController> logger, IPickInsertionService service) : base(logger, service)
     {
     }
 }

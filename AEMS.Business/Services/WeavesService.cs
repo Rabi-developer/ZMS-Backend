@@ -11,40 +11,40 @@ using System.Net;
 
 namespace IMS.Business.Services
 {
-    public interface IStuffService : IBaseService<StuffReq, StuffRes, Stuff>
+    public interface IWeavesService : IBaseService<WeavesReq, WeavesRes, Weaves>
     {
     }
 
-    public class StuffService : BaseService<StuffReq, StuffRes, StuffRepository, Stuff>, IStuffService
+    public class WeavesService : BaseService<WeavesReq, WeavesRes, WeavesRepository, Weaves>, IWeavesService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IStuffRepository _repository;
+        private readonly IWeavesRepository _repository;
         protected readonly IUnitOfWork UnitOfWork;
 
-        public StuffService(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
+        public WeavesService(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
         {
             _context = dbContext;
             UnitOfWork = unitOfWork;
-            _repository = UnitOfWork.GetRepository<StuffRepository>();
+            _repository = UnitOfWork.GetRepository<WeavesRepository>();
         }
 
-        public override async Task<Response<Guid>> Add(StuffReq reqModel)
+        public override async Task<Response<Guid>> Add(WeavesReq reqModel)
         {
             try
             {
-                var lastStuff = await _context.Stuffs
+                var lastWeaves = await _context.Weaves
                     .OrderByDescending(x => x.Listid)
                     .FirstOrDefaultAsync();
 
-                string newListId = lastStuff == null
+                string newListId = lastWeaves == null
                     ? "00000001"
-                    : (int.Parse(lastStuff.Listid) + 1).ToString("D8");
+                    : (int.Parse(lastWeaves.Listid) + 1).ToString("D8");
 
-                var entity = reqModel.Adapt<Stuff>();
+                var entity = reqModel.Adapt<Weaves>();
                 entity.Listid = newListId;
                 entity.Id = Guid.NewGuid();
-                entity.Descriptions = reqModel.Descriptions; 
-                entity.SubDescription = reqModel.SubDescription; 
+                entity.Descriptions = reqModel.Descriptions;
+                entity.SubDescription = reqModel.SubDescription;
 
                 await Repository.Add(entity);
                 await UnitOfWork.SaveAsync();
@@ -69,18 +69,18 @@ namespace IMS.Business.Services
         {
             try
             {
-                var entity = await _context.Stuffs 
+                var entity = await _context.Weaves
                     .FirstOrDefaultAsync(d => d.Id == id);
                 if (entity == null)
                 {
                     return new Response<bool>
                     {
-                        StatusMessage = "Stuff not found",
+                        StatusMessage = "Weaves not found",
                         StatusCode = HttpStatusCode.NotFound
                     };
                 }
 
-                _context.Stuffs.Remove(entity); 
+                _context.Weaves.Remove(entity);
                 await UnitOfWork.SaveAsync();
 
                 return new Response<bool>

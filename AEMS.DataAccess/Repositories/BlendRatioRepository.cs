@@ -1,6 +1,5 @@
 ﻿using IMS.Domain.Context;
 using IMS.Domain.Entities;
-using IMS.Domain.Migrations.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace IMS.DataAccess.Repositories

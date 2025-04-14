@@ -11,40 +11,40 @@ using System.Net;
 
 namespace IMS.Business.Services
 {
-    public interface IStuffService : IBaseService<StuffReq, StuffRes, Stuff>
+    public interface IPickInsertionService : IBaseService<PickInsertionReq, PickInsertionRes, PickInsertion>
     {
     }
 
-    public class StuffService : BaseService<StuffReq, StuffRes, StuffRepository, Stuff>, IStuffService
+    public class PickInsertionService : BaseService<PickInsertionReq, PickInsertionRes, PickInsertionRepository, PickInsertion>, IPickInsertionService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IStuffRepository _repository;
+        private readonly IPickInsertionRepository _repository;
         protected readonly IUnitOfWork UnitOfWork;
 
-        public StuffService(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
+        public PickInsertionService(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
         {
             _context = dbContext;
             UnitOfWork = unitOfWork;
-            _repository = UnitOfWork.GetRepository<StuffRepository>();
+            _repository = UnitOfWork.GetRepository<PickInsertionRepository>();
         }
 
-        public override async Task<Response<Guid>> Add(StuffReq reqModel)
+        public override async Task<Response<Guid>> Add(PickInsertionReq reqModel)
         {
             try
             {
-                var lastStuff = await _context.Stuffs
+                var lastPickInsertion = await _context.PickInsertion
                     .OrderByDescending(x => x.Listid)
                     .FirstOrDefaultAsync();
 
-                string newListId = lastStuff == null
+                string newListId = lastPickInsertion == null
                     ? "00000001"
-                    : (int.Parse(lastStuff.Listid) + 1).ToString("D8");
+                    : (int.Parse(lastPickInsertion.Listid) + 1).ToString("D8");
 
-                var entity = reqModel.Adapt<Stuff>();
+                var entity = reqModel.Adapt<PickInsertion>();
                 entity.Listid = newListId;
                 entity.Id = Guid.NewGuid();
-                entity.Descriptions = reqModel.Descriptions; 
-                entity.SubDescription = reqModel.SubDescription; 
+                entity.Descriptions = reqModel.Descriptions;
+                entity.SubDescription = reqModel.SubDescription;
 
                 await Repository.Add(entity);
                 await UnitOfWork.SaveAsync();
@@ -69,18 +69,18 @@ namespace IMS.Business.Services
         {
             try
             {
-                var entity = await _context.Stuffs 
+                var entity = await _context.PickInsertion
                     .FirstOrDefaultAsync(d => d.Id == id);
                 if (entity == null)
                 {
                     return new Response<bool>
                     {
-                        StatusMessage = "Stuff not found",
+                        StatusMessage = "PickInsertion not found",
                         StatusCode = HttpStatusCode.NotFound
                     };
                 }
 
-                _context.Stuffs.Remove(entity); 
+                _context.PickInsertion.Remove(entity);
                 await UnitOfWork.SaveAsync();
 
                 return new Response<bool>

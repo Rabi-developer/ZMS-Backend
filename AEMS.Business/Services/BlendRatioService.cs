@@ -5,7 +5,6 @@ using IMS.DataAccess.Repositories;
 using IMS.DataAccess.UnitOfWork;
 using IMS.Domain.Context;
 using IMS.Domain.Entities;
-using IMS.Domain.Migrations.Entities;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using System.Net;

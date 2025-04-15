@@ -66,7 +66,7 @@ public static class ServicesInjector
         builder.Services.AddTransient<IWeavesService, WeavesService>();
         builder.Services.AddTransient<IPickInsertionService, PickInsertionService>();
         builder.Services.AddTransient<IFinalService, FinalService>();
-        builder.Services.AddTransient<ISelvegeService,ISelvegeService>();
+        builder.Services.AddTransient<ISelvegeService,SelvegeService>();
         #endregion
 
         builder.Services.AddIdentity<ApplicationUser, AppRole>().AddEntityFrameworkStores<ApplicationDbContext>()

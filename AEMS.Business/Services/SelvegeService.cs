@@ -1,15 +1,16 @@
 ﻿using IMS.Business.DTOs.Requests;
 using IMS.Business.DTOs.Responses;
-using IMS.Business.Utitlity; 
+using IMS.Business.Utitlity;
 using IMS.DataAccess.Repositories;
 using IMS.DataAccess.UnitOfWork;
+using IMS.Domain.Base;
 using IMS.Domain.Context;
 using IMS.Domain.Entities;
+using IMS.Domain.Utilities;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace IMS.Business.Services
 {
@@ -24,7 +25,7 @@ namespace IMS.Business.Services
         // Constructor with dependency injection
         public SelvegeService(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
         {
-            _context = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _context = dbContext;
         }
 
         // Add a new Selvege entity
@@ -107,7 +108,7 @@ namespace IMS.Business.Services
         }
 
         // Example: Update a Selvege entity (optional, added for completeness)
-        public async Task<Response<Guid>> Update(Guid id, SelvegeReq reqModel)
+        public  async Task<Response<Guid>> Update(Guid id, SelvegeReq reqModel)
         {
             try
             {

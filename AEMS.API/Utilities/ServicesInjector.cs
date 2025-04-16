@@ -73,7 +73,8 @@ public static class ServicesInjector
         builder.Services.AddTransient<IPackingService, PackingService>();
         builder.Services.AddTransient<IFabricTypeService, FabricTypeService>();
         builder.Services.AddTransient<IEndUseService, EndUseService>();
-         #endregion
+        builder.Services.AddTransient<ISellerService, SellerService>();
+        #endregion
 
         builder.Services.AddIdentity<ApplicationUser, AppRole>().AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();

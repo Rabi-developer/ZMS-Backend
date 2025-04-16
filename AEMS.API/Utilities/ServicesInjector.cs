@@ -67,7 +67,13 @@ public static class ServicesInjector
         builder.Services.AddTransient<IPickInsertionService, PickInsertionService>();
         builder.Services.AddTransient<IFinalService, FinalService>();
         builder.Services.AddTransient<ISelvegeService,SelvegeService>();
-        #endregion
+        builder.Services.AddTransient<ISelvegeWeavesService, SelvegeWeavesService>();
+        builder.Services.AddTransient<ISelvegeWidthService, SelvegeWidthService>();
+        builder.Services.AddTransient<IPeicelengthService, PeicelengthService>();
+        builder.Services.AddTransient<IPackingService, PackingService>();
+        builder.Services.AddTransient<IFabricTypeService, FabricTypeService>();
+        builder.Services.AddTransient<IEndUseService, EndUseService>();
+         #endregion
 
         builder.Services.AddIdentity<ApplicationUser, AppRole>().AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();

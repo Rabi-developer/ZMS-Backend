@@ -48,6 +48,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<PickInsertion> PickInsertion { get; set; }
     public DbSet<Final> Finals { get; set; }    
     public DbSet<Selvege> Selveges { get; set; }
+    public DbSet<SelvegeWeaves> SelvegeWeaves { get; set; }
+    public DbSet<SelvegeWidth> SelvegeWidths { get; set; }
+    public DbSet<Peicelength> Peicelengths { get; set; }
+    public DbSet<Packing> Packings { get; set; }
+    public DbSet<FabricType> FabricTypes { get; set; }
+    public DbSet<EndUse> EndUses { get; set; }
 
 
 

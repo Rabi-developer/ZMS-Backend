@@ -29,21 +29,23 @@ public class SellerService : BaseService<SellerReq, SellerRes, SellerRepository,
     {
         try
         {
-            var entity = reqModel.Adapt<Seller>();
-
             var getaccount = _context.Liabilities.Where(p => p.Description == reqModel.SellerName).FirstOrDefault();
-if (getaccount == null)
+            if (getaccount == null)
             {
 
                 return new Response<Guid>
                 {
-                    StatusMessage = "Account not found" 
+                    StatusMessage = "Account not found"
                 };
             }
 
             reqModel.PayableCode = getaccount.Description;
             reqModel.Payableid = getaccount.Listid;
 
+
+            var entity = reqModel.Adapt<Seller>();
+
+           
             var ss = await Repository.Add((Seller)(entity as IMinBase ??
                                                 throw new InvalidOperationException(
                                                     "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));

@@ -55,7 +55,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<FabricType> FabricTypes { get; set; }
     public DbSet<EndUse> EndUses { get; set; }
     public DbSet<Seller> Sellers { get; set; }
-
+    public DbSet<Buyer> Buyers { get; set; }    
+      
 
 
 

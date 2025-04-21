@@ -74,6 +74,10 @@ public static class ServicesInjector
         builder.Services.AddTransient<IFabricTypeService, FabricTypeService>();
         builder.Services.AddTransient<IEndUseService, EndUseService>();
         builder.Services.AddTransient<ISellerService, SellerService>();
+       
+        builder.Services.AddTransient<IWrapYarnTypeService, WrapYarnTypeService>();
+
+        //bakio ky aap daal lain jo 2 rahty hadone
         #endregion
 
         builder.Services.AddIdentity<ApplicationUser, AppRole>().AddEntityFrameworkStores<ApplicationDbContext>()

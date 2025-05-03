@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\AEMS.Domain\IMS.Domain.csproj" />
+		<ProjectReference Include="..\AEMS.Domain\ZMS.Domain.csproj" />
 	</ItemGroup>
 
 </Project>

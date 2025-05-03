@@ -15,7 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\AEMS.DataAccess\IMS.DataAccess.csproj" />
+		<ProjectReference Include="..\AEMS.DataAccess\ZMS.DataAccess.csproj" />
 	</ItemGroup>
 
 </Project>

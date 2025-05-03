@@ -20,7 +20,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\AEMS.Business\IMS.Business.csproj" />
+		<ProjectReference Include="..\AEMS.Business\ZMS.Business.csproj" />
 	</ItemGroup>
 
 </Project>

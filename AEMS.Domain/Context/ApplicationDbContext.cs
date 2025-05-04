@@ -2,6 +2,7 @@
 using IMS.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ZMS.Domain.Entities;
 
 namespace IMS.Domain.Context;
 
@@ -55,9 +56,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<FabricType> FabricTypes { get; set; }
     public DbSet<EndUse> EndUses { get; set; }
     public DbSet<Seller> Sellers { get; set; }
-    public DbSet<Buyer> Buyers { get; set; }    
-      
-
+    public DbSet<Buyer> Buyers { get; set; }  
+    public DbSet<CommisionType> CommisionTypes { get; set; }
+    public DbSet<DeliveryTerm> DeliveryTerms { get; set; }
+    public DbSet<PaymentTerm> PaymentTerms { get; set; }
+    public DbSet<UnitofMeasure> UnitofMeasures { get; set; }
+    public DbSet<GeneralSaleTextType> GeneralSaleTexts { get; set; }
 
 
 

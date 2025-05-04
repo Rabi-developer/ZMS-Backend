@@ -9,7 +9,6 @@ namespace IMS.Domain.Entities
 {
     public class BuyerRes
     {
-      
         public Guid? Id { get; set; }
         public string? BuyerName { get; set; }
         public string? BuyerType { get; set; }

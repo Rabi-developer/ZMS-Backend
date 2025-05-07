@@ -81,6 +81,7 @@ public static class ServicesInjector
         builder.Services.AddTransient<IPaymentTermService, PaymentTermService>();
         builder.Services.AddTransient<IUnitofMeasureService, UnitofMeasureService>();
         builder.Services.AddTransient<IGeneralSaleTextTypeService, GeneralSaleTextTypeService>();
+        builder.Services.AddTransient<IContractService, ContractService>();
 
         
         #endregion

@@ -98,3 +98,8 @@ namespace IMS.Business.DTOs.Requests
         public string? Labs { get; set; }
     }
 }
+public class ContractStatus
+{
+    public Guid? Id { get; set; }
+    public string? Status { get; set; }
+}

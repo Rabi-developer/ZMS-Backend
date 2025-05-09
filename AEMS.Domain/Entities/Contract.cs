@@ -67,6 +67,10 @@ namespace ZMS.Domain.Entities
         public List<DeliveryBreakup>? BuyerDeliveryBreakups { get; set; }
         public List<DeliveryBreakup>? SellerDeliveryBreakups { get; set; }
         public List<SampleDetail>? SampleDetails { get; set; }
+
+        public string? Status { get; set; }
+
+
     }
 
     public class DeliveryBreakup

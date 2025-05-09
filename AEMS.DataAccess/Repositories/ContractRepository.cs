@@ -7,8 +7,7 @@ namespace IMS.DataAccess.Repositories;
 
 public interface IContractRepository
 {
-    Task GetByIdAsync(Guid value);
-    Task UpdateAsync(object contract);
+    
 }
 
 public class ContractRepository : BaseRepository<Contract>, IContractRepository

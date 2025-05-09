@@ -66,6 +66,7 @@ namespace IMS.Business.DTOs.Requests
         public List<DeliveryBreakupRes>? BuyerDeliveryBreakups { get; set; }
         public List<DeliveryBreakupRes>? SellerDeliveryBreakups { get; set; }
         public List<SampleDetailRes>? SampleDetails { get; set; }
+        public string? Status { get; set; }
     }
 
     public class DeliveryBreakupRes

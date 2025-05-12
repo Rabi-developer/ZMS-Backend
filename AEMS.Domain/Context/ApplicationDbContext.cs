@@ -63,6 +63,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<UnitofMeasure> UnitofMeasures { get; set; }
     public DbSet<GeneralSaleTextType> GeneralSaleTexts { get; set; }
     public DbSet<Contract> contracts { get; set; }
+    public DbSet<DispatchNote> DispatchNotes { get; set; }
 
 
 

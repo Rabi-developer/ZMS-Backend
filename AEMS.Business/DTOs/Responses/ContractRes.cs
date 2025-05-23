@@ -33,9 +33,9 @@ namespace IMS.Business.DTOs.Requests
         public string? PickInsertion { get; set; }
         public string? Width { get; set; }
         public string? Final { get; set; }
-        public string? Selvedge { get; set; }
-        public string? SelvedgeWeave { get; set; }
-        public string? SelvedgeWidth { get; set; }
+        public string? Selvege { get; set; }
+        public string? SelvegeWeaves { get; set; }
+        public string? SelvegeWidth { get; set; }
         public string? Quantity { get; set; }
         public string? UnitOfMeasure { get; set; }
         public string? Tolerance { get; set; }

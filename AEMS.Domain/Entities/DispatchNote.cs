@@ -32,5 +32,7 @@ namespace ZMS.Domain.Entities
         public string? Date { get; set; }
         public string? Quantity { get; set; }
         public string? TotalAmount { get; set; }
+        public string? Base { get; set; }
+        public string? DispatchQty { get; set; }
     }
 }

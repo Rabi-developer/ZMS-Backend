@@ -55,7 +55,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var packings = await _DbContext.Packings.ToListAsync();
             var pieceLengths = await _DbContext.Peicelengths.ToListAsync();
             var endUses = await _DbContext.EndUses.ToListAsync();
-            var gstTypes = await _DbContext.GeneralSaleTexts.ToListAsync();
+            var gst = await _DbContext.GeneralSaleTexts.ToListAsync();
             var selvege = await _DbContext.Selveges.ToListAsync();
             var selvegeWeaves = await _DbContext.SelvegeWeaves.ToListAsync();
             var selvegeWidth = await _DbContext.SelvegeWidths.ToListAsync();
@@ -116,7 +116,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                     item.EndUse = endUses.FirstOrDefault(e => e.Listid == item.EndUse)?.Descriptions;
 
                 if (!string.IsNullOrWhiteSpace(item.Gst))
-                    item.Gst = gstTypes.FirstOrDefault(g => g.GstType == item.Gst)?.GstType;
+                    item.Gst = gst.FirstOrDefault(g => g.Id.ToString() == item.Gst)?.GstType;
                
                 if (!string.IsNullOrWhiteSpace(item.Seller))
                     item.Seller = sellers.FirstOrDefault(s => s.Id.ToString() == item.Seller)?.SellerName;

@@ -60,8 +60,9 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var selvegeWeaves = await _DbContext.SelvegeWeaves.ToListAsync();
             var selvegeWidth = await _DbContext.SelvegeWidths.ToListAsync();
             var peicelengths = await _DbContext.Peicelengths.ToListAsync();
-            var seller = await _DbContext.Sellers.ToListAsync();
-            var Buyer = await _DbContext.Buyers.ToListAsync();
+            var sellers = await _DbContext.Sellers.ToListAsync();
+            var buyers = await _DbContext.Buyers.ToListAsync();
+
 
 
 
@@ -116,9 +117,15 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
 
                 if (!string.IsNullOrWhiteSpace(item.Gst))
                     item.Gst = gstTypes.FirstOrDefault(g => g.GstType == item.Gst)?.GstType;
+               
+                if (!string.IsNullOrWhiteSpace(item.Seller))
+                    item.Seller = sellers.FirstOrDefault(s => s.Id.ToString() == item.Seller)?.SellerName;
+
+                if (!string.IsNullOrWhiteSpace(item.Buyer))
+                    item.Buyer = buyers.FirstOrDefault(b => b.Id.ToString() == item.Buyer)?.BuyerName;
 
                 // Fixed property names and consistency
-}
+            }
 
             return new Response<IList<ContractRes>>
             {

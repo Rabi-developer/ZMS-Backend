@@ -177,4 +177,34 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
         };
     }
 
+
+    public async override Task<Response<ContractRes>> Get(Guid id)
+    {
+        try
+        {
+            var entity = await Repository.Get(id, query=> query.Include(p => p.BuyerDeliveryBreakups).Include(p=> p.SellerDeliveryBreakups).Include(p=>p.SampleDetails).ThenInclude(p=> p.AdditionalInfo));
+            if (entity == null)
+            {
+                return new Response<ContractRes>
+                {
+                    StatusMessage = $"{typeof(Contract).Name} Not found",
+                    StatusCode = HttpStatusCode.NoContent
+                };
+            }
+            return new Response<ContractRes>
+            {
+                Data = entity.Adapt<ContractRes>(),
+                StatusMessage = "Fetch successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<ContractRes>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
 }

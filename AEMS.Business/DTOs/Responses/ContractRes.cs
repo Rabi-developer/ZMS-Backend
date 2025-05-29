@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Logging;
+using System;
 using System.Collections.Generic;
 
 namespace IMS.Business.DTOs.Requests
@@ -101,6 +102,7 @@ namespace IMS.Business.DTOs.Requests
 }
 public class ContractStatus
 {
+    
     public Guid? Id { get; set; }
     public string? Status { get; set; }
 }

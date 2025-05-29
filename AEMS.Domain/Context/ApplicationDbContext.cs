@@ -8,6 +8,8 @@ namespace IMS.Domain.Context;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, Guid>
 {
+    public IEnumerable<object> invoice;
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }
@@ -64,7 +66,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<GeneralSaleTextType> GeneralSaleTexts { get; set; }
     public DbSet<Contract> contracts { get; set; }
     public DbSet<DispatchNote> DispatchNotes { get; set; }
-
+    public DbSet<Invoice> Invoices { get; set; }
 
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

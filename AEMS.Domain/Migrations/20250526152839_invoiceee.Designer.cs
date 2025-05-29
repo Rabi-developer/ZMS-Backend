@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250526152839_invoiceee")]
+    partial class invoiceee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "14536ce2-2c56-46ab-9443-e0c9b0e8918d",
+                            ConcurrencyStamp = "04167b77-ab92-440a-b021-15137fa600b2",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -276,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPy2PN8XX+Ojx/fi3h5INM0/vXOog+5bU2Q02DszG7cBIoBU2EdVza14D4fWj0JXJw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFpGpqgk5chpzbEbPbcmce+DAGY9Sj1CUlFaJSJGWscXQuGo4Xc1r5jH22XhMaIU6A==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -3267,6 +3270,9 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("Buyer")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ContractId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ContractNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -3276,16 +3282,13 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("DispatchQty")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FabricDetails")
+                    b.Property<string>("Final")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gst")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GstPercentage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GstValue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("InvoiceId")
@@ -3297,7 +3300,10 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("InvoiceRate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InvoiceValueWithGst")
+                    b.Property<string>("NoOfEnds")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NoOfPicks")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Quantity")
@@ -3306,19 +3312,39 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("Seller")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Selvedge")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("TotalAmount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TotalInvoiceValue")
+                    b.Property<string>("WarpCount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WarpYarnType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Weaves")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WeftCount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WeftYarnType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Wht")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WhtPercentage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("WhtValue")
+                    b.Property<string>("Width")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
 
                     b.HasIndex("InvoiceId");
 
@@ -3795,10 +3821,17 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.RelatedInvoiceContract", b =>
                 {
+                    b.HasOne("ZMS.Domain.Entities.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ZMS.Domain.Entities.Invoice", null)
                         .WithMany("RelatedContracts")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Contract");
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.SampleDetail", b =>

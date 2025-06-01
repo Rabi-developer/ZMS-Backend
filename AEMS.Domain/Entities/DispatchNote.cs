@@ -7,6 +7,8 @@ namespace ZMS.Domain.Entities
     public class DispatchNote : GeneralBase
     {
         public Guid? Id { get; set; }
+        public string? Listid { get; set; }
+
         public string? Date { get; set; }
         public string? Bilty { get; set; }
         public string? Seller { get; set; }

@@ -1,5 +1,5 @@
 ﻿using IMS.Business.DTOs.Requests;
-using IMS.Business.DTOs.Responses;
+using ZMS.Business.DTOs.Responses;
 using IMS.Business.Utitlity;
 using IMS.DataAccess.Repositories;
 using IMS.DataAccess.UnitOfWork;
@@ -26,23 +26,20 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
     private readonly IHttpContextAccessor _context;
     private readonly ApplicationDbContext _DbContext;
 
-    public DispatchNoteService(IUnitOfWork unitOfWork, IHttpContextAccessor context, ApplicationDbContext dbContextn) : base(unitOfWork)
+    public DispatchNoteService(IUnitOfWork unitOfWork, IHttpContextAccessor context, ApplicationDbContext dbContext) : base(unitOfWork)
     {
         _repository = UnitOfWork.GetRepository<DispatchNoteRepository>();
         _context = context;
-        _DbContext = dbContextn;
+        _DbContext = dbContext;
     }
-
 
     public async override Task<Response<IList<DispatchNoteRes>>> GetAll(Pagination? paginate)
     {
         try
         {
             var pagination = paginate ?? new Pagination();
-            //TODO: Get Pagination from the Query
+            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.RelatedContracts));
 
-            var (pag, data) = await Repository.GetAll(pagination, query=> query.Include(p=> p.RelatedContracts));
-           
             return new Response<IList<DispatchNoteRes>>
             {
                 Data = data.Adapt<List<DispatchNoteRes>>(),
@@ -54,6 +51,41 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
         catch (Exception e)
         {
             return new Response<IList<DispatchNoteRes>>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
+    public override async Task<Response<Guid>> Add(DispatchNoteReq reqModel)
+    {
+        try
+        {
+            var lastDispatchNote = await _DbContext.DispatchNotes
+                .OrderByDescending(x => x.Listid)
+                .FirstOrDefaultAsync();
+
+            string newListId = lastDispatchNote == null
+                ? "1"
+                : (int.Parse(lastDispatchNote.Listid) + 1).ToString("D1");
+
+            var entity = reqModel.Adapt<DispatchNote>();
+            entity.Listid = newListId;
+
+            await Repository.Add(entity);
+            await UnitOfWork.SaveAsync();
+
+            return new Response<Guid>
+            {
+                Data = entity.Id.Value,
+                StatusMessage = "Created successfully",
+                StatusCode = HttpStatusCode.Created
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<Guid>
             {
                 StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
@@ -90,6 +122,4 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
             };
         }
     }
-
-
 }

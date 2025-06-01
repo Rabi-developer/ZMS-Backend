@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace IMS.Business.DTOs.Requests
+namespace ZMS.Business.DTOs.Responses
 {
     public class DispatchNoteRes
     {
         public Guid? Id { get; set; }
+        public string? Listid { get; set; }
+
         public string? Date { get; set; }
         public string? Bilty { get; set; }
         public string? Seller { get; set; }

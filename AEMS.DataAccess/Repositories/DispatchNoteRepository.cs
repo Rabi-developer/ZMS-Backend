@@ -15,4 +15,9 @@ public class DispatchNoteRepository : BaseRepository<DispatchNote>, IDispatchNot
     public DispatchNoteRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
     }
+
+    public IQueryable<DispatchNote> GetAll()
+    {
+        return DbSet.AsQueryable();
+    }
 }

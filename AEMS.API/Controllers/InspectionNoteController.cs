@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using IMS.Domain.Entities;
+using ZMS.Domain.Entities;
 using IMS.Domain.Migrations;
 
 namespace ZMS.API.Controllers;
@@ -20,15 +20,14 @@ public class InspectionNoteController : BaseController<InspectionNoteController,
 {
     public InspectionNoteController(ILogger<InspectionNoteController> logger, IInspectionNoteService service) : base(logger, service)
     {
-
     }
 
     [HttpPost("status")]
-    public async Task<IActionResult> UpdateStatus([FromBody] InspectionNoteStatus contractstatus)
+    public async Task<IActionResult> UpdateStatus([FromBody] InspectionNoteStatus InspectionNotestatus)
     {
         try
         {
-            var result = await Service.UpdateStatusAsync((Guid)contractstatus.Id, contractstatus.Status);
+            var result = await Service.UpdateStatusAsync((Guid)InspectionNotestatus.Id, InspectionNotestatus.Status);
             return Ok(result);
         }
         catch (ArgumentException ex)
@@ -41,7 +40,7 @@ public class InspectionNoteController : BaseController<InspectionNoteController,
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "An error occurred while updating the contract status.");
+            return StatusCode(500, "An error occurred while updating the InspectionNote status.");
         }
     }
 }

@@ -10,9 +10,10 @@ namespace IMS.Business.DTOs.Requests
         public string? IrnDate { get; set; }
         public string? Seller { get; set; }
         public string? Buyer { get; set; }
-        public string? InspectionNoteNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string? Remarks { get; set; }
         public string? CreatedBy { get; set; }
+        public string? Status { get; set; }
         public string? CreationDate { get; set; }
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }

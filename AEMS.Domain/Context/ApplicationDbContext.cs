@@ -67,6 +67,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<Contract> contracts { get; set; }
     public DbSet<DispatchNote> DispatchNotes { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InspectionNote> InspectionNotes { get; set; }
 
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

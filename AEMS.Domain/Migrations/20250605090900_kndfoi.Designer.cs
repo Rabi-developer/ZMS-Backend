@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250605090900_kndfoi")]
+    partial class kndfoi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2f32f8d1-cd09-4df6-9c6b-4852c7490712",
+                            ConcurrencyStamp = "b67bf435-7090-4a9b-b9b3-2d477c1f8efa",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -276,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPKIltGtuAk0gkSmArwYslNH2xQSLp7pxr2kfErtA3IqPXwfOpTWhc6DQ4gmaMk5rg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAED4KE93din838U18gUJ+jDrShM2/WRbxzJHYadPirWwEfssmegAMYw9FJjFedWGR3Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -1239,122 +1242,6 @@ namespace IMS.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GeneralSaleTexts");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.InspectionContract", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AGrade")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BGrade")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContractNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DispatchQty")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InspectedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("InspectionNoteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Quantity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Sl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InspectionNoteId");
-
-                    b.ToTable("InspectionContract");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.InspectionNote", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Buyer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("InvoiceNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IrnDate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IrnNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Seller")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("InspectionNotes");
                 });
 
             modelBuilder.Entity("IMS.Domain.Entities.Level", b =>
@@ -3234,6 +3121,129 @@ namespace IMS.Domain.Migrations
                     b.ToTable("DispatchNotes");
                 });
 
+            modelBuilder.Entity("ZMS.Domain.Entities.InspectionContract", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AGrade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BGrade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContractNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DispatchQty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InspectedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("InspectionNoteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Quantity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InspectionNoteId");
+
+                    b.ToTable("InspectionContract");
+                });
+
+            modelBuilder.Entity("ZMS.Domain.Entities.InspectionNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Buyer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IrnDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IrnNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Seller")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdationDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InspectionNotes");
+                });
+
             modelBuilder.Entity("ZMS.Domain.Entities.Invoice", b =>
                 {
                     b.Property<Guid?>("Id")
@@ -3653,14 +3663,6 @@ namespace IMS.Domain.Migrations
                     b.Navigation("ParentAccount");
                 });
 
-            modelBuilder.Entity("IMS.Domain.Entities.InspectionContract", b =>
-                {
-                    b.HasOne("IMS.Domain.Entities.InspectionNote", null)
-                        .WithMany("RelatedContracts")
-                        .HasForeignKey("InspectionNoteId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("IMS.Domain.Entities.Level", b =>
                 {
                     b.HasOne("IMS.Domain.Entities.Organization", "Organization")
@@ -3912,6 +3914,17 @@ namespace IMS.Domain.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("ZMS.Domain.Entities.InspectionContract", b =>
+                {
+                    b.HasOne("ZMS.Domain.Entities.InspectionNote", "InspectionNote")
+                        .WithMany("RelatedContracts")
+                        .HasForeignKey("InspectionNoteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("InspectionNote");
+                });
+
             modelBuilder.Entity("ZMS.Domain.Entities.RelatedContract", b =>
                 {
                     b.HasOne("ZMS.Domain.Entities.DispatchNote", null)
@@ -3956,11 +3969,6 @@ namespace IMS.Domain.Migrations
                     b.Navigation("Children");
                 });
 
-            modelBuilder.Entity("IMS.Domain.Entities.InspectionNote", b =>
-                {
-                    b.Navigation("RelatedContracts");
-                });
-
             modelBuilder.Entity("IMS.Domain.Entities.Liabilities", b =>
                 {
                     b.Navigation("Children");
@@ -4002,6 +4010,11 @@ namespace IMS.Domain.Migrations
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.DispatchNote", b =>
+                {
+                    b.Navigation("RelatedContracts");
+                });
+
+            modelBuilder.Entity("ZMS.Domain.Entities.InspectionNote", b =>
                 {
                     b.Navigation("RelatedContracts");
                 });

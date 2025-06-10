@@ -20,7 +20,7 @@ namespace IMS.Business.DTOs.Requests
         public string? Refer { get; set; }
         public string? Referdate { get; set; }
         public string? FabricType { get; set; }
-        public string? DescriptionId { get; set; }
+        public string? Description { get; set; }
         public string? Stuff { get; set; }
         public string? BlendRatio { get; set; }
         public string? BlendType { get; set; }

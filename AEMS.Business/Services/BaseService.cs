@@ -92,8 +92,8 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
         {
             var entity = reqModel.Adapt<T>();
             var ss = await Repository.Add((T)(entity as IMinBase ??
-                                                throw new InvalidOperationException(
-                                                    "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+             throw new InvalidOperationException(
+             "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
             await UnitOfWork.SaveAsync();
             return new Response<Guid>
             {

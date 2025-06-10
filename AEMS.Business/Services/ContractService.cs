@@ -47,7 +47,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var stuffTypes = await _DbContext.Stuffs.ToListAsync();
             var blendRatios = await _DbContext.BlendRatio.ToListAsync();
             var final = await _DbContext.Finals.ToListAsync();
-            var Description = await _DbContext.Descriptions.ToListAsync();
+            var description = await _DbContext.Descriptions.ToListAsync();
             var warpYarnTypes = await _DbContext.WrapYarnTypes.ToListAsync();
             var weftYarnTypes = await _DbContext.WeftYarnTypes.ToListAsync();
             var weavesList = await _DbContext.Weaves.ToListAsync();
@@ -81,7 +81,10 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
 
                 if (!string.IsNullOrWhiteSpace(item.Selvege))
                     item.Selvege = selvege.FirstOrDefault(s => s.Listid == item.Selvege)?.Descriptions;
-                
+
+                if (!string.IsNullOrWhiteSpace(item.Description))
+                    item.Description = description.FirstOrDefault(s => s.Listid == item.Description)?.Descriptions;
+
                 if (!string.IsNullOrWhiteSpace(item.SelvegeWeaves))
                     item.SelvegeWeaves = selvegeWeaves.FirstOrDefault(s => s.Listid == item.SelvegeWeaves)?.Descriptions;
 

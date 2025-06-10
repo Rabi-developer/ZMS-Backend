@@ -68,6 +68,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<DispatchNote> DispatchNotes { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InspectionNote> InspectionNotes { get; set; }
+    public DbSet<SelvegeThickness>  SelvegeThicknesses { get; set; }
+
 
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

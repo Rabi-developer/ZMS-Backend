@@ -52,7 +52,7 @@ public static class AuthCore
     {
         var authSigningKey =
             new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secrets.AuthenticationSchemeSecretKey));
-        var tokenExpiryTimeInHour = Convert.ToInt64(1);
+        var tokenExpiryTimeInHour = Convert.ToInt64(9);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Issuer = issuer ?? Secrets.AuthenticationSchemeIssuer,

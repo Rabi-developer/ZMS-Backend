@@ -69,6 +69,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InspectionNote> InspectionNotes { get; set; }
     public DbSet<SelvegeThickness>  SelvegeThicknesses { get; set; }
+    public DbSet<InductionThread> InductionThreads { get; set; }
+    public DbSet<Gsm> Gsms { get; set; }
 
 
 

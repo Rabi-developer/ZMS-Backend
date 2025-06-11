@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250611053149_inductionthreasd")]
+    partial class inductionthreasd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2e747d38-682d-41c9-96ab-3ecc5d0abe2f",
+                            ConcurrencyStamp = "a1bd7d18-103b-4e8f-be7e-52080cfc7a34",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -276,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMIGamkrGyCQ+neM69KuRI6vw5c1Bb/WxdsS9ahbAF8OYNW4QsOc/V5b13WwtXKd4A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELskftOvbmZVuE9AQ50m77actTCUzZiUGKPxxza9R0kYpAb6/WJDFwL9DNpO1rMihQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -1239,44 +1242,6 @@ namespace IMS.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GeneralSaleTexts");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.Gsm", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Listid")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SubDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Gsms");
                 });
 
             modelBuilder.Entity("IMS.Domain.Entities.InductionThread", b =>
@@ -3102,16 +3067,10 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("Final")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Gsm")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Gst")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GstValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InductionThread")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -3169,9 +3128,6 @@ namespace IMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Selvege")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SelvegeThickness")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SelvegeWeaves")

@@ -86,6 +86,8 @@ public static class ServicesInjector
         builder.Services.AddTransient<IInvoiceService, InvoiceService>();
         builder.Services.AddTransient<IInspectionNoteService, InspectionNoteService>();
         builder.Services.AddTransient<ISelvegeThicknessService, SelvegeThicknessService>();
+        builder.Services.AddTransient<IInductionThreadService, InductionThreadService>();
+        builder.Services.AddTransient<IGsmService, GsmService>();
 
         
         #endregion

@@ -64,6 +64,9 @@ namespace ZMS.Domain.Entities
         public string? ApprovedBy { get; set; }
         public string? ApprovedDate { get; set; }
         public string? EndUse { get; set; }
+        public string? SelvegeThickness { get; set; }
+        public string? InductionThread {  get; set; }
+        public string? Gsm {  get; set; }
         public List<DeliveryBreakup>? BuyerDeliveryBreakups { get; set; }
         public List<DeliveryBreakup>? SellerDeliveryBreakups { get; set; }
         public List<SampleDetail>? SampleDetails { get; set; }

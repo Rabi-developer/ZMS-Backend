@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250611055559_gsm")]
+    partial class gsm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2e747d38-682d-41c9-96ab-3ecc5d0abe2f",
+                            ConcurrencyStamp = "f8894094-fe81-46f0-a8fa-5973e58dd03d",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -276,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMIGamkrGyCQ+neM69KuRI6vw5c1Bb/WxdsS9ahbAF8OYNW4QsOc/V5b13WwtXKd4A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEL+Yh9IL3/ESrfFue8p3xY+N4UbD/tINncrzmyf7789Oog9N/7NUs2N2MUv6caBw2A==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -3102,16 +3105,10 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("Final")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Gsm")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Gst")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GstValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InductionThread")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -3169,9 +3166,6 @@ namespace IMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Selvege")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SelvegeThickness")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SelvegeWeaves")

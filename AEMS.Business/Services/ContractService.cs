@@ -62,6 +62,13 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var peicelengths = await _DbContext.Peicelengths.ToListAsync();
             var sellers = await _DbContext.Sellers.ToListAsync();
             var buyers = await _DbContext.Buyers.ToListAsync();
+            var inductionThread = await _DbContext.InductionThreads.ToListAsync();
+            var selvegeThickness = await _DbContext.SelvegeThicknesses.ToListAsync();
+            var gsm = await _DbContext.Gsms.ToListAsync();
+
+
+
+
 
 
 
@@ -108,6 +115,17 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
 
                 if (!string.IsNullOrWhiteSpace(item.PickInsertion))
                     item.PickInsertion = pickInsertions.FirstOrDefault(p => p.Listid == item.PickInsertion)?.Descriptions;
+
+                if (!string.IsNullOrWhiteSpace(item.SelvegeThickness))
+                    item.SelvegeThickness = selvegeThickness.FirstOrDefault(p => p.Listid == item.SelvegeThickness)?.Descriptions;
+
+
+                if (!string.IsNullOrWhiteSpace(item.InductionThread))
+                    item.InductionThread = inductionThread.FirstOrDefault(p => p.Listid == item.InductionThread)?.Descriptions;
+
+
+                if (!string.IsNullOrWhiteSpace(item.Gsm))
+                    item.Gsm = gsm.FirstOrDefault(p => p.Listid == item.Gsm)?.Descriptions;
 
                 if (!string.IsNullOrWhiteSpace(item.Packing))
                     item.Packing = packings.FirstOrDefault(p => p.Listid == item.Packing)?.Descriptions;

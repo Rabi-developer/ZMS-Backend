@@ -63,6 +63,9 @@ namespace IMS.Business.DTOs.Requests
         public string? ApprovedBy { get; set; }
         public string? ApprovedDate { get; set; }
         public string? EndUse { get; set; }
+        public string? SelvegeThickness { get; set; }
+        public string? InductionThread { get; set; }
+        public string? Gsm { get; set; }
         public List<DeliveryBreakupReq>? BuyerDeliveryBreakups { get; set; }
         public List<DeliveryBreakupReq>? SellerDeliveryBreakups { get; set; }
         public List<SampleDetailReq>? SampleDetails { get; set; }

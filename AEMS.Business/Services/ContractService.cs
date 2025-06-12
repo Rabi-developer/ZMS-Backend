@@ -65,6 +65,8 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var inductionThread = await _DbContext.InductionThreads.ToListAsync();
             var selvegeThickness = await _DbContext.SelvegeThicknesses.ToListAsync();
             var gsm = await _DbContext.Gsms.ToListAsync();
+            var deliveryterm = await _DbContext.DeliveryTerms.ToListAsync();
+            var paymentTerms = await _DbContext.PaymentTerms.ToListAsync();
 
 
 
@@ -82,6 +84,13 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             {
                 if (!string.IsNullOrWhiteSpace(item.FabricType))
                     item.FabricType = fabricTypes.FirstOrDefault(f => f.Listid == item.FabricType)?.Descriptions;
+
+                if (!string.IsNullOrWhiteSpace(item.PaymentTermsBuyer))
+                    item.PaymentTermsBuyer = paymentTerms.FirstOrDefault(f => f.Listid == item.PaymentTermsBuyer)?.Descriptions;
+
+
+                if (!string.IsNullOrWhiteSpace(item.DeliveryTerms))
+                    item.DeliveryTerms = deliveryterm.FirstOrDefault(f => f.Listid == item.DeliveryTerms)?.Descriptions;
 
                 if (!string.IsNullOrWhiteSpace(item.Stuff))
                     item.Stuff = stuffTypes.FirstOrDefault(s => s.Listid == item.Stuff)?.Descriptions;

@@ -40,7 +40,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var pagination = paginate ?? new Pagination();
 
             // Fetch paged data
-            var (pag, data) = await Repository.GetAll(pagination, null);
+            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.BuyerDeliveryBreakups).Include(p => p.SellerDeliveryBreakups).Include(p => p.DeliveryDetails).Include(p => p.SampleDetails).ThenInclude(p => p.AdditionalInfo));
 
             // Fetch all lookup tables
             var fabricTypes = await _DbContext.FabricTypes.ToListAsync();
@@ -212,7 +212,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
     {
         try
         {
-            var entity = await Repository.Get(id, query=> query.Include(p => p.BuyerDeliveryBreakups).Include(p=> p.SellerDeliveryBreakups).Include(p=>p.SampleDetails).ThenInclude(p=> p.AdditionalInfo));
+            var entity = await Repository.Get(id, query=> query.Include(p => p.BuyerDeliveryBreakups).Include(p=> p.SellerDeliveryBreakups).Include(p=> p.DeliveryDetails).Include(p=>p.SampleDetails).ThenInclude(p=> p.AdditionalInfo));
             if (entity == null)
             {
                 return new Response<ContractRes>

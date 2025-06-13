@@ -70,6 +70,7 @@ namespace ZMS.Domain.Entities
         public List<DeliveryBreakup>? BuyerDeliveryBreakups { get; set; }
         public List<DeliveryBreakup>? SellerDeliveryBreakups { get; set; }
         public List<SampleDetail>? SampleDetails { get; set; }
+        public List<DeliveryDetail>? DeliveryDetails { get; set; }
 
         public string? Status { get; set; }
 
@@ -95,7 +96,41 @@ namespace ZMS.Domain.Entities
         public string? UpdateDate { get; set; }
         public List<AdditionalInfo>? AdditionalInfo { get; set; }
     }
-
+    public class DeliveryDetail
+    {
+        public Guid? Id { get; set; }
+        public string? Quantity { get; set; }
+        public string? Rate { get; set; }
+        public string? FabricValue { get; set; }
+        public string? Gst { get; set; }
+        public string? GstValue { get; set; }
+        public string? TotalAmount { get; set; }
+        public string? CommissionType { get; set; }
+        public string? CommissionPercentage { get; set; }
+        public string? CommissionValue { get; set; }
+        public string? UnitOfMeasure { get; set; }
+        public string? Tolerance { get; set; }
+        public string? Packing { get; set; }
+        public string? PieceLength { get; set; }
+        public string? PaymentTermsSeller { get; set; }
+        public string? PaymentTermsBuyer { get; set; }
+        public string? FinishWidth { get; set; } // New field
+        public string? DeliveryTerms { get; set; }
+        public string? CommissionFrom { get; set; }
+        public string? SellerCommission { get; set; } // New field
+        public string? BuyerCommission { get; set; } // New field
+        public string? DispatchLater { get; set; } // New field
+        public string? SellerRemark { get; set; }
+        public string? BuyerRemark { get; set; }
+        public string? DeliveryDate { get; set; }
+        public string? Color { get; set; } // New field
+        public string? Weight { get; set; } // New field
+        public string? Shrinkage { get; set; } // New field
+        public string? Finish { get; set; } // New field
+        public string? LabDispNo { get; set; } // New field
+        public string? LabDispDate { get; set; } // New field
+        public Guid? ContractId { get; set; } // Foreign key to Contract
+    }
     public class AdditionalInfo
     {
         public Guid? Id { get; set; }

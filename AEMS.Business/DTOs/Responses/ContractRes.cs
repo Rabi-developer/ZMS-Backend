@@ -68,10 +68,38 @@ namespace IMS.Business.DTOs.Requests
         public string? SelvegeThickness { get; set; }
         public string? InductionThread { get; set; }
         public string? Gsm { get; set; }
+
+        // New Field
+        public string? FinishWidth { get; set; } // New field
+
+        public string? SellerCommission { get; set; } // New field
+        public string? BuyerCommission { get; set; } // New field
+        public string? DispatchLater { get; set; } // New field
+
+        public string? Color { get; set; } // New field
+        public string? Weight { get; set; } // New field
+        public string? Shrinkage { get; set; } // New field
+        public string? Finish { get; set; } // New field
+        public string? LabDispNo { get; set; } // New field
+        public string? LabDispDate { get; set; } // New field
+        public string? PickRate { get; set; } // New field
+        public string? FabricRate { get; set; } // New field
+        public string? Amounts { get; set; } // New field
+        public string? Wrapwt { get; set; } // New field
+        public string? Weftwt { get; set; } // New field
+        public string? WrapBag { get; set; } // New field
+        public string? WeftBag { get; set; } // New field
+        public string? TotalBag { get; set; } // New field
+        public string? TotalAmountMultiple { get; set; } // New field
+
+
+
+
+
         public List<DeliveryBreakupRes>? BuyerDeliveryBreakups { get; set; }
         public List<DeliveryBreakupRes>? SellerDeliveryBreakups { get; set; }
         public List<SampleDetailRes>? SampleDetails { get; set; }
-        public List<DeliveryDetailRes>? DeliveryDetails { get; set; } 
+/*        public List<DeliveryDetailRes>? DeliveryDetails { get; set; } */        
         public string? Status { get; set; }
     }
 
@@ -94,7 +122,7 @@ namespace IMS.Business.DTOs.Requests
         public string? UpdateDate { get; set; }
         public List<AdditionalInfoRes>? AdditionalInfo { get; set; }
     }
-    public class DeliveryDetailRes
+   /* public class DeliveryDetailRes
     {
         public Guid? Id { get; set; }
         public string? Quantity { get; set; }
@@ -128,7 +156,7 @@ namespace IMS.Business.DTOs.Requests
         public string? LabDispNo { get; set; } // New field
         public string? LabDispDate { get; set; } // New field
         public Guid? ContractId { get; set; } // Foreign key to Contract
-    }
+    }*/
     public class AdditionalInfoRes
     {
         public Guid? Id { get; set; }

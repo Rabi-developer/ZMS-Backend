@@ -40,7 +40,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var pagination = paginate ?? new Pagination();
 
             // Fetch paged data
-            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.BuyerDeliveryBreakups).Include(p => p.SellerDeliveryBreakups).Include(p => p.DeliveryDetails).Include(p => p.SampleDetails).ThenInclude(p => p.AdditionalInfo));
+            var (pag, data) = await Repository.GetAll(pagination, null);
 
             // Fetch all lookup tables
             var fabricTypes = await _DbContext.FabricTypes.ToListAsync();
@@ -67,7 +67,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var gsm = await _DbContext.Gsms.ToListAsync();
             var deliveryterm = await _DbContext.DeliveryTerms.ToListAsync();
             var paymentTerms = await _DbContext.PaymentTerms.ToListAsync();
-          
+
 
 
 
@@ -148,7 +148,6 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 if (!string.IsNullOrWhiteSpace(item.Gst))
                     item.Gst = gst.FirstOrDefault(g => g.Id.ToString() == item.Gst)?.GstType;
 
-
                 if (!string.IsNullOrWhiteSpace(item.Seller))
                     item.Seller = sellers.FirstOrDefault(s => s.Id.ToString() == item.Seller)?.SellerName;
 
@@ -156,28 +155,6 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                     item.Buyer = buyers.FirstOrDefault(b => b.Id.ToString() == item.Buyer)?.BuyerName;
 
                 // Fixed property names and consistency
-
-
-                if (item.DeliveryDetails != null)
-                {
-                    foreach (var deliveryDetail in item.DeliveryDetails)
-                    {
-                        if (!string.IsNullOrWhiteSpace(deliveryDetail.Gst))
-                            deliveryDetail.Gst = gst.FirstOrDefault(g => g.Id.ToString() == deliveryDetail.Gst)?.GstType;
-
-                        if (!string.IsNullOrWhiteSpace(deliveryDetail.PieceLength))
-                            deliveryDetail.PieceLength = pieceLengths.FirstOrDefault(p => p.Listid == deliveryDetail.PieceLength)?.Descriptions;
-
-                        if (!string.IsNullOrWhiteSpace(deliveryDetail.PaymentTermsBuyer))
-                            deliveryDetail.PaymentTermsBuyer = paymentTerms.FirstOrDefault(p => p.Listid == deliveryDetail.PaymentTermsBuyer)?.Descriptions;
-                      
-                        if (!string.IsNullOrWhiteSpace(deliveryDetail.PaymentTermsSeller))
-                            deliveryDetail.PaymentTermsSeller = paymentTerms.FirstOrDefault(p => p.Listid == deliveryDetail.PaymentTermsSeller)?.Descriptions;
-                      
-                        if (!string.IsNullOrWhiteSpace(deliveryDetail.Packing))
-                            deliveryDetail.Packing = packings.FirstOrDefault(p => p.Listid == deliveryDetail.Packing)?.Descriptions;
-                    }
-                }
             }
 
             return new Response<IList<ContractRes>>
@@ -235,7 +212,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
     {
         try
         {
-            var entity = await Repository.Get(id, query=> query.Include(p => p.BuyerDeliveryBreakups).Include(p=> p.SellerDeliveryBreakups).Include(p=> p.DeliveryDetails).Include(p=>p.SampleDetails).ThenInclude(p=> p.AdditionalInfo));
+            var entity = await Repository.Get(id, query => query.Include(p => p.BuyerDeliveryBreakups).Include(p => p.SellerDeliveryBreakups).Include(p => p.SampleDetails).ThenInclude(p => p.AdditionalInfo));
             if (entity == null)
             {
                 return new Response<ContractRes>

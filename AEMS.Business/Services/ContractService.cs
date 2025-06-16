@@ -1,4 +1,5 @@
-﻿using IMS.Business.DTOs.Requests;
+﻿using IMS.Application.Contracts;
+using IMS.Business.DTOs.Requests;
 using IMS.Business.DTOs.Responses;
 using IMS.Business.Utitlity;
 using IMS.DataAccess.Repositories;
@@ -57,14 +58,14 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var endUses = await _DbContext.EndUses.ToListAsync();
             var gst = await _DbContext.GeneralSaleTexts.ToListAsync();
             var selvege = await _DbContext.Selveges.ToListAsync();
-            var selvegeWeaves = await _DbContext.SelvegeWeaves.ToListAsync();
+            var SelvegeWeave  = await _DbContext.SelvegeWeaves.ToListAsync();
             var selvegeWidth = await _DbContext.SelvegeWidths.ToListAsync();
             var peicelengths = await _DbContext.Peicelengths.ToListAsync();
-            var sellers = await _DbContext.Sellers.ToListAsync();
+            var sellers = await _DbContext. Sellers.ToListAsync();
             var buyers = await _DbContext.Buyers.ToListAsync();
             var inductionThread = await _DbContext.InductionThreads.ToListAsync();
             var selvegeThickness = await _DbContext.SelvegeThicknesses.ToListAsync();
-            var gsm = await _DbContext.Gsms.ToListAsync();
+            var GSM = await _DbContext.Gsms.ToListAsync();
             var deliveryterm = await _DbContext.DeliveryTerms.ToListAsync();
             var paymentTerms = await _DbContext.PaymentTerms.ToListAsync();
 
@@ -101,8 +102,8 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 if (!string.IsNullOrWhiteSpace(item.Description))
                     item.Description = description.FirstOrDefault(s => s.Listid == item.Description)?.Descriptions;
 
-                if (!string.IsNullOrWhiteSpace(item.SelvegeWeaves))
-                    item.SelvegeWeaves = selvegeWeaves.FirstOrDefault(s => s.Listid == item.SelvegeWeaves)?.Descriptions;
+                if (!string.IsNullOrWhiteSpace(item.SelvegeWeave ))
+                    item.SelvegeWeave  = SelvegeWeave .FirstOrDefault(s => s.Listid == item.SelvegeWeave )?.Descriptions;
 
                 if (!string.IsNullOrWhiteSpace(item.SelvegeWidth))
                     item.SelvegeWidth = selvegeWidth.FirstOrDefault(s => s.Listid == item.SelvegeWidth)?.Descriptions;
@@ -133,8 +134,8 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                     item.InductionThread = inductionThread.FirstOrDefault(p => p.Listid == item.InductionThread)?.Descriptions;
 
 
-                if (!string.IsNullOrWhiteSpace(item.Gsm))
-                    item.Gsm = gsm.FirstOrDefault(p => p.Listid == item.Gsm)?.Descriptions;
+                if (!string.IsNullOrWhiteSpace(item.GSM))
+                    item.GSM = GSM.FirstOrDefault(p => p.Listid == item.GSM)?.Descriptions;
 
                 if (!string.IsNullOrWhiteSpace(item.Packing))
                     item.Packing = packings.FirstOrDefault(p => p.Listid == item.Packing)?.Descriptions;
@@ -148,11 +149,11 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 if (!string.IsNullOrWhiteSpace(item.Gst))
                     item.Gst = gst.FirstOrDefault(g => g.Id.ToString() == item.Gst)?.GstType;
 
-                if (!string.IsNullOrWhiteSpace(item.Seller))
-                    item.Seller = sellers.FirstOrDefault(s => s.Id.ToString() == item.Seller)?.SellerName;
+                if (!string.IsNullOrWhiteSpace(item.SellerName))
+                    item. SellerName =  sellers.FirstOrDefault(s => s.Id.ToString() == item. SellerName)?. SellerName;
 
-                if (!string.IsNullOrWhiteSpace(item.Buyer))
-                    item.Buyer = buyers.FirstOrDefault(b => b.Id.ToString() == item.Buyer)?.BuyerName;
+                if (!string.IsNullOrWhiteSpace(item.BuyerName))
+                    item.BuyerName = buyers.FirstOrDefault(b => b.Id.ToString() == item.BuyerName)?.BuyerName;
 
                 // Fixed property names and consistency
             }
@@ -196,7 +197,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
 
         contract.Status = status;
         contract.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
-        contract.UpdationDate = DateTime.UtcNow.ToString("o");
+      //  contract.UpdationDate = DateTime.UtcNow.ToString("o");
 
         await UnitOfWork.SaveAsync();
 
@@ -212,7 +213,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
     {
         try
         {
-            var entity = await Repository.Get(id, query => query.Include(p => p.BuyerDeliveryBreakups).Include(p => p.SellerDeliveryBreakups).Include(p => p.SampleDetails).ThenInclude(p => p.AdditionalInfo));
+            var entity = await Repository.Get(id, query => query.Include(p => p.BuyerDeliveryBreakups).Include(p => p. SellerDeliveryBreakups).Include(p => p.SampleDetails).ThenInclude(p => p.AdditionalInfos));
             if (entity == null)
             {
                 return new Response<ContractRes>

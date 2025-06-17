@@ -58,16 +58,6 @@ namespace ZMS.Domain.Entities
         public string? Gst { get; set; }
         public string? GstValue { get; set; }
         public string? TotalAmount { get; set; }
-        public string? PaymentTermsSeller { get; set; }
-        public string? PaymentTermsBuyer { get; set; }
-        public string? DeliveryTerms { get; set; }
-        public string? CommissionFrom { get; set; }
-        public string? CommissionType { get; set; }
-        public string? CommissionPercentage { get; set; }
-        public string? CommissionValue { get; set; }
-        public string? DispatchAddress { get; set; }
-        public string? SellerRemark { get; set; }
-        public string? BuyerRemark { get; set; }
         public string? CreatedBy { get; set; }
         public string? CreationDate { get; set; }
         public string? UpdatedBy { get; set; }
@@ -80,8 +70,6 @@ namespace ZMS.Domain.Entities
         public string? EndUseSubOptions { get; set; }
         public string? Notes { get; set; }
         public string? DispatchLater { get; set; }
-        public string? SellerCommission { get; set; }
-        public string? BuyerCommission { get; set; }
         public string? Status { get; set; }
         public string? FinishWidth { get; set; }
         public List<DeliveryBreakup>? BuyerDeliveryBreakups { get; set; }
@@ -95,8 +83,6 @@ namespace ZMS.Domain.Entities
     {
         //
         public Guid Id { get; set; } // Changed from Guid? to Guid
-        public Guid ContractId { get; set; } // Added foreign key
-        public Contract? Contract { get; set; } // Navigation property
         public string? Qty { get; set; }
         public string? DeliveryDate { get; set; }
     }
@@ -126,16 +112,15 @@ namespace ZMS.Domain.Entities
         public string? CommissionPercentage { get; set; }
         public string? CommissionValue { get; set; }
         public string? TotalAmount { get; set; }
-        public List<CommisionInfo>? CommisionInfo { get; set; }
-        public List<DeliveryBreakup>? DeliveryBreakup { get; set; }
+        public CommisionInfo? CommisionInfo { get; set; }
+        public List<DeliveryBreakup>? BuyerDeliveryBreakups { get; set; }
+        public List<DeliveryBreakup>? SellerDeliveryBreakups { get; set; }
     }
 
     public class CommisionInfo
     {
         //
         public Guid Id { get; set; }
-        public Guid ConversionContractRowId { get; set; } // Added foreign key
-        public ConversionContractRow? ConversionContractRow { get; set; } // Navigation property
         public string? PaymentTermsSeller { get; set; }
         public string? PaymentTermsBuyer { get; set; }
         public string? DeliveryTerms { get; set; }
@@ -154,7 +139,7 @@ namespace ZMS.Domain.Entities
     {
         //
         public Guid Id { get; set; }
-        public Guid ContractRST { get; set; } // Added foreign key
+        public Guid ContractId { get; set; } // Added foreign key
         public Contract? Contract { get; set; }
         public string? LabDispatchNo { get; set; }
         public DateTime? LabDispatchDate { get; set; }
@@ -174,29 +159,11 @@ namespace ZMS.Domain.Entities
         public string? Shrinkage { get; set; }
         public string? FinishWidth { get; set; }
         public string? Weight { get; set; }
-        public List<DietContractRowList>? DietContractRowList { get; set; }
-        public List<DeliveryBreakup>? DeliveryBreakup { get; set; }
+        public CommisionInfo? CommisionInfo { get; set; }
+        public List<DeliveryBreakup>? BuyerDeliveryBreakups { get; set; }
+        public List<DeliveryBreakup>? SellerDeliveryBreakups { get; set; }
     }
 
-    public class DietContractRowList
-    {
-        //
-        public Guid Id { get; set; }
-        public Guid DietContractRowId { get; set; } // Added foreign key
-        public DietContractRow? DietContractRow { get; set; } // Navigation property
-        public string? PaymentTermsSeller { get; set; }
-        public string? PaymentTermsBuyer { get; set; }
-        public string? DeliveryTerms { get; set; }
-        public string? CommissionFrom { get; set; }
-        public string? DispatchAddress { get; set; }
-        public string? SellerRemark { get; set; }
-        public string? BuyerRemark { get; set; }
-        public string? EndUse { get; set; }
-        public string? EndUseSubOptions { get; set; }
-        public string? DispatchLater { get; set; }
-        public string? SellerCommission { get; set; }
-        public string? BuyerCommission { get; set; }
-    }
 
     public class MultiWidthContractRow
     {
@@ -215,26 +182,9 @@ namespace ZMS.Domain.Entities
         public string? CommissionPercentage { get; set; }
         public string? CommissionValue { get; set; }
         public string? TotalAmount { get; set; }
-        public List<MultiWidthContractRowInfo>? MultiWidthContractRowInfo { get; set; }
-        public List<DeliveryBreakup>? DeliveryBreakup { get; set; }
+        public CommisionInfo? CommisionInfo { get; set; }
+        public List<DeliveryBreakup>? BuyerDeliveryBreakups { get; set; }
+        public List<DeliveryBreakup>? SellerDeliveryBreakups { get; set; }
     }
 
-    public class MultiWidthContractRowInfo
-    {
-        public Guid Id { get; set; }
-        public Guid MultiWidthContractRowId { get; set; } // Added foreign key
-        public MultiWidthContractRow? MultiWidthContractRow { get; set; } // Navigation property
-        public string? PaymentTermsSeller { get; set; }
-        public string? PaymentTermsBuyer { get; set; }
-        public string? DeliveryTerms { get; set; }
-        public string? CommissionFrom { get; set; }
-        public string? DispatchAddress { get; set; }
-        public string? SellerRemark { get; set; }
-        public string? BuyerRemark { get; set; }
-        public string? EndUse { get; set; }
-        public string? EndUseSubOptions { get; set; }
-        public string? DispatchLater { get; set; }
-        public string? SellerCommission { get; set; }
-        public string? BuyerCommission { get; set; }
-    }
 }

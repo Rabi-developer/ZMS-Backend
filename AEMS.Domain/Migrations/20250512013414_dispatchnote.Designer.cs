@@ -2734,7 +2734,7 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("Labs")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SampleDetailId")
+                    b.Property<Guid?>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Weight")

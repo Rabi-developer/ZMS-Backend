@@ -17,12 +17,12 @@ using ZMS.Domain.Entities;
 
 namespace IMS.Business.Services;
 
-public interface IContractService : IBaseService<ContracReq, ContracRes, Contract>
+public interface IContractService : IBaseService<ContractReq, ContractRes, Contract>
 {
     public Task<ContractStatus> UpdateStatusAsync(Guid id, string status);
 }
 
-public class ContractService : BaseService<ContracReq, ContracRes, ContractRepository, Contract>, IContractService
+public class ContractService : BaseService<ContractReq, ContractRes, ContractRepository, Contract>, IContractService
 {
     private readonly IContractRepository _repository;
     private readonly IHttpContextAccessor _context;
@@ -34,7 +34,7 @@ public class ContractService : BaseService<ContracReq, ContracRes, ContractRepos
         _context = context;
         _DbContext = dbContextn;
     }
-    public async override Task<Response<IList<ContracRes>>> GetAll(Pagination? paginate)
+    public async override Task<Response<IList<ContractRes>>> GetAll(Pagination? paginate)
     {
         try
         {
@@ -77,7 +77,7 @@ public class ContractService : BaseService<ContracReq, ContracRes, ContractRepos
 
 
             // Map to DTO
-            var result = data.Adapt<List<ContracRes>>();
+            var result = data.Adapt<List<ContractRes>>();
 
             // Replace listid values with Descriptions
             // Replace listid values with Descriptions
@@ -86,13 +86,13 @@ public class ContractService : BaseService<ContracReq, ContracRes, ContractRepos
                 if (!string.IsNullOrWhiteSpace(item.FabricType))
                     item.FabricType = fabricTypes.FirstOrDefault(f => f.Listid == item.FabricType)?.Descriptions;
 
-                if (!string.IsNullOrWhiteSpace(item.PaymentTermsBuyer))
+         /*       if (!string.IsNullOrWhiteSpace(item.PaymentTermsBuyer))
                     item.PaymentTermsBuyer = paymentTerms.FirstOrDefault(f => f.Listid == item.PaymentTermsBuyer)?.Descriptions;
 
 
                 if (!string.IsNullOrWhiteSpace(item.DeliveryTerms))
                     item.DeliveryTerms = deliveryterm.FirstOrDefault(f => f.Listid == item.DeliveryTerms)?.Descriptions;
-
+*/
                 if (!string.IsNullOrWhiteSpace(item.Stuff))
                     item.Stuff = stuffTypes.FirstOrDefault(s => s.Listid == item.Stuff)?.Descriptions;
 
@@ -158,7 +158,7 @@ public class ContractService : BaseService<ContracReq, ContracRes, ContractRepos
                 // Fixed property names and consistency
             }
 
-            return new Response<IList<ContracRes>>
+            return new Response<IList<ContractRes>>
             {
                 Data = result,
                 Misc = pag,
@@ -168,7 +168,7 @@ public class ContractService : BaseService<ContracReq, ContracRes, ContractRepos
         }
         catch (Exception e)
         {
-            return new Response<IList<ContracRes>>
+            return new Response<IList<ContractRes>>
             {
                 StatusMessage = e.InnerException?.Message ?? e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
@@ -209,29 +209,29 @@ public class ContractService : BaseService<ContracReq, ContracRes, ContractRepos
     }
 
 
-    public async override Task<Response<ContracRes>> Get(Guid id)
+    public async override Task<Response<ContractRes>> Get(Guid id)
     {
         try
         {
             var entity = await Repository.Get(id, query => query.Include(p => p.BuyerDeliveryBreakups).Include(p => p.SellerDeliveryBreakups));
             if (entity == null)
             {
-                return new Response<ContracRes>
+                return new Response<ContractRes>
                 {
                     StatusMessage = $"{typeof(Contract).Name} Not found",
                     StatusCode = HttpStatusCode.NoContent
                 };
             }
-            return new Response<ContracRes>
+            return new Response<ContractRes>
             {
-                Data = entity.Adapt<ContracRes>(),
+                Data = entity.Adapt<ContractRes>(),
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
             };
         }
         catch (Exception e)
         {
-            return new Response<ContracRes>
+            return new Response<ContractRes>
             {
                 StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                 StatusCode = HttpStatusCode.InternalServerError

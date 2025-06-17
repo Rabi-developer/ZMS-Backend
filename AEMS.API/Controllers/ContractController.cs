@@ -16,7 +16,7 @@ namespace ZMS.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
-public class ContractController : BaseController<ContractController, IContractService, ContracReq, ContracRes, Contract>
+public class ContractController : BaseController<ContractController, IContractService, ContractReq, ContractRes, Contract>
 {
     public ContractController(ILogger<ContractController> logger, IContractService service) : base(logger, service)
     {

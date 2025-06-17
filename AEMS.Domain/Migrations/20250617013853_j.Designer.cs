@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250617013853_j")]
+    partial class j
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5dd3ea5a-b844-49c9-a5a7-75e905168abf",
+                            ConcurrencyStamp = "0098a8f3-1197-49f5-b3dd-d42dca62c2e7",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -276,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEL0LjHzLS4j+L77fAkV7O/en7k7qaYC3fi4XZTJC0Pdm1M+aHGFGINXqG+qtAnDpVA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGmpmaxufPN1k82pmQEyCdavSNjlJ8kMfcw0cVefDI4QlCPAfoIePJmbMDHGfx750w==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -2946,6 +2949,37 @@ namespace IMS.Domain.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ZMS.Domain.Entities.AdditionalInfo", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Count")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EndUse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Labs")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("SampleDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Weight")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("YarnBags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SampleDetailId");
+
+                    b.ToTable("AdditionalInfo");
+                });
+
             modelBuilder.Entity("ZMS.Domain.Entities.CommisionInfo", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3960,6 +3994,43 @@ namespace IMS.Domain.Migrations
                     b.ToTable("RelatedInvoiceContract");
                 });
 
+            modelBuilder.Entity("ZMS.Domain.Entities.SampleDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ContractId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreationDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SampleDeliveredDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SampleQty")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SampleReceivedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdateDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.ToTable("SampleDetail");
+                });
+
             modelBuilder.Entity("ZMS.Domain.Entities.UnitofMeasure", b =>
                 {
                     b.Property<Guid?>("Id")
@@ -4370,6 +4441,14 @@ namespace IMS.Domain.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ZMS.Domain.Entities.AdditionalInfo", b =>
+                {
+                    b.HasOne("ZMS.Domain.Entities.SampleDetail", null)
+                        .WithMany("AdditionalInfo")
+                        .HasForeignKey("SampleDetailId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("ZMS.Domain.Entities.CommisionInfo", b =>
                 {
                     b.HasOne("ZMS.Domain.Entities.ConversionContractRow", null)
@@ -4471,6 +4550,14 @@ namespace IMS.Domain.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("ZMS.Domain.Entities.SampleDetail", b =>
+                {
+                    b.HasOne("ZMS.Domain.Entities.Contract", null)
+                        .WithMany("SampleDetails")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("IMS.Domain.Entities.Assets", b =>
                 {
                     b.Navigation("Children");
@@ -4537,6 +4624,8 @@ namespace IMS.Domain.Migrations
 
                     b.Navigation("MultiWidthContractRow");
 
+                    b.Navigation("SampleDetails");
+
                     b.Navigation("SellerDeliveryBreakups");
                 });
 
@@ -4569,6 +4658,11 @@ namespace IMS.Domain.Migrations
                     b.Navigation("DeliveryBreakup");
 
                     b.Navigation("MultiWidthContractRowInfo");
+                });
+
+            modelBuilder.Entity("ZMS.Domain.Entities.SampleDetail", b =>
+                {
+                    b.Navigation("AdditionalInfo");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,14 +10,13 @@ using System;
 using System.Threading.Tasks;
 using ZMS.Domain.Entities;
 using IMS.Domain.Migrations;
-using IMS.Application.Contracts;
 
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
-public class ContractController : BaseController<ContractController, IContractService, ContractReq, ContractRes, Contract>
+public class ContractController : BaseController<ContractController, IContractService, ContracReq, ContracRes, Contract>
 {
     public ContractController(ILogger<ContractController> logger, IContractService service) : base(logger, service)
     {

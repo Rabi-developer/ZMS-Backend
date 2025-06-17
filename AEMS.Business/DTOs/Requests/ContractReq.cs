@@ -1,128 +1,134 @@
-﻿using System;
+﻿using IMS.Domain.Base;
+using System;
 using System.Collections.Generic;
 
-namespace IMS.Application.Contracts
+namespace ZMS.Domain.Entities
 {
-    public class ContractReq
+    public class ContracReq : GeneralBase
     {
-        public string ContractNumber { get; set; } 
-        public DateTime Date { get; set; }
-        public string ContractType { get; set; } 
-        public Guid CompanyId { get; set; }
-        public Guid BranchId { get; set; }
-        public string ContractOwner { get; set; } 
-        public Guid SellerId { get; set; }
-        public Guid BuyerId { get; set; }
+//
+        public string? ContractNumber { get; set; }
+        public string? Date { get; set; }
+        public string? ContractType { get; set; }
+        public string? CompanyId { get; set; }
+        public string? BranchId { get; set; }
+        public string? ContractOwner { get; set; }
+        public string? Seller { get; set; }
+        public string? Buyer { get; set; }
         public string? ReferenceNumber { get; set; }
-        public DateTime? DeliveryDate { get; set; }
+        public string? DeliveryDate { get; set; }
         public string? Refer { get; set; }
-        public DateTime? Referdate { get; set; }
-        public string FabricType { get; set; } 
-        public string Description { get; set; } 
-        public string? DescriptionSubOptions { get; set; } 
-        public string Stuff { get; set; } 
-        public string? StuffSubOptions { get; set; } 
+        public string? Referdate { get; set; }
+        public string FabricType { get; set; }
+        public string Description { get; set; }
+        public string? DescriptionSubOptions { get; set; }
+        public string Stuff { get; set; }
+        public string? StuffSubOptions { get; set; }
         public string? BlendRatio { get; set; }
         public string? BlendType { get; set; }
         public string? WarpCount { get; set; }
-        public string? WarpYarnType { get; set; }
-        public string? WarpYarnTypeSubOptions { get; set; } // Pipe-separated
         public string? WeftCount { get; set; }
+        public string? WarpYarnType { get; set; }
+        public string? WarpYarnTypeSubOptions { get; set; }
         public string WeftYarnType { get; set; }
-        public string? WeftYarnTypeSubOptions { get; set; } // Pipe-separated
+        public string? WeftYarnTypeSubOptions { get; set; }
         public string? NoOfEnds { get; set; }
         public string? NoOfPicks { get; set; }
         public string? Weaves { get; set; }
-        public string? WeavesSubOptions { get; set; } // Pipe-separated
+        public string? WeavesSubOptions { get; set; }
         public string? PickInsertion { get; set; }
-        public string? PickInsertionSubOptions { get; set; } // Pipe-separated
+        public string? PickInsertionSubOptions { get; set; }
         public string? Width { get; set; }
         public string? Final { get; set; }
-        public string? FinalSubOptions { get; set; } // Pipe-separated
         public string? Selvege { get; set; }
-        public string? SelvegeSubOptions { get; set; } // Pipe-separated
-        public string? SelvegeWeave { get; set; }
-        public string? SelvegeWeaveSubOptions { get; set; } // Pipe-separated
+        public string? SelvegeSubOptions { get; set; }
+        public string? SelvegeWeaves { get; set; }
+        public string? SelvegeWeaveSubOptions { get; set; }
         public string? SelvegeWidth { get; set; }
-        public string? InductionThread { get; set; }
-        public string? InductionThreadSubOptions { get; set; } // Pipe-separated
-        public string? GSM { get; set; }
         public string? Quantity { get; set; }
         public string? UnitOfMeasure { get; set; }
         public string? Tolerance { get; set; }
         public string? Rate { get; set; }
         public string? Packing { get; set; }
         public string? PieceLength { get; set; }
+        public string? InductionThread { get; set; }
+        public string? InductionThreadSubOptions { get; set; }
         public string? FabricValue { get; set; }
+        public string? Gsm { get; set; }
         public string? Gst { get; set; }
         public string? GstValue { get; set; }
         public string? TotalAmount { get; set; }
-        public string? PaymentTermsSeller { get; set; } // Dropdown
-        public string? PaymentTermsBuyer { get; set; } // Dropdown
-        public string? DeliveryTerms { get; set; } // Dropdown
-        public string? CommissionFrom { get; set; } // Dropdown
+        public string? PaymentTermsSeller { get; set; }
+        public string? PaymentTermsBuyer { get; set; }
+        public string? DeliveryTerms { get; set; }
+        public string? CommissionFrom { get; set; }
         public string? CommissionType { get; set; }
         public string? CommissionPercentage { get; set; }
         public string? CommissionValue { get; set; }
-        public string? DispatchAddress { get; set; } // Input
-        public string? SellerRemark { get; set; } // Input
-        public string? BuyerRemark { get; set; } // Input
-        public string? EndUse { get; set; } // Dropdown
-        public string? EndUseSubOptions { get; set; } // Pipe-separated
-        public string? Notes { get; set; }
+        public string? DispatchAddress { get; set; }
+        public string? SellerRemark { get; set; }
+        public string? BuyerRemark { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? CreationDate { get; set; }
+        public string? UpdatedBy { get; set; }
+        public string? UpdationDate { get; set; }
+        public string? ApprovedBy { get; set; }
+        public string? ApprovedDate { get; set; }
+        public string? EndUse { get; set; }
         public string? SelvegeThickness { get; set; }
-        public string? DispatchLater { get; set; } // Dropdown
-        public string? SellerCommission { get; set; } // Input, Pipe-separated
-        public string? BuyerCommission { get; set; } // Input, Pipe-separated
+        public string? SelvegeThicknessSubOptions { get; set; }
+        public string? EndUseSubOptions { get; set; }
+        public string? Notes { get; set; }
+        public string? DispatchLater { get; set; }
+        public string? SellerCommission { get; set; }
+        public string? BuyerCommission { get; set; }
         public string? Status { get; set; }
-
-        // Nested collections
-        public List<BuyerDeliveryBreakupReq> BuyerDeliveryBreakups { get; set; } = new List<BuyerDeliveryBreakupReq>();
-        public List<SellerDeliveryBreakupReq> SellerDeliveryBreakups { get; set; } = new List<SellerDeliveryBreakupReq>();
-        public List<SampleDetailReq> SampleDetails { get; set; } = new List<SampleDetailReq>();
-        public List<ConversionContractRowReq> ConversionContractRows { get; set; } = new List<ConversionContractRowReq>();
-        public List<DietContractRowReq> DietContractRows { get; set; } = new List<DietContractRowReq>();
-        public List<MultiWidthContractRowReq> MultiWidthContractRows { get; set; } = new List<MultiWidthContractRowReq>();
+        public string? FinishWidth { get; set; }
+        public List<DeliveryBreakuReq>? BuyerDeliveryBreakuReqs { get; set; }
+        public List<DeliveryBreakuReq>? SellerDeliveryBreakuReqs { get; set; }
+  //    public List<SampleDetailReq>? SampleDetailsReq { get; set; }
+        public List<ConversionContractRowReq>? ConversionContractRowReq { get; set; }
+        public List<DietContractRowReq>? DietContractRowReq { get; set; }
+        public List<MultiWidthContractRowReq>? MultiWidthContractRowReq { get; set; }
     }
 
-    public class BuyerDeliveryBreakupReq
+    public class DeliveryBreakuReq
     {
-        public string Qty { get; set; } = string.Empty;
-        public DateTime DeliveryDate { get; set; }
+//
+        public string? Qty { get; set; }
+        public string? DeliveryDate { get; set; }
     }
 
-    public class SellerDeliveryBreakupReq
-    {
-        public string Qty { get; set; } = string.Empty;
-        public DateTime DeliveryDate { get; set; }
-    }
-
-    public class SampleDetailReq
-    {
+   /* public class SampleDetailReq
+    { 
+        //public Guid Id { get; set; }
         public string? SampleQty { get; set; }
-        public DateTime? SampleReceivedDate { get; set; }
-        public DateTime? SampleDeliveredDate { get; set; }
-
-        public List<AdditionalInfoReq> AdditionalInfos { get; set; } = new List<AdditionalInfoReq>();
-    }
-
-    public class AdditionalInfoReq
+        public string? SampleReceivedDate { get; set; }
+        public string? SampleDeliveredDate { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? CreationDate { get; set; }
+        public string? UpdatedBy { get; set; }
+        public string? UpdateDate { get; set; }
+        public List<AdditionalInfoReq>? AdditionalInfoReq { get; set; }
+    }*/
+    /*public class AdditionalInfoReq
     {
-        public Guid id { get; set; }
+//
         public string? EndUse { get; set; }
         public string? Count { get; set; }
         public string? Weight { get; set; }
         public string? YarnBags { get; set; }
         public string? Labs { get; set; }
-    }
-
+    }*/
     public class ConversionContractRowReq
     {
+//
+        public Contract? Contract { get; set; }
         public string? Width { get; set; }
-        public string Quantity { get; set; } 
+        public string Quantity { get; set; }
         public string? PickRate { get; set; }
         public string? FabRate { get; set; }
-        public string Rate { get; set; } 
+        public string Rate { get; set; }
         public string? Amounts { get; set; }
         public DateTime DeliveryDate { get; set; }
         public string? Wrapwt { get; set; }
@@ -130,18 +136,20 @@ namespace IMS.Application.Contracts
         public string? WrapBag { get; set; }
         public string? WeftBag { get; set; }
         public string? TotalAmountMultiple { get; set; }
-        public string Gst { get; set; } 
+        public string Gst { get; set; }
         public string? GstValue { get; set; }
         public string? FabricValue { get; set; }
         public string? CommissionType { get; set; }
         public string? CommissionPercentage { get; set; }
         public string? CommissionValue { get; set; }
         public string? TotalAmount { get; set; }
-        public List<CommisionInfoReq> CommisionInfo { get; set; } = new List<CommisionInfoReq>();
+        public List<CommisionInfoReq>? CommisionInfoRe{ get; set; }
+        public List<DeliveryBreakuReq>? DeliveryBreakuReq { get; set; }
     }
 
     public class CommisionInfoReq
     {
+//
         public string? PaymentTermsSeller { get; set; }
         public string? PaymentTermsBuyer { get; set; }
         public string? DeliveryTerms { get; set; }
@@ -158,15 +166,18 @@ namespace IMS.Application.Contracts
 
     public class DietContractRowReq
     {
+//
+        public Guid ContractId { get; set; }
+        public Contract? Contract { get; set; }
         public string? LabDispatchNo { get; set; }
         public DateTime? LabDispatchDate { get; set; }
         public string? Color { get; set; }
-        public string Quantity { get; set; } 
+        public string Quantity { get; set; }
         public string? Finish { get; set; }
-        public string Rate { get; set; } 
+        public string Rate { get; set; }
         public string? AmountTotal { get; set; }
         public DateTime DeliveryDate { get; set; }
-        public string Gst { get; set; } 
+        public string Gst { get; set; }
         public string? GstValue { get; set; }
         public string? FabricValue { get; set; }
         public string? CommissionType { get; set; }
@@ -176,14 +187,34 @@ namespace IMS.Application.Contracts
         public string? Shrinkage { get; set; }
         public string? FinishWidth { get; set; }
         public string? Weight { get; set; }
-        public List<CommisionInfoReq> CommisionInfo { get; set; } = new List<CommisionInfoReq>();
+        public List<DietContractRowReqListReq>? DietContractRowReqListReq { get; set; }
+        public List<DeliveryBreakuReq>? DeliveryBreakuReq { get; set; }
     }
+    public class DietContractRowReqListReq
+    {
+//
+        public string? PaymentTermsSeller { get; set; }
+        public string? PaymentTermsBuyer { get; set; }
+        public string? DeliveryTerms { get; set; }
+        public string? CommissionFrom { get; set; }
+        public string? DispatchAddress { get; set; }
+        public string? SellerRemark { get; set; }
+        public string? BuyerRemark { get; set; }
+        public string? EndUse { get; set; }
+        public string? EndUseSubOptions { get; set; }
+        public string? DispatchLater { get; set; }
+        public string? SellerCommission { get; set; }
+        public string? BuyerCommission { get; set; }
 
+    }
     public class MultiWidthContractRowReq
     {
+//
+        public Guid ContractId { get; set; }
+        public Contract? Contract { get; set; }
         public string? Width { get; set; }
-        public string Quantity { get; set; } 
-        public string Rate { get; set; } 
+        public string Quantity { get; set; }
+        public string Rate { get; set; }
         public string? Amount { get; set; }
         public string Gst { get; set; }
         public string? GstValue { get; set; }
@@ -192,6 +223,25 @@ namespace IMS.Application.Contracts
         public string? CommissionPercentage { get; set; }
         public string? CommissionValue { get; set; }
         public string? TotalAmount { get; set; }
-        public List<CommisionInfoReq> CommisionInfo { get; set; } = new List<CommisionInfoReq>();
+        public List<MultiWidthContractRowReqInfo>? MultiWidthContractRowReqInfo { get; set; }
+        public List<DeliveryBreakuReq>? DeliveryBreakuReq { get; set; }
+
+    }
+
+    public class MultiWidthContractRowReqInfo
+    {
+//
+        public string? PaymentTermsSeller { get; set; }
+        public string? PaymentTermsBuyer { get; set; }
+        public string? DeliveryTerms { get; set; }
+        public string? CommissionFrom { get; set; }
+        public string? DispatchAddress { get; set; }
+        public string? SellerRemark { get; set; }
+        public string? BuyerRemark { get; set; }
+        public string? EndUse { get; set; }
+        public string? EndUseSubOptions { get; set; }
+        public string? DispatchLater { get; set; }
+        public string? SellerCommission { get; set; }
+        public string? BuyerCommission { get; set; }
     }
 }

@@ -119,6 +119,7 @@ async void TryRunMigration(IHost webApplication)
 
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    
     dbContext.Database.Migrate();
     // Now, Execute Data Seeding 2.0:
     //dbContext.SeedData();

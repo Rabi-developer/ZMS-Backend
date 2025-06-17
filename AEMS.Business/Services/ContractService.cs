@@ -41,9 +41,18 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var pagination = paginate ?? new Pagination();
 
             // Fetch paged data
-            var (pag, data) = await Repository.GetAll(pagination, null);
-
-            // Fetch all lookup tables
+            var (pag, data) = await Repository.GetAll(
+                pagination,
+                query => query
+                    .Include(p => p.BuyerDeliveryBreakups)
+                    .Include(p => p.SellerDeliveryBreakups)
+                    .Include(p => p.ConversionContractRow)
+                        .ThenInclude(p => p.CommisionInfo)
+                   .Include(p => p.DietContractRow)
+                        .ThenInclude(p => p.CommisionInfo)
+                    .Include(p => p.MultiWidthContractRow)
+                        .ThenInclude(p => p.CommisionInfo)
+            );            // Fetch all lookup tables
             var fabricTypes = await _DbContext.FabricTypes.ToListAsync();
             var stuffTypes = await _DbContext.Stuffs.ToListAsync();
             var blendRatios = await _DbContext.BlendRatio.ToListAsync();
@@ -213,7 +222,16 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
     {
         try
         {
-            var entity = await Repository.Get(id, query => query.Include(p => p.BuyerDeliveryBreakups).Include(p => p.SellerDeliveryBreakups));
+            var entity = await Repository.Get(id, query => query
+        .Include(p => p.BuyerDeliveryBreakups)
+        .Include(p => p.SellerDeliveryBreakups)
+        .Include(p => p.ConversionContractRow)
+            .ThenInclude(p => p.CommisionInfo)
+       .Include(p => p.DietContractRow)
+            .ThenInclude(p => p.CommisionInfo)
+        .Include(p => p.MultiWidthContractRow)
+            .ThenInclude(p => p.CommisionInfo)
+);
             if (entity == null)
             {
                 return new Response<ContractRes>

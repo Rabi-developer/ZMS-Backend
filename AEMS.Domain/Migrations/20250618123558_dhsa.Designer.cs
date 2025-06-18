@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250618123558_dhsa")]
+    partial class dhsa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a97ccb01-ec8e-4dc5-9928-4d11e4b49907",
+                            ConcurrencyStamp = "2dfc330d-fc89-4bce-8b34-39e5f25e54ce",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -276,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEECFaev4TBfs2x7vEMkhBJ9gsJqcuvfcaTXP5to3ChA7RRFuBTv+MKW3UDzLXZh7bQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDh9Cz1qAJO86TIsK4rQd/nAhMpYoav7BncD1mKGUEWyNeWIKy3i60+tkXecrDdmXw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -3656,9 +3659,6 @@ namespace IMS.Domain.Migrations
 
                     b.Property<Guid?>("ContractId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Date")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FabricValue")
                         .HasColumnType("nvarchar(max)");

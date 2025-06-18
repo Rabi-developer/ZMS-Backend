@@ -95,11 +95,14 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 if (!string.IsNullOrWhiteSpace(item.FabricType))
                     item.FabricType = fabricTypes.FirstOrDefault(f => f.Listid == item.FabricType)?.Descriptions;
 
-         /*       if (!string.IsNullOrWhiteSpace(item.PaymentTermsBuyer))
+             /*   if (!string.IsNullOrWhiteSpace(item.PaymentTermsBuyer))
                     item.PaymentTermsBuyer = paymentTerms.FirstOrDefault(f => f.Listid == item.PaymentTermsBuyer)?.Descriptions;
+              
+                if (!string.IsNullOrWhiteSpace(item.PaymentTermsSeller))
+                    item.PaymentTermsSeller = paymentTerms.FirstOrDefault(f => f.Listid == item.PaymentTermsSeller)?.Descriptions;
+*/
 
-
-                if (!string.IsNullOrWhiteSpace(item.DeliveryTerms))
+                /*if (!string.IsNullOrWhiteSpace(item.DeliveryTerms))
                     item.DeliveryTerms = deliveryterm.FirstOrDefault(f => f.Listid == item.DeliveryTerms)?.Descriptions;
 */
                 if (!string.IsNullOrWhiteSpace(item.Stuff))
@@ -191,7 +194,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             throw new ArgumentException("Contract ID and Status are required.");
         }
 
-        var validStatuses = new[] { "Pending", "Approved", "Canceled", "Closed Dispatch", "Closed Payment", "Complete Closed" };
+        var validStatuses = new[] { "Pending", "Approved", "Canceled", "Closed Dispatch", "Closed Payment", "Complete Closed", "Conversion", "Dyed" , "MultiWidth" };
         if (!validStatuses.Contains(status))
         {
             throw new ArgumentException($"Status must be one of: {string.Join(", ", validStatuses)}");

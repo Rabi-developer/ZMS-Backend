@@ -175,6 +175,7 @@ namespace ZMS.Domain.Entities
         public string? Quantity { get; set; }
         public string? Rate { get; set; }
         public string? Amount { get; set; }
+        public string? Date { get; set; }
         public string? Gst { get; set; }
         public string? GstValue { get; set; }
         public string? FabricValue { get; set; }

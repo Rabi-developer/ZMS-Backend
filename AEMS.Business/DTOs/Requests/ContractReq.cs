@@ -99,7 +99,7 @@ namespace ZMS.Domain.Entities
         public string? FabRate { get; set; }
         public string? Rate { get; set; }
         public string? Amounts { get; set; }
-        public DateTime? DeliveryDate { get; set; }
+        public string? DeliveryDate { get; set; }
         public string? Wrapwt { get; set; }
         public string? Weftwt { get; set; }
         public string? WrapBag { get; set; }
@@ -142,13 +142,13 @@ namespace ZMS.Domain.Entities
         public Guid? ContractId { get; set; } // Added foreign key
 
         public string? LabDispatchNo { get; set; }
-        public DateTime? LabDispatchDate { get; set; }
+        public string? LabDispatchDate { get; set; }
         public string? Color { get; set; }
         public string? Quantity { get; set; }
         public string? Finish { get; set; }
         public string? Rate { get; set; }
         public string? AmountTotal { get; set; }
-        public DateTime? DeliveryDate { get; set; }
+        public string? DeliveryDate { get; set; }
         public string? Gst { get; set; }
         public string? GstValue { get; set; }
         public string? FabricValue { get; set; }

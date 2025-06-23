@@ -34,7 +34,7 @@ public class GeneralBase : IGeneralBase
     public bool IsActive { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime CreatedDateTime { get; set; }
-    public Guid CreatedBy { get; set; }
+    public Guid CreatedBy { get; set; } 
     public DateTime? ModifiedDateTime { get; set; }
     public Guid? ModifiedBy { get; set; }
 }

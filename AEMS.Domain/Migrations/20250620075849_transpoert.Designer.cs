@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250620075849_transpoert")]
+    partial class transpoert
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "420f802f-9bd4-400f-ac05-b8af96cb5f1f",
+                            ConcurrencyStamp = "44be7857-9327-4d39-8c12-b34ce3d4ef45",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -276,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHUUBIsKH1Vu0iRnQb3TY6VRwAaw4dk19j+hj69CvKoTwGlOtZyBOO7Oq0GwvjcNRw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOfMeGoWqUH0G1jAmBYAS40cM+G2lI036971YH6rErSq4dISl21EleLoA/tnW6+h7A==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -3527,14 +3530,7 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("Date")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Destination")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("DriverName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DriverNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -3558,13 +3554,13 @@ namespace IMS.Domain.Migrations
                     b.Property<string>("Seller")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Transporter")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdationDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Vehicle")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VehicleType")
@@ -3741,25 +3737,13 @@ namespace IMS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("BalanceQuantity")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Base")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Buyer")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BuyerRefer")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ContractNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContractQuantity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContractType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Date")
@@ -3768,31 +3752,16 @@ namespace IMS.Domain.Migrations
                     b.Property<Guid?>("DispatchNoteId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("DispatchQuantity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FabricDetails")
+                    b.Property<string>("DispatchQty")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Quantity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Rate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RowId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Seller")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TotalAmount")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TotalDispatchQuantity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WidthOrColor")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

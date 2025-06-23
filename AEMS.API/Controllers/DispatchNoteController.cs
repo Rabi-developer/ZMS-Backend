@@ -23,4 +23,16 @@ public class DispatchNoteController : BaseController<DispatchNoteController, IDi
     {
 
     }
+
+    [HttpPost("History")]
+
+    public async Task<IActionResult> getBySellerBuyer(HistoryDispatchNote HistoryDispatchNotes)
+    {
+        var data = await Service.getBySellerBuyer(HistoryDispatchNotes.Seller, HistoryDispatchNotes.Buyer);
+        if (data != null)
+        {
+            return Ok(data);
+        }
+        return BadRequest();
+    }
 }

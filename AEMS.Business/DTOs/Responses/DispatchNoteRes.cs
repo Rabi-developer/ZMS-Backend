@@ -24,6 +24,11 @@ namespace ZMS.Business.DTOs.Responses
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
         public List<RelatedContractRes>? RelatedContracts { get; set; }
+
+        public static implicit operator DispatchNoteRes(DispatchNote v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class RelatedContractRes

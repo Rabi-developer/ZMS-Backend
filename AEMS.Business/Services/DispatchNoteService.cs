@@ -18,6 +18,8 @@ namespace IMS.Business.Services;
 
 public interface IDispatchNoteService : IBaseService<DispatchNoteReq, DispatchNoteRes, DispatchNote>
 {
+
+   public Task<Response<DispatchNoteRes>> getBySellerBuyer(string Seller, string Buyer);
 }
 
 public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes, DispatchNoteRepository, DispatchNote>, IDispatchNoteService
@@ -122,4 +124,30 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
             };
         }
     }
+
+    public async Task<Response<DispatchNoteRes>> getBySellerBuyer(string Seller, string Buyer)
+    {
+        var getdata = await _DbContext.DispatchNotes
+            .Where(p => p.Seller == Seller && p.Buyer == Buyer)
+            .Include(p => p.RelatedContracts)
+            .OrderByDescending(p => p.Id) // <-- Replace with the correct field if needed
+            .FirstOrDefaultAsync();
+
+        if (getdata == null)
+        {
+            return new Response<DispatchNoteRes>
+            {
+                StatusMessage = "Not Found",
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+
+        return new Response<DispatchNoteRes>
+        {
+            Data = getdata.Adapt<DispatchNoteRes>(),
+            StatusMessage = "Fetch successfully",
+            StatusCode = HttpStatusCode.OK
+        };
+    }
+
 }

@@ -47,4 +47,11 @@ namespace IMS.Business.DTOs.Requests
         public string? ContractType { get; set; }
         public string? RowId { get; set; }
     }
-}
+
+    public class HistoryDispatchNote
+    {
+
+        public string Seller { set; get; }
+        public string Buyer { set; get; }
+    }
+    }

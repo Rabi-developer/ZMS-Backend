@@ -259,4 +259,58 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             };
         }
     }
+
+    public async override Task<Response<bool>> Delete(Guid id)
+    {
+        try
+        {
+            var contract = await UnitOfWork._context.contracts
+                .Include(c => c.ConversionContractRow)
+                .Include(c => c.DietContractRow)
+                .Include(c => c.MultiWidthContractRow)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (contract == null)
+            {
+                return new Response<bool>
+                {
+                    Data = false,
+                    StatusMessage = "Contract not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+            // Remove related rows explicitly
+            if (contract.ConversionContractRow != null)
+                UnitOfWork._context.RemoveRange(contract.ConversionContractRow);
+
+            if (contract.DietContractRow != null)
+                UnitOfWork._context.RemoveRange(contract.DietContractRow);
+
+            if (contract.MultiWidthContractRow != null)
+                UnitOfWork._context.RemoveRange(contract.MultiWidthContractRow);
+
+            // Remove the contract itself
+            UnitOfWork._context.contracts.Remove(contract);
+
+            await UnitOfWork._context.SaveChangesAsync();
+
+            return new Response<bool>
+            {
+                Data = true,
+                StatusMessage = "Deleted successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<bool>
+            {
+                Data = false,
+                StatusMessage = e.InnerException?.Message ?? e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
 }

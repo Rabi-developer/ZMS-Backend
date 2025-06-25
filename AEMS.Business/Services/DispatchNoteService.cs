@@ -13,6 +13,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using ZMS.Domain.Entities;
+using IMS.Domain.Base;
 
 namespace IMS.Business.Services;
 
@@ -150,4 +151,79 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
         };
     }
 
+    public async override Task<Response<DispatchNoteRes>> Update(DispatchNoteReq reqModel)
+    {
+        try
+        {
+            // Map the incoming DTO to the DispatchNote entity
+            var entity = reqModel.Adapt<DispatchNote>();
+
+            // Fetch the existing entity with RelatedContracts
+            var existingEntity = await Repository.Get(entity.Id.Value, query => query.Include(p => p.RelatedContracts));
+            if (existingEntity == null)
+            {
+                return new Response<DispatchNoteRes>
+                {
+                    StatusMessage = $"{typeof(DispatchNote).Name} not found with Id: {entity.Id}",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+            // Update scalar properties
+            _DbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
+
+            // Handle RelatedContracts
+            existingEntity.RelatedContracts ??= new List<RelatedContract>();
+
+            // Get IDs of existing and incoming contracts
+            var existingContractIds = existingEntity.RelatedContracts.Select(rc => rc.Id).ToList();
+            var incomingContractIds = entity.RelatedContracts?.Select(rc => rc.Id).Where(id => id.HasValue).Select(id => id.Value).ToList() ?? new List<Guid>();
+
+            // Remove contracts that are no longer in the incoming list
+            existingEntity.RelatedContracts.RemoveAll(rc => !incomingContractIds.Contains(rc.Id.Value));
+
+            // Add or update contracts
+            if (entity.RelatedContracts != null)
+            {
+                foreach (var incomingContract in entity.RelatedContracts.Where(rc => rc.Id.HasValue))
+                {
+                    var existingContract = existingEntity.RelatedContracts.FirstOrDefault(rc => rc.Id == incomingContract.Id);
+                    if (existingContract == null)
+                    {
+                        // Add new contract
+                        var newContract = incomingContract.Adapt<RelatedContract>();
+                        // Ensure the new contract is not tracked
+                        _DbContext.Entry(newContract).State = EntityState.Detached;
+                        existingEntity.RelatedContracts.Add(newContract);
+                    }
+                    else
+                    {
+                        // Update existing contract
+                        _DbContext.Entry(existingContract).CurrentValues.SetValues(incomingContract);
+                    }
+                }
+            }
+
+            // Update ModifiedDateTime
+            existingEntity.ModifiedDateTime = DateTime.UtcNow;
+
+            // Save changes
+            await UnitOfWork.SaveAsync();
+
+            return new Response<DispatchNoteRes>
+            {
+                Data = existingEntity.Adapt<DispatchNoteRes>(),
+                StatusMessage = "Updated successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<DispatchNoteRes>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
 }

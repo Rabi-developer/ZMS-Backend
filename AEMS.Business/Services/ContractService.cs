@@ -264,10 +264,26 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
     {
         try
         {
+            // Load the contract with all related entities, including nested relationships
             var contract = await UnitOfWork._context.contracts
                 .Include(c => c.ConversionContractRow)
+                    .ThenInclude(ccr => ccr.CommisionInfo)
+                .Include(c => c.ConversionContractRow)
+                    .ThenInclude(ccr => ccr.BuyerDeliveryBreakups)
+                .Include(c => c.ConversionContractRow)
+                    .ThenInclude(ccr => ccr.SellerDeliveryBreakups)
                 .Include(c => c.DietContractRow)
+                    .ThenInclude(dcr => dcr.CommisionInfo)
+                .Include(c => c.DietContractRow)
+                    .ThenInclude(dcr => dcr.BuyerDeliveryBreakups)
+                .Include(c => c.DietContractRow)
+                    .ThenInclude(dcr => dcr.SellerDeliveryBreakups)
                 .Include(c => c.MultiWidthContractRow)
+                    .ThenInclude(mwcr => mwcr.CommisionInfo)
+                .Include(c => c.MultiWidthContractRow)
+                    .ThenInclude(mwcr => mwcr.BuyerDeliveryBreakups)
+                .Include(c => c.MultiWidthContractRow)
+                    .ThenInclude(mwcr => mwcr.SellerDeliveryBreakups)
                 .Include(c => c.BuyerDeliveryBreakups)
                 .Include(c => c.SellerDeliveryBreakups)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -282,26 +298,65 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 };
             }
 
-            // Remove related rows explicitly
+            // Remove nested related rows in the correct order to avoid FK constraints
             if (contract.ConversionContractRow != null)
+            {
+                foreach (var row in contract.ConversionContractRow)
+                {
+                    // Remove nested BuyerDeliveryBreakups and SellerDeliveryBreakups
+                    if (row.BuyerDeliveryBreakups != null)
+                        UnitOfWork._context.RemoveRange(row.BuyerDeliveryBreakups);
+                    if (row.SellerDeliveryBreakups != null)
+                        UnitOfWork._context.RemoveRange(row.SellerDeliveryBreakups);
+                    // Remove CommisionInfo
+                    if (row.CommisionInfo != null)
+                        UnitOfWork._context.Remove(row.CommisionInfo);
+                }
                 UnitOfWork._context.RemoveRange(contract.ConversionContractRow);
-
-
-            if (contract.SellerDeliveryBreakups != null)
-                UnitOfWork._context.RemoveRange(contract.SellerDeliveryBreakups);
-
-            if (contract.BuyerDeliveryBreakups != null)
-                UnitOfWork._context.RemoveRange(contract.BuyerDeliveryBreakups);
+            }
 
             if (contract.DietContractRow != null)
+            {
+                foreach (var row in contract.DietContractRow)
+                {
+                    // Remove nested BuyerDeliveryBreakups and SellerDeliveryBreakups
+                    if (row.BuyerDeliveryBreakups != null)
+                        UnitOfWork._context.RemoveRange(row.BuyerDeliveryBreakups);
+                    if (row.SellerDeliveryBreakups != null)
+                        UnitOfWork._context.RemoveRange(row.SellerDeliveryBreakups);
+                    // Remove CommisionInfo
+                    if (row.CommisionInfo != null)
+                        UnitOfWork._context.Remove(row.CommisionInfo);
+                }
                 UnitOfWork._context.RemoveRange(contract.DietContractRow);
+            }
 
             if (contract.MultiWidthContractRow != null)
+            {
+                foreach (var row in contract.MultiWidthContractRow)
+                {
+                    // Remove nested BuyerDeliveryBreakups and SellerDeliveryBreakups
+                    if (row.BuyerDeliveryBreakups != null)
+                        UnitOfWork._context.RemoveRange(row.BuyerDeliveryBreakups);
+                    if (row.SellerDeliveryBreakups != null)
+                        UnitOfWork._context.RemoveRange(row.SellerDeliveryBreakups);
+                    // Remove CommisionInfo
+                    if (row.CommisionInfo != null)
+                        UnitOfWork._context.Remove(row.CommisionInfo);
+                }
                 UnitOfWork._context.RemoveRange(contract.MultiWidthContractRow);
+            }
+
+            // Remove top-level BuyerDeliveryBreakups and SellerDeliveryBreakups
+            if (contract.BuyerDeliveryBreakups != null)
+                UnitOfWork._context.RemoveRange(contract.BuyerDeliveryBreakups);
+            if (contract.SellerDeliveryBreakups != null)
+                UnitOfWork._context.RemoveRange(contract.SellerDeliveryBreakups);
 
             // Remove the contract itself
             UnitOfWork._context.contracts.Remove(contract);
 
+            // Save changes to the database
             await UnitOfWork._context.SaveChangesAsync();
 
             return new Response<bool>
@@ -321,5 +376,4 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             };
         }
     }
-
 }

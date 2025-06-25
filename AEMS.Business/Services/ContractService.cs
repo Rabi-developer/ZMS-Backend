@@ -268,6 +268,8 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 .Include(c => c.ConversionContractRow)
                 .Include(c => c.DietContractRow)
                 .Include(c => c.MultiWidthContractRow)
+                .Include(c => c.BuyerDeliveryBreakups)
+                .Include(c => c.SellerDeliveryBreakups)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (contract == null)
@@ -283,6 +285,13 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             // Remove related rows explicitly
             if (contract.ConversionContractRow != null)
                 UnitOfWork._context.RemoveRange(contract.ConversionContractRow);
+
+
+            if (contract.SellerDeliveryBreakups != null)
+                UnitOfWork._context.RemoveRange(contract.SellerDeliveryBreakups);
+
+            if (contract.BuyerDeliveryBreakups != null)
+                UnitOfWork._context.RemoveRange(contract.BuyerDeliveryBreakups);
 
             if (contract.DietContractRow != null)
                 UnitOfWork._context.RemoveRange(contract.DietContractRow);

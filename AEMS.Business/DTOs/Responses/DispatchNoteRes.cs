@@ -23,6 +23,7 @@ namespace ZMS.Business.DTOs.Responses
         public string? CreationDate { get; set; }
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
+        public string? Status { get; set; }
         public List<RelatedContractRes>? RelatedContracts { get; set; }
 
         public static implicit operator DispatchNoteRes(DispatchNote v)

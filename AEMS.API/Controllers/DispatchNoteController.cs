@@ -35,4 +35,27 @@ public class DispatchNoteController : BaseController<DispatchNoteController, IDi
         }
         return BadRequest();
     }
+    public async Task<IActionResult> UpdateStatus([FromBody] DispatchNoteStatus dispatchnotestatus)
+    {
+        try
+        {
+            var result = await Service.UpdateStatusAsync((Guid)dispatchnotestatus.Id, dispatchnotestatus.Status);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while updating the contract status.");
+        }
+    }
+
+
+
 }

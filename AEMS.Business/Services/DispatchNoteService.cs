@@ -21,6 +21,7 @@ public interface IDispatchNoteService : IBaseService<DispatchNoteReq, DispatchNo
 {
 
    public Task<Response<DispatchNoteRes>> getBySellerBuyer(string Seller, string Buyer);
+    public Task<DispatchNoteStatus> UpdateStatusAsync(Guid id, string status);
 }
 
 public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes, DispatchNoteRepository, DispatchNote>, IDispatchNoteService
@@ -226,4 +227,38 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
             };
         }
     }
+
+    public async Task<DispatchNoteStatus> UpdateStatusAsync(Guid id, string status)
+    {
+        if (status == null || id == null)
+        {
+            throw new ArgumentException("Dispatcht ID and Status are required.");
+        }
+
+        var validStatuses = new[] { "Pending", "Approved", "Canceled", "Closed Dispatch", "Closed Payment", "Complete Closed", };
+        if (!validStatuses.Contains(status))
+        {
+            throw new ArgumentException($"Status must be one of: {string.Join(", ", validStatuses)}");
+        }
+
+        var dispatchnote = await _DbContext.contracts.Where(p => p.Id == id).FirstOrDefaultAsync();
+
+        if (dispatchnote == null)
+        {
+            throw new KeyNotFoundException($"Dispatch with ID {id} not found.");
+        }
+
+        dispatchnote.Status = status;
+        dispatchnote.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
+        dispatchnote.UpdationDate = DateTime.UtcNow.ToString("o");
+
+        await UnitOfWork.SaveAsync();
+
+        return new DispatchNoteStatus
+        {
+            Id = id,
+            Status = status,
+        };
+    }
+
 }

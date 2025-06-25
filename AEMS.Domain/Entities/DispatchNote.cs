@@ -23,6 +23,7 @@ namespace ZMS.Domain.Entities
         public string? CreationDate { get; set; }
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
+        public string? Status { get; set; }
         public List<RelatedContract>? RelatedContracts { get; set; }
     }
 

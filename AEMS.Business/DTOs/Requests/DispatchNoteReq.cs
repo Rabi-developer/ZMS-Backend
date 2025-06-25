@@ -23,6 +23,7 @@ namespace IMS.Business.DTOs.Requests
         public string? CreationDate { get; set; }
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
+        public string? Status { get; set; }
         public List<RelatedContractReq>? RelatedContracts { get; set; }
     }
 
@@ -55,3 +56,10 @@ namespace IMS.Business.DTOs.Requests
         public string Buyer { set; get; }
     }
     }
+
+public class DispatchNoteStatus
+{
+    public Guid? Id { get; set; }
+    public string? Status { get; set; }
+}
+

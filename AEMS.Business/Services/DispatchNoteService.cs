@@ -76,7 +76,7 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
 
             var entity = reqModel.Adapt<DispatchNote>();
             entity.Listid = newListId;
-
+            entity.Id = Guid.NewGuid();
             await Repository.Add(entity);
             await UnitOfWork.SaveAsync();
 
@@ -241,7 +241,7 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
             throw new ArgumentException($"Status must be one of: {string.Join(", ", validStatuses)}");
         }
 
-        var dispatchnote = await _DbContext.contracts.Where(p => p.Id == id).FirstOrDefaultAsync();
+        var dispatchnote = await _DbContext.DispatchNotes.Where(p => p.Id == id).FirstOrDefaultAsync();
 
         if (dispatchnote == null)
         {

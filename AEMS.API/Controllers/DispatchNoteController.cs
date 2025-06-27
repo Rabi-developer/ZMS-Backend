@@ -24,8 +24,8 @@ public class DispatchNoteController : BaseController<DispatchNoteController, IDi
 
     }
 
-    [HttpPost("History")]
 
+    [HttpPost("History")]
     public async Task<IActionResult> getBySellerBuyer(HistoryDispatchNote HistoryDispatchNotes)
     {
         var data = await Service.getBySellerBuyer(HistoryDispatchNotes.Seller, HistoryDispatchNotes.Buyer);
@@ -35,6 +35,7 @@ public class DispatchNoteController : BaseController<DispatchNoteController, IDi
         }
         return BadRequest();
     }
+    [HttpPost("Status")]
     public async Task<IActionResult> UpdateStatus([FromBody] DispatchNoteStatus dispatchnotestatus)
     {
         try

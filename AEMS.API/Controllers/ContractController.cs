@@ -20,6 +20,7 @@ public class ContractController : BaseController<ContractController, IContractSe
 {
     public ContractController(ILogger<ContractController> logger, IContractService service) : base(logger, service)
     {
+
     }
 
     [HttpPost("status")]

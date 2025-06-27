@@ -18,6 +18,7 @@ namespace IMS.Business.Services;
 
 public interface IInspectionNoteService : IBaseService<InspectionNoteReq, InspectionNoteRes, InspectionNote>
 {
+    Task<Response<Guid>> Add(InspectionNoteReq reqModel);
     public Task<InspectionNoteStatus> UpdateStatusAsync(Guid id, string status);
 
 }
@@ -34,7 +35,6 @@ public class InspectionNoteService : BaseService<InspectionNoteReq, InspectionNo
         _context = context;
         _DbContext = dbContextn;
     }
-
 
     public async override Task<Response<IList<InspectionNoteRes>>> GetAll(Pagination? paginate)
     {
@@ -62,8 +62,6 @@ public class InspectionNoteService : BaseService<InspectionNoteReq, InspectionNo
             };
         }
     }
-
-
 
     public async virtual Task<Response<InspectionNoteRes>> Get(Guid id)
     {
@@ -95,6 +93,41 @@ public class InspectionNoteService : BaseService<InspectionNoteReq, InspectionNo
         }
     }
 
+    public override async Task<Response<Guid>> Add(InspectionNoteReq reqModel)
+    {
+        try
+        {
+            var lastInspectionNote = await _DbContext.InspectionNotes
+                .OrderByDescending(x => x.IrnNumber)
+                .FirstOrDefaultAsync();
+
+            string newIrnNumber = lastInspectionNote == null
+                ? "1"
+                : (int.Parse(lastInspectionNote.IrnNumber) + 1).ToString("D1");
+
+            var entity = reqModel.Adapt<InspectionNote>();
+            entity.IrnNumber = newIrnNumber;
+            entity.Id = Guid.NewGuid();
+            await Repository.Add(entity);
+            await UnitOfWork.SaveAsync();
+
+            return new Response<Guid>
+            {
+                Data = entity.Id.Value,
+                StatusMessage = "Created successfully",
+                StatusCode = HttpStatusCode.Created
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<Guid>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
     public async Task<InspectionNoteStatus> UpdateStatusAsync(Guid id, string status)
     {
         if (status == null || id == null)
@@ -102,7 +135,7 @@ public class InspectionNoteService : BaseService<InspectionNoteReq, InspectionNo
             throw new ArgumentException("Contract ID and Status are required.");
         }
 
-        var validStatuses = new[] { "Approved Inspection" };
+        var validStatuses = new[] { "Approved Inspection" , "UnApproved Inspection", "Active" };
         if (!validStatuses.Contains(status))
         {
             throw new ArgumentException($"Status must be one of: {string.Join(", ", validStatuses)}");

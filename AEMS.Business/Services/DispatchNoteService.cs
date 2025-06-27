@@ -130,7 +130,7 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
     public async Task<Response<DispatchNoteRes>> getBySellerBuyer(string Seller, string Buyer)
     {
         var getdata = await _DbContext.DispatchNotes
-            .Where(p => p.Seller == Seller && p.Buyer == Buyer)
+            .Where(p => p.Seller == Seller && p.Buyer == Buyer && p.IsDeleted != true)
             .Include(p => p.RelatedContracts)
             .OrderByDescending(p => p.Id) // <-- Replace with the correct field if needed
             .FirstOrDefaultAsync();

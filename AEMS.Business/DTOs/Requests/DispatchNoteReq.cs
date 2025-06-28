@@ -30,6 +30,7 @@ namespace IMS.Business.DTOs.Requests
     public class RelatedContractReq
     {
         public Guid? Id { get; set; }
+        public Guid? DispatchNoteId { get; set; }
         public string? ContractNumber { get; set; }
         public string? Seller { get; set; }
         public string? Buyer { get; set; }

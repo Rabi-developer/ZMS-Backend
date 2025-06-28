@@ -76,7 +76,7 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
 
             var entity = reqModel.Adapt<DispatchNote>();
             entity.Listid = newListId;
-            entity.Id = Guid.NewGuid();
+           
             await Repository.Add(entity);
             await UnitOfWork.SaveAsync();
 

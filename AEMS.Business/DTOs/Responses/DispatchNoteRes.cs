@@ -36,6 +36,7 @@ namespace ZMS.Business.DTOs.Responses
     {
         public Guid? Id { get; set; }
         public string? ContractNumber { get; set; }
+        public Guid? DispatchNoteId { get; set; }
         public string? Seller { get; set; }
         public string? Buyer { get; set; }
         public string? WidthOrColor { get; set; }

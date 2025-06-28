@@ -30,6 +30,8 @@ namespace ZMS.Domain.Entities
     public class RelatedContract
     {
         public Guid? Id { get; set; }
+        public Guid? DispatchNoteId { get; set; }
+        public DispatchNote? DispatchNote { get; set; }
         public string? ContractNumber { get; set; }
         public string? Seller { get; set; }
         public string? Buyer { get; set; }

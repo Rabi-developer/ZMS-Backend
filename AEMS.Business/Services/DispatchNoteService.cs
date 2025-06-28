@@ -124,7 +124,7 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
                 StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
             };
-        }
+        }// Dispatch NOte
     }
 
     public async Task<Response<DispatchNoteRes>> getBySellerBuyer(string Seller, string Buyer)

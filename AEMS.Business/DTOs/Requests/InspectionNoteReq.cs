@@ -7,6 +7,7 @@ namespace IMS.Business.DTOs.Requests
     {
         public Guid? Id { get; set; }
         public string? IrnNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string? IrnDate { get; set; }
         public string? Seller { get; set; }
         public string? Buyer { get; set; }

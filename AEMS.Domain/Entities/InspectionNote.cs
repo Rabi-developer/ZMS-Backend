@@ -10,6 +10,7 @@ namespace IMS.Domain.Entities
         public string IrnNumber { get; set; }
         public string IrnDate { get; set; }
         public string Seller { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string Buyer { get; set; }
         public string DispatchNoteId { get; set; }
         public string? Remarks { get; set; }

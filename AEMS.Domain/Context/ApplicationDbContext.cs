@@ -62,6 +62,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<CommisionType> CommisionTypes { get; set; }
     public DbSet<DeliveryTerm> DeliveryTerms { get; set; }
     public DbSet<PaymentTerm> PaymentTerms { get; set; }
+    public DbSet<Payment> Payments { get; set; }
     public DbSet<UnitofMeasure> UnitofMeasures { get; set; }
     public DbSet<GeneralSaleTextType> GeneralSaleTexts { get; set; }
     public DbSet<Contract> contracts { get; set; }

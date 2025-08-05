@@ -40,6 +40,7 @@ public static class ServicesInjector
         builder.Services.AddTransient<IRoleService, RoleService>();
         builder.Services.AddTransient<IUsersService, UsersService>();
         builder.Services.AddTransient<ILevelService, LevelService>();
+        builder.Services.AddTransient<IPaymentService, PaymentService>();
         builder.Services.AddTransient<IStockService, StockService>();
         builder.Services.AddTransient<IStockMovementService, StockMovementService>();
         builder.Services.AddTransient<IStockReorderService, StockReorderService>();

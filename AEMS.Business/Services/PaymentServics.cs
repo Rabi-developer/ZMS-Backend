@@ -77,6 +77,22 @@ namespace IMS.Business.Services
 
                 var entity = reqModel.Adapt<Payment>();
                 entity.PaymentNumber = newPaymentNumber;
+                var relatedInvoices = entity.RelatedInvoices;
+
+                foreach (var invoice in relatedInvoices)
+                {
+                    float receivedAmount;
+                    float currentBalance;
+
+                    // Safe parsing
+                    if (float.TryParse(invoice.ReceivedAmount, out receivedAmount) &&
+                        float.TryParse(invoice.Balance, out currentBalance))
+                    {
+                        float newBalance = receivedAmount - currentBalance;
+                        invoice.Balance = newBalance.ToString("F2"); // Format to 2 decimal places if needed
+                    }
+                }
+
 
                 await Repository.Add(entity);
                 await UnitOfWork.SaveAsync();

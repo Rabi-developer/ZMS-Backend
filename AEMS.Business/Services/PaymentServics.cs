@@ -67,37 +67,44 @@ namespace IMS.Business.Services
         {
             try
             {
+                // Get last payment to generate new PaymentNumber
                 var lastPayment = await _DbContext.Payments
                     .OrderByDescending(x => x.PaymentNumber)
                     .FirstOrDefaultAsync();
 
                 string newPaymentNumber = lastPayment == null
                     ? "1"
-                    : (int.Parse(lastPayment.PaymentNumber) + 1).ToString("D1");
+                    : (int.Parse(lastPayment.PaymentNumber) + 1).ToString();
 
+                // Map request to entity
                 var entity = reqModel.Adapt<Payment>();
                 entity.PaymentNumber = newPaymentNumber;
-                var relatedInvoices = entity.RelatedInvoices;
 
-                float Totaladjusted = 0;
-                foreach (var invoice in relatedInvoices)
+                // Adjust balances for related invoices
+                foreach (var invoice in entity.RelatedInvoices)
                 {
-                    float receivedAmount;
-                    float currentBalance;
-                    int adjusted;
+                    // Parse Balance
+                    if (!float.TryParse(invoice.Balance, out float currentBalance))
+                        currentBalance = 0;
 
-                    // Safe parsing
-                    if (float.TryParse(invoice.ReceivedAmount, out receivedAmount) |
-                        float.TryParse(invoice.Balance, out currentBalance) |
-                        int.TryParse(invoice.InvoiceAdjusted, out adjusted) )
-                    {
-                        float newBalance = receivedAmount - currentBalance - adjusted;
-                        invoice.Balance = newBalance.ToString("F2"); // Format to 2 decimal places if needed
-                        
-                    }
+                    // Parse InvoiceAdjusted
+                    if (!float.TryParse(invoice.InvoiceAdjusted, out float adjusted))
+                        adjusted = 0;
+
+                    // Parse ReceivedAmount
+                    if (!float.TryParse(invoice.ReceivedAmount, out float receivedAmount))
+                        receivedAmount = 0;
+
+                    // Adjust balance: Old Balance - Adjusted Amount
+                    float newBalance = currentBalance - adjusted;
+                    invoice.Balance = newBalance.ToString("F2");
+
+                    // Optional: Update ReceivedAmount
+                    receivedAmount += adjusted;
+                    invoice.ReceivedAmount = receivedAmount.ToString("F2");
                 }
 
-
+                // Save payment
                 await Repository.Add(entity);
                 await UnitOfWork.SaveAsync();
 
@@ -117,6 +124,7 @@ namespace IMS.Business.Services
                 };
             }
         }
+
 
         public override async Task<Response<PaymentRes>> Get(Guid id)
         {

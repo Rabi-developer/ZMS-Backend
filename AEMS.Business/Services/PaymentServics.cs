@@ -79,17 +79,17 @@ namespace IMS.Business.Services
                 entity.PaymentNumber = newPaymentNumber;
                 var relatedInvoices = entity.RelatedInvoices;
 
-                
+                float Totaladjusted = 0;
                 foreach (var invoice in relatedInvoices)
                 {
                     float receivedAmount;
                     float currentBalance;
-                    float adjusted;
+                    int adjusted;
 
                     // Safe parsing
-                    if (float.TryParse(invoice.ReceivedAmount, out receivedAmount) &&
-                        float.TryParse(invoice.Balance, out currentBalance) &&
-                        float.TryParse(invoice.InvoiceAdjusted, out adjusted) )
+                    if (float.TryParse(invoice.ReceivedAmount, out receivedAmount) |
+                        float.TryParse(invoice.Balance, out currentBalance) |
+                        int.TryParse(invoice.InvoiceAdjusted, out adjusted) )
                     {
                         float newBalance = receivedAmount - currentBalance - adjusted;
                         invoice.Balance = newBalance.ToString("F2"); // Format to 2 decimal places if needed
@@ -97,7 +97,7 @@ namespace IMS.Business.Services
                     }
                 }
 
-                
+
                 await Repository.Add(entity);
                 await UnitOfWork.SaveAsync();
 

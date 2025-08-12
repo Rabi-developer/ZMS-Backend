@@ -89,6 +89,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<Vendor> Vendor { get; set; }
     public DbSet<Brooker> Brooker { get; set; }
     public DbSet<BusinessAssociate> BusinessAssociate { get; set; }
+    public DbSet<Munshyana> Munshyana { get; set; }
+    public DbSet<SalesTax> SalesTax { get; set; }
 
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

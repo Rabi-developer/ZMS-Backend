@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250812140440_ABLMunshyana")]
+    partial class ABLMunshyana
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -468,7 +471,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "280499d0-c687-4e07-929a-e14f4ad58a41",
+                            ConcurrencyStamp = "bb20fea1-c8e6-4661-ad56-801a9e78fff6",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -480,7 +483,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELShYn8xIbNcFnmeZbZWyUMILTwWaE9lvFSEkuFysXig8yiGT08Vc8ga8wmDIt97Ww==",
+                            PasswordHash = "AQAAAAIAAYagAAAAED++ndPrpU9oRiKau+050KS+l+/cFiYLL3oqGmWQ4xD+pldwXMzLPZ7O27prutTv3Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -2511,59 +2514,6 @@ namespace IMS.Domain.Migrations
                     b.HasIndex("ParentAccountId");
 
                     b.ToTable("Revenues");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.SalesTax", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PayableAccountId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PayableDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Percentage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReceivableAccountId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReceivableDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SalesTaxNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TaxName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TaxType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SalesTax");
                 });
 
             modelBuilder.Entity("IMS.Domain.Entities.Seller", b =>

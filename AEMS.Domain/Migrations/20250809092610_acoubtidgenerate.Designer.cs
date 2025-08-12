@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250809092610_acoubtidgenerate")]
+    partial class acoubtidgenerate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,6 +31,9 @@ namespace IMS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AblAssestsId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -67,6 +73,8 @@ namespace IMS.Domain.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AblAssestsId");
 
                     b.HasIndex("ParentAccountId");
 
@@ -79,6 +87,9 @@ namespace IMS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AblExpenseId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -118,6 +129,8 @@ namespace IMS.Domain.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AblExpenseId");
 
                     b.HasIndex("ParentAccountId");
 
@@ -130,6 +143,9 @@ namespace IMS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AblLiabilitiesId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -169,6 +185,8 @@ namespace IMS.Domain.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AblLiabilitiesId");
 
                     b.HasIndex("ParentAccountId");
 
@@ -181,6 +199,9 @@ namespace IMS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AblRevenueId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -220,6 +241,8 @@ namespace IMS.Domain.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AblRevenueId");
 
                     b.HasIndex("ParentAccountId");
 
@@ -468,7 +491,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "eec8baa8-cf45-4e22-bb88-67e0b6bad132",
+                            ConcurrencyStamp = "758f79bd-e9d7-44e1-87cc-67198264b9ff",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -480,7 +503,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELPWiio7VDTnGxdhF/cbYlFPG7+ZB3WiS8LGg6nHK/u12jeX8jhQYmrPJz8/463sXQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMsTdrVJqITzBbxYrDmBS0JYolhH4lc5x1NIp1L+p5Z1MJz/TzdCQfHcn2MFZID2Xw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -4350,8 +4373,13 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.AblAssests", b =>
                 {
-                    b.HasOne("IMS.Domain.Entities.AblAssests", "ParentAccount")
+                    b.HasOne("IMS.Domain.Entities.AblAssests", null)
                         .WithMany("Children")
+                        .HasForeignKey("AblAssestsId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("IMS.Domain.Entities.Equality", "ParentAccount")
+                        .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -4360,8 +4388,13 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.AblExpense", b =>
                 {
-                    b.HasOne("IMS.Domain.Entities.AblExpense", "ParentAccount")
+                    b.HasOne("IMS.Domain.Entities.AblExpense", null)
                         .WithMany("Children")
+                        .HasForeignKey("AblExpenseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("IMS.Domain.Entities.Equality", "ParentAccount")
+                        .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -4370,8 +4403,13 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.AblLiabilities", b =>
                 {
-                    b.HasOne("IMS.Domain.Entities.AblLiabilities", "ParentAccount")
+                    b.HasOne("IMS.Domain.Entities.AblLiabilities", null)
                         .WithMany("Children")
+                        .HasForeignKey("AblLiabilitiesId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("IMS.Domain.Entities.Equality", "ParentAccount")
+                        .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -4380,8 +4418,13 @@ namespace IMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.AblRevenue", b =>
                 {
-                    b.HasOne("IMS.Domain.Entities.AblRevenue", "ParentAccount")
+                    b.HasOne("IMS.Domain.Entities.AblRevenue", null)
                         .WithMany("Children")
+                        .HasForeignKey("AblRevenueId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("IMS.Domain.Entities.Equality", "ParentAccount")
+                        .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 

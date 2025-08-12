@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250808115155_ablequalitychartsofaccount")]
+    partial class ablequalitychartsofaccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,210 +24,6 @@ namespace IMS.Domain.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblAssests", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DueDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FixedAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Listid")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Paid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ParentAccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentAccountId");
-
-                    b.ToTable("AblAssests");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblExpense", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DueDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FixedAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Listid")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Paid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ParentAccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentAccountId");
-
-                    b.ToTable("AblExpense");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblLiabilities", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DueDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FixedAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Listid")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Paid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ParentAccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentAccountId");
-
-                    b.ToTable("AblLiabilities");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblRevenue", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DueDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FixedAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Listid")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Paid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ParentAccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentAccountId");
-
-                    b.ToTable("AblRevenue");
-                });
 
             modelBuilder.Entity("IMS.Domain.Entities.Address", b =>
                 {
@@ -468,7 +267,7 @@ namespace IMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "eec8baa8-cf45-4e22-bb88-67e0b6bad132",
+                            ConcurrencyStamp = "d4ee6c40-cdc8-425a-a2cc-90b9fab70d6b",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -480,7 +279,7 @@ namespace IMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELPWiio7VDTnGxdhF/cbYlFPG7+ZB3WiS8LGg6nHK/u12jeX8jhQYmrPJz8/463sXQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP6FuyDVsSbQscRQ60XrRjiNj//2vMnrklmqVhWtB39NLntnZ/dKiQ1AhAI3Hf8azw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -4348,46 +4147,6 @@ namespace IMS.Domain.Migrations
                     b.HasDiscriminator().HasValue("AppRoleClaim");
                 });
 
-            modelBuilder.Entity("IMS.Domain.Entities.AblAssests", b =>
-                {
-                    b.HasOne("IMS.Domain.Entities.AblAssests", "ParentAccount")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentAccountId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ParentAccount");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblExpense", b =>
-                {
-                    b.HasOne("IMS.Domain.Entities.AblExpense", "ParentAccount")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentAccountId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ParentAccount");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblLiabilities", b =>
-                {
-                    b.HasOne("IMS.Domain.Entities.AblLiabilities", "ParentAccount")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentAccountId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ParentAccount");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblRevenue", b =>
-                {
-                    b.HasOne("IMS.Domain.Entities.AblRevenue", "ParentAccount")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentAccountId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ParentAccount");
-                });
-
             modelBuilder.Entity("IMS.Domain.Entities.Address", b =>
                 {
                     b.HasOne("IMS.Domain.Entities.Branch", "Branch")
@@ -4883,26 +4642,6 @@ namespace IMS.Domain.Migrations
                         .WithMany("RelatedContracts")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblAssests", b =>
-                {
-                    b.Navigation("Children");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblExpense", b =>
-                {
-                    b.Navigation("Children");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblLiabilities", b =>
-                {
-                    b.Navigation("Children");
-                });
-
-            modelBuilder.Entity("IMS.Domain.Entities.AblRevenue", b =>
-                {
-                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("IMS.Domain.Entities.Assets", b =>

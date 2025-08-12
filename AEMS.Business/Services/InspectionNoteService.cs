@@ -25,7 +25,7 @@ public interface IInspectionNoteService : IBaseService<InspectionNoteReq, Inspec
 
 public class InspectionNoteService : BaseService<InspectionNoteReq, InspectionNoteRes, InspectionNoteRepository, InspectionNote>, IInspectionNoteService
 {
-    private readonly IInspectionNoteRepository _repository;
+    private readonly ICommisionInvoiceRepository _repository;
     private readonly IHttpContextAccessor _context;
     private readonly ApplicationDbContext _DbContext;
 

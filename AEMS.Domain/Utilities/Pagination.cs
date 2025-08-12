@@ -8,4 +8,6 @@ public class Pagination
     public int? PageSize { get; set; } = 10;
     public string? RefId { get; set; }
     public string? SearchQuery { get; set; }
+    public string? TotalCount { get; set; }
+    public int PageNumber { get; set; }
 }

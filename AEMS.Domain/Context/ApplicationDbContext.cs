@@ -73,8 +73,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<InductionThread> InductionThreads { get; set; }
     public DbSet<Gsm> Gsms { get; set; }
     public DbSet<TransporterCompany> TransporterCompanies { get; set; }
+  /*  public DbSet<CommisionInvoice> CommisionInvoice { get; set; }*/
+    public object ConversionContractRows { get; set; }
+    public object RelatedInvoices { get; set; }
+    public object RelatedInvoiceContracts { get; set; }
 
-
+    /*ABL Software*/
+    public DbSet<Equality> Equality { get; set; }
+    public DbSet<AblLiabilities> AblLiabilities { get; set; }
+    public DbSet<AblExpense> AblExpense { get; set; }
+    public DbSet<AblRevenue> AblRevenue { get; set; }
+    public DbSet<AblAssests> AblAssests { get; set; }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {

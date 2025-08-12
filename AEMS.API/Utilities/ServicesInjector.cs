@@ -91,6 +91,14 @@ public static class ServicesInjector
         builder.Services.AddTransient<IGsmService, GsmService>();
         builder.Services.AddTransient<ITransporterCompanyService, TransporterCompanyService>();
 
+        /* ABL SOFTWARE  */
+        builder.Services.AddTransient<IEqualityService, EqualityService>();
+        builder.Services.AddTransient<IAblLiabilitiesService, AblLiabilitiesService>();
+        builder.Services.AddTransient<IAblRevenueService, AblRevenueService>();
+        builder.Services.AddTransient<IAblExpenseService, AblExpenseService>();
+        builder.Services.AddTransient<IAblAssestsService, AblAssestsService>();
+
+
         
         #endregion
 

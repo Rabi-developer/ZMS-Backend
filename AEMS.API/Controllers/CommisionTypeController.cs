@@ -20,4 +20,5 @@ public class CommisionTypeController : BaseController<CommisionTypeController, I
     public CommisionTypeController(ILogger<CommisionTypeController> logger, ICommisionTypeService service) : base(logger, service)
     {
     }
+
 }

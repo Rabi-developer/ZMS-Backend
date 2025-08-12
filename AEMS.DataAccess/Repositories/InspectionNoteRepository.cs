@@ -5,12 +5,12 @@ using ZMS.Domain.Entities;
 
 namespace IMS.DataAccess.Repositories;
 
-public interface IInspectionNoteRepository
+public interface ICommisionInvoiceRepository
 {
 
 }
 
-public class InspectionNoteRepository : BaseRepository<InspectionNote>, IInspectionNoteRepository
+public class InspectionNoteRepository : BaseRepository<InspectionNote>, ICommisionInvoiceRepository
 {
     public InspectionNoteRepository(ApplicationDbContext dbContext) : base(dbContext)
     {

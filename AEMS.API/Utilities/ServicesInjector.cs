@@ -98,9 +98,13 @@ public static class ServicesInjector
         builder.Services.AddTransient<IAblExpenseService, AblExpenseService>();
         builder.Services.AddTransient<IAblAssestsService, AblAssestsService>();
         builder.Services.AddTransient<IPartyService, PartyService>();
+        builder.Services.AddTransient<ITransporterService, TransporterService>();
+        builder.Services.AddTransient<IVendorService , VendorService>();
+        builder.Services.AddTransient<IBrookerService, BrookerService>();
+        builder.Services.AddTransient<IBusinessAssociateService, BusinessAssociateService>();
 
 
-        
+
         #endregion
 
         builder.Services.AddIdentity<ApplicationUser, AppRole>().AddEntityFrameworkStores<ApplicationDbContext>()

@@ -97,6 +97,7 @@ public static class ServicesInjector
         builder.Services.AddTransient<IAblRevenueService, AblRevenueService>();
         builder.Services.AddTransient<IAblExpenseService, AblExpenseService>();
         builder.Services.AddTransient<IAblAssestsService, AblAssestsService>();
+        builder.Services.AddTransient<IPartyService, PartyService>();
 
 
         

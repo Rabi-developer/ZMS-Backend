@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ZMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250817203517_ABLBookingOrders")]
+    partial class ABLBookingOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -468,7 +471,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f823eacf-33a3-4cf4-a1af-0e77a79d88bf",
+                            ConcurrencyStamp = "99c04d0e-2877-4762-87bb-108677b594f1",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -480,7 +483,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF1VJjOApHLAqynoI1J5bbrV3CkF5rzpvUilkEFNZlZiyOgdF4CcNfHNizExl9KCUg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM3E22K/uFo/FU4TwTqbVlecLaMO8PobzLILCbIFgMBtFLCYTQDK+fVWGsiy3z2YZg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -3721,127 +3724,6 @@ namespace ZMS.Domain.Migrations
                     b.ToTable("BookingOrder");
                 });
 
-            modelBuilder.Entity("ZMS.Domain.Entities.ChargeLine", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float?>("Amount")
-                        .HasColumnType("real");
-
-                    b.Property<string>("BiltyNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Charge")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ChargesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Contact")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Date")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaidTo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Vehicle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChargesId");
-
-                    b.ToTable("ChargeLine");
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.Charges", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ChargeDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ChargeNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("OrderNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Charges");
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.ChargesPayments", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BankCash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ChargesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ChqDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ChqNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float?>("PaidAmount")
-                        .HasColumnType("real");
-
-                    b.Property<string>("PayNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChargesId");
-
-                    b.ToTable("ChargesPayments");
-                });
-
             modelBuilder.Entity("ZMS.Domain.Entities.CommisionInfo", b =>
                 {
                     b.Property<Guid?>("Id")
@@ -3925,168 +3807,6 @@ namespace ZMS.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CommisionTypes");
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.Consignment", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BiltyNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Consignee")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConsignmentDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConsignmentMode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConsignmentNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Consignor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContainerNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Date")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("DeliveryCharges")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("DeliveryDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Destination")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("Freight")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("FreightFrom")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("IncomeTaxAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("IncomeTaxDed")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("InsuranceCharges")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("OrderNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("OtherCharges")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Port")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReceiptNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("ReceivedAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ReceiverContactNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReceiverName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SbrTax")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShippingLine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("SprAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("TollTax")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("TotalQty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Consignment");
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.ConsignmentItem", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ConsignmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Desc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("Qty")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("QtyUnit")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("Weight")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("WeightUnit")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConsignmentId");
-
-                    b.ToTable("ConsignmentItem");
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.Contract", b =>
@@ -4882,123 +4602,6 @@ namespace ZMS.Domain.Migrations
                     b.ToTable("PaymentTerms");
                 });
 
-            modelBuilder.Entity("ZMS.Domain.Entities.Receipt", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BankName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ChequeDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ChequeNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Party")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentMode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("ReceiptAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ReceiptDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReceiptNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SalesTaxOption")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SalesTaxRate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WhtOnSbr")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Receipt");
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.ReceiptItem", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("Balance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("BiltyAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("BiltyDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BiltyNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("ReceiptAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("ReceiptId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("SrbAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("VehicleNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiptId");
-
-                    b.ToTable("ReceiptItem");
-                });
-
             modelBuilder.Entity("ZMS.Domain.Entities.RelatedConsignment", b =>
                 {
                     b.Property<Guid?>("Id")
@@ -5720,30 +5323,6 @@ namespace ZMS.Domain.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ZMS.Domain.Entities.ChargeLine", b =>
-                {
-                    b.HasOne("ZMS.Domain.Entities.Charges", null)
-                        .WithMany("Lines")
-                        .HasForeignKey("ChargesId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.ChargesPayments", b =>
-                {
-                    b.HasOne("ZMS.Domain.Entities.Charges", null)
-                        .WithMany("Payments")
-                        .HasForeignKey("ChargesId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.ConsignmentItem", b =>
-                {
-                    b.HasOne("ZMS.Domain.Entities.Consignment", null)
-                        .WithMany("Items")
-                        .HasForeignKey("ConsignmentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("ZMS.Domain.Entities.ConversionContractRow", b =>
                 {
                     b.HasOne("ZMS.Domain.Entities.CommisionInfo", "CommisionInfo")
@@ -5836,14 +5415,6 @@ namespace ZMS.Domain.Migrations
                     b.Navigation("CommisionInfo");
 
                     b.Navigation("Contract");
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.ReceiptItem", b =>
-                {
-                    b.HasOne("ZMS.Domain.Entities.Receipt", null)
-                        .WithMany("Items")
-                        .HasForeignKey("ReceiptId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.RelatedConsignment", b =>
@@ -5968,18 +5539,6 @@ namespace ZMS.Domain.Migrations
                     b.Navigation("Consignments");
                 });
 
-            modelBuilder.Entity("ZMS.Domain.Entities.Charges", b =>
-                {
-                    b.Navigation("Lines");
-
-                    b.Navigation("Payments");
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.Consignment", b =>
-                {
-                    b.Navigation("Items");
-                });
-
             modelBuilder.Entity("ZMS.Domain.Entities.Contract", b =>
                 {
                     b.Navigation("BuyerDeliveryBreakups");
@@ -6027,11 +5586,6 @@ namespace ZMS.Domain.Migrations
             modelBuilder.Entity("ZMS.Domain.Entities.Payment", b =>
                 {
                     b.Navigation("RelatedInvoices");
-                });
-
-            modelBuilder.Entity("ZMS.Domain.Entities.Receipt", b =>
-                {
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

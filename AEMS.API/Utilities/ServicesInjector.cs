@@ -104,6 +104,10 @@ public static class ServicesInjector
         builder.Services.AddTransient<IBusinessAssociateService, BusinessAssociateService>();
         builder.Services.AddTransient<IMunshyanaService, MunshyanaService>();
         builder.Services.AddTransient<ISalesTaxService, SalesTaxService>();
+        builder.Services.AddTransient<IBookingOrderService, BookingOrderService>();
+        builder.Services.AddTransient<IConsignmentService, ConsignmentService>();
+        builder.Services.AddTransient<IChargesService, ChargesService>();
+        builder.Services.AddTransient<IReceiptService, ReceiptService>();
 
 
 

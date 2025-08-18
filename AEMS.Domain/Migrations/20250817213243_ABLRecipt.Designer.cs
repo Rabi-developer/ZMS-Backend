@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ZMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250817213243_ABLRecipt")]
+    partial class ABLRecipt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -468,7 +471,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f823eacf-33a3-4cf4-a1af-0e77a79d88bf",
+                            ConcurrencyStamp = "fc8b8046-0bc3-4214-8a23-1fa27aee08d7",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -480,7 +483,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF1VJjOApHLAqynoI1J5bbrV3CkF5rzpvUilkEFNZlZiyOgdF4CcNfHNizExl9KCUg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDtO+y1y6uer+EiYmtxwu4rUWWFXZfiQC0Y73g2I7ToDY0RlIMy3DZgs3vJJzN0lcQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -3727,8 +3730,8 @@ namespace ZMS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<float?>("Amount")
-                        .HasColumnType("real");
+                    b.Property<string>("Amount")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BiltyNo")
                         .HasColumnType("nvarchar(max)");
@@ -3829,8 +3832,8 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("ChqNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("PaidAmount")
-                        .HasColumnType("real");
+                    b.Property<string>("PaidAmount")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PayNo")
                         .HasColumnType("nvarchar(max)");

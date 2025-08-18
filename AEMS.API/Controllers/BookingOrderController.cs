@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using ZMS.Domain.Entities;
+using ZMS.Business.DTOs.Requests;
 /*using IMS.Domain.Migrations;
 */
 namespace ZMS.API.Controllers;
@@ -16,15 +17,15 @@ namespace ZMS.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
-public class InvoiceController : BaseController<InvoiceController, IInvoiceService, InvoiceReq, InvoiceRes, Invoice>
+public class BookingOrderController : BaseController<BookingOrderController, IBookingOrderService, BookingOrderReq, BookingOrderRes, BookingOrder>
 {
-    public InvoiceController(ILogger<InvoiceController> logger, IInvoiceService service) : base(logger, service)
+    public BookingOrderController(ILogger<BookingOrderController> logger, IBookingOrderService service) : base(logger, service)
     {
 
     }
 
     [HttpPost("status")]
-    public async Task<IActionResult> UpdateStatus([FromBody] InvoiceStatus contractstatus)
+    public async Task<IActionResult> UpdateStatus([FromBody] BookingOrderStatus contractstatus)
     {
         try
         {

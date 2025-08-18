@@ -16,15 +16,15 @@ namespace ZMS.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
-public class InvoiceController : BaseController<InvoiceController, IInvoiceService, InvoiceReq, InvoiceRes, Invoice>
+public class ChargesController : BaseController<ChargesController, IChargesService, ChargesReq, ChargesRes, Charges>
 {
-    public InvoiceController(ILogger<InvoiceController> logger, IInvoiceService service) : base(logger, service)
+    public ChargesController(ILogger<ChargesController> logger, IChargesService service) : base(logger, service)
     {
 
     }
 
     [HttpPost("status")]
-    public async Task<IActionResult> UpdateStatus([FromBody] InvoiceStatus contractstatus)
+    public async Task<IActionResult> UpdateStatus([FromBody] ChargesStatus contractstatus)
     {
         try
         {

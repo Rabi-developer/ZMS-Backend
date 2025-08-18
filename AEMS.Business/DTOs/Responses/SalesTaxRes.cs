@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace IMS.Business.DTOs.Requests
 {
+
     public class SalesTaxRes
     {
         public Guid? Id { get; set; }

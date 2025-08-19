@@ -3,6 +3,7 @@ using IMS.Business.DTOs.Responses;
 using IMS.Business.Utitlity;
 using IMS.DataAccess.Repositories;
 using IMS.DataAccess.UnitOfWork;
+using IMS.Domain.Base;
 using IMS.Domain.Context;
 using IMS.Domain.Entities;
 using IMS.Domain.Utilities;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using ZMS.Business.DTOs.Requests;
 using ZMS.Domain.Entities;
 
 namespace IMS.Business.Services;
@@ -64,6 +66,46 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
     }
 
 
+    public async override Task<Response<Guid>> Add(ReceiptReq reqModel)
+    {
+        try
+        {
+            var entity = reqModel.Adapt<Receipt>();
+
+            var GetlastNo = await UnitOfWork._context.Receipt
+     .OrderByDescending(p => p.Id)
+     .FirstOrDefaultAsync();
+
+            if (GetlastNo == null || GetlastNo.ReceiptNo == "")
+            {
+                entity.ReceiptNo = "1";
+            }
+            else
+            {
+                int NewNo = int.Parse(GetlastNo.ReceiptNo) + 1;
+                entity.ReceiptNo = NewNo.ToString();
+            }
+
+            var ss = await Repository.Add((Receipt)(entity as IMinBase ??
+             throw new InvalidOperationException(
+             "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+            await UnitOfWork.SaveAsync();
+            return new Response<Guid>
+            {
+
+                StatusMessage = "Created successfully",
+                StatusCode = HttpStatusCode.Created
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<Guid>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
 
     public async virtual Task<Response<ReceiptRes>> Get(Guid id)
     {

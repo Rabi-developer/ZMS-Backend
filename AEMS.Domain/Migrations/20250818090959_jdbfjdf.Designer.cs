@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ZMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250818090959_jdbfjdf")]
+    partial class jdbfjdf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -468,7 +471,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ab5bb320-612e-494f-8160-8e985725498c",
+                            ConcurrencyStamp = "8b251896-5001-4f4c-a1a5-a8fee73aff2b",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -480,7 +483,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJw44tA4lRZJNrkwlf1kzo1mo6wwl+fQ4orbPaaPZbdZoC1O4L1w24y4wvB1UMuYOQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP6uDTFkXvpvW6Od3/rKNZoufirtG/9EXKxTOGpIKKqIPDNzQl8G+nV8I2aO9WGRqw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -3981,11 +3984,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("FreightFrom")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("IncomeTaxAmount")
-                        .HasColumnType("real");
+                    b.Property<string>("IncomeTaxAmount")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("IncomeTaxDed")
-                        .HasColumnType("real");
+                    b.Property<string>("IncomeTaxDed")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InsuranceCharges")
                         .HasColumnType("nvarchar(max)");
@@ -4014,8 +4017,8 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("ReceiptNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("ReceivedAmount")
-                        .HasColumnType("real");
+                    b.Property<string>("ReceivedAmount")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReceiverContactNo")
                         .HasColumnType("nvarchar(max)");
@@ -4032,8 +4035,8 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("ShippingLine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("SprAmount")
-                        .HasColumnType("real");
+                    b.Property<string>("SprAmount")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
@@ -4041,11 +4044,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("TollTax")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("TotalAmount")
-                        .HasColumnType("real");
+                    b.Property<string>("TotalAmount")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("TotalQty")
-                        .HasColumnType("real");
+                    b.Property<string>("TotalQty")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -4070,14 +4073,14 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Desc")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("Qty")
-                        .HasColumnType("real");
+                    b.Property<string>("Qty")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("QtyUnit")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("Weight")
-                        .HasColumnType("real");
+                    b.Property<string>("Weight")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WeightUnit")
                         .HasColumnType("nvarchar(max)");

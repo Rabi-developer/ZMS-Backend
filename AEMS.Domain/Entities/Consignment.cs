@@ -23,18 +23,18 @@ namespace ZMS.Domain.Entities
         public string? Port { get; set; }
         public string? Destination { get; set; }
         public string? FreightFrom { get; set; }
-        public decimal? TotalQty { get; set; }
-        public decimal? Freight { get; set; }
+        public float? TotalQty { get; set; }
+        public string? Freight { get; set; }
         public string? SbrTax { get; set; }
-        public decimal? SprAmount { get; set; }
-        public decimal? DeliveryCharges { get; set; }
-        public decimal? InsuranceCharges { get; set; }
-        public decimal? TollTax { get; set; }
-        public decimal? OtherCharges { get; set; }
-        public decimal? TotalAmount { get; set; }
-        public decimal? ReceivedAmount { get; set; }
-        public decimal? IncomeTaxDed { get; set; }
-        public decimal? IncomeTaxAmount { get; set; }
+        public float? SprAmount { get; set; }
+        public string? DeliveryCharges { get; set; }
+        public string? InsuranceCharges { get; set; }
+        public string? TollTax { get; set; }
+        public string? OtherCharges { get; set; }
+        public float? TotalAmount { get; set; }
+        public float? ReceivedAmount { get; set; }
+        public float? IncomeTaxDed { get; set; }
+        public float? IncomeTaxAmount { get; set; }
         public string? DeliveryDate { get; set; }
         public string? Remarks { get; set; }
         public string? CreatedBy { get; set; }
@@ -49,9 +49,9 @@ namespace ZMS.Domain.Entities
     {
         public Guid? Id { get; set; }
         public string? Desc { get; set; }
-        public decimal? Qty { get; set; }
+        public float? Qty { get; set; }
         public string? QtyUnit { get; set; }
-        public decimal? Weight { get; set; }
+        public float? Weight { get; set; }
         public string? WeightUnit { get; set; }
     }
 }

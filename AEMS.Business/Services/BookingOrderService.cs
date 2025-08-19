@@ -3,6 +3,7 @@ using IMS.Business.DTOs.Responses;
 using IMS.Business.Utitlity;
 using IMS.DataAccess.Repositories;
 using IMS.DataAccess.UnitOfWork;
+using IMS.Domain.Base;
 using IMS.Domain.Context;
 using IMS.Domain.Entities;
 using IMS.Domain.Utilities;
@@ -64,6 +65,46 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
         }
     }
 
+    public async virtual Task<Response<Guid>> Add(BookingOrderReq reqModel)
+    {
+        try
+        {
+            var entity = reqModel.Adapt<BookingOrder>();
+
+            var GetlastNo = await UnitOfWork._context.BookingOrder
+     .OrderByDescending(p => p.Id)
+     .FirstOrDefaultAsync();
+
+            if (GetlastNo == null || GetlastNo.OrderNo == "")
+            {
+                entity.OrderNo = "1";
+            }
+            else
+            {
+                int NewNo = int.Parse(GetlastNo.OrderNo) + 1;
+                entity.OrderNo = NewNo.ToString();
+            }
+
+            var ss = await Repository.Add((BookingOrder)(entity as IMinBase ??
+             throw new InvalidOperationException(
+             "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+            await UnitOfWork.SaveAsync();
+            return new Response<Guid>
+            {
+               
+                StatusMessage = "Created successfully",
+                StatusCode = HttpStatusCode.Created
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<Guid>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
 
 
     public async virtual Task<Response<BookingOrderRes>> Get(Guid id)

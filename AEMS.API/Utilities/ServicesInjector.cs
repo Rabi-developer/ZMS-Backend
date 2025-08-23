@@ -22,7 +22,7 @@ public static class ServicesInjector
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("AEMSConnection")));
         #endregion
 
-        // Other service registrations
+        // Other service registrationss
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddAEMSAuthentication();
         builder.Services.AddAEMSAuthorization();

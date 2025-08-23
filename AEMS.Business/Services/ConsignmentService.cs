@@ -37,7 +37,6 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
         _DbContext = dbContextn;
     }
 
-
     public async override Task<Response<IList<ConsignmentRes>>> GetAll(Pagination? paginate)
     {
         try
@@ -47,9 +46,31 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
 
             var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Items));
 
+            var OrderNo = await _DbContext.BookingOrder.ToListAsync();
+            var Consignor = await _DbContext.Party.ToListAsync();
+            var Consignee = await _DbContext.Party.ToListAsync();
+            var SbrTax = await _DbContext.SalesTax.ToListAsync();
+
+
+
+            var result = data.Adapt<List<ConsignmentRes>>();
+
+            foreach (var item in result)
+            {/*
+                if (!string.IsNullOrWhiteSpace(item.OrderNo))
+                    item.OrderNo = OrderNo.FirstOrDefault(t => t.Id.ToString() == item.OrderNo)?.OrderNo; // Adjust 'Name' to actual property*/
+
+                if (!string.IsNullOrWhiteSpace(item.Consignor))
+                    item.Consignor = Consignor.FirstOrDefault(v => v.Id.ToString() == item.Consignor)?.Name; // Adjust 'Name' to actual property
+                if (!string.IsNullOrWhiteSpace(item.Consignee))
+                    item.Consignee = Consignee.FirstOrDefault(v => v.Id.ToString() == item.Consignee)?.Name; // Adjust 'Name' to actual
+                if (!string.IsNullOrWhiteSpace(item.SbrTax))
+                    item.SbrTax = SbrTax.FirstOrDefault(v => v.Id.ToString() == item.SbrTax)?.TaxName; // Adjust 'Name' to actual
+                                                                                                                  // 
+            }
             return new Response<IList<ConsignmentRes>>
             {
-                Data = data.Adapt<List<ConsignmentRes>>(),
+                Data = result,
                 Misc = pag,
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
@@ -106,7 +127,7 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
      .OrderByDescending(p => p.Id)
      .FirstOrDefaultAsync();
 
-            if (GetlastNo == null || GetlastNo.ReceiptNo == "")
+            if (GetlastNo == null || GetlastNo.ReceiptNo == "REC516552277" || GetlastNo.ReceiptNo == "")
             {
                 entity.ReceiptNo = "1";
             }

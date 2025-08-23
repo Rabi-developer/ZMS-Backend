@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ZMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250822112627_fhfdhh")]
+    partial class fhfdhh
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -468,7 +471,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "406cd302-3776-4897-bba3-55ea6717dd5d",
+                            ConcurrencyStamp = "be8d214d-7fc4-48bf-8864-7e6f0bc83f6b",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -480,7 +483,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKBuZ/8gYgN3MVNYdoUgMo2bXTcwk+WcbyF/TqUrshiOQq19QAM6Q9DgOlIfhT07Xw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBQHejprB5SOlh1z124K6eWcm9ib0ddWYLl5BaUhD2qeSVIUAeyePPGDPH4gYKauDg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -4880,8 +4883,8 @@ namespace ZMS.Domain.Migrations
                     b.Property<DateTime?>("ModifiedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<float?>("PaidAmount")
-                        .HasColumnType("real");
+                    b.Property<decimal?>("PaidAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PaidTo")
                         .HasColumnType("nvarchar(max)");
@@ -4918,8 +4921,8 @@ namespace ZMS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<float?>("Balance")
-                        .HasColumnType("real");
+                    b.Property<decimal?>("Balance")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Charges")
                         .HasColumnType("nvarchar(max)");
@@ -4927,8 +4930,8 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("DueDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("ExpenseAmount")
-                        .HasColumnType("real");
+                    b.Property<decimal?>("ExpenseAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("OrderDate")
                         .HasColumnType("nvarchar(max)");
@@ -4936,8 +4939,8 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("OrderNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("PaidAmount")
-                        .HasColumnType("real");
+                    b.Property<decimal?>("PaidAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("PaymentABLId")
                         .HasColumnType("uniqueidentifier");

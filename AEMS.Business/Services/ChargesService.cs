@@ -47,9 +47,18 @@ public class ChargesService : BaseService<ChargesReq, ChargesRes, ChargesReposit
 
             var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Lines));
 
+            var OrderNo = await _DbContext.BookingOrder.ToListAsync();
+
+            var result = data.Adapt<List<ChargesRes>>();
+
+            foreach (var item in result)
+            {
+                if (!string.IsNullOrWhiteSpace(item.OrderNo))
+                    item.OrderNo = OrderNo.FirstOrDefault(t => t.Id.ToString() == item.OrderNo)?.OrderNo;
+            }
             return new Response<IList<ChargesRes>>
             {
-                Data = data.Adapt<List<ChargesRes>>(),
+                Data = result,
                 Misc = pag,
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
@@ -64,6 +73,7 @@ public class ChargesService : BaseService<ChargesReq, ChargesRes, ChargesReposit
             };
         }
     }
+
 
 
     public async override Task<Response<Guid>> Add(ChargesReq reqModel)

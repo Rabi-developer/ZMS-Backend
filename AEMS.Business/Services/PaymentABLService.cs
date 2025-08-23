@@ -18,27 +18,27 @@ using ZMS.Domain.Entities;
 
 namespace IMS.Business.Services;
 
-public interface IReceiptService : IBaseService<ReceiptReq, ReceiptRes, Receipt>
+public interface IPaymentABLService : IBaseService<PaymentABLReq, PaymentABLRes, PaymentABL>
 {
-    public Task<ReceiptStatus> UpdateStatusAsync(Guid id, string status);
+    public Task<PaymentABLService> UpdateStatusAsync(Guid id, string status);
 
 }
 
-public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptRepository, Receipt>, IReceiptService
+public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, PaymentABLRepository, PaymentABL>, IPaymentABLService
 {
-    private readonly IReceiptRepository _repository;
+    private readonly IPaymentABLRepository _repository;
     private readonly IHttpContextAccessor _context;
     private readonly ApplicationDbContext _DbContext;
 
-    public ReceiptService(IUnitOfWork unitOfWork, IHttpContextAccessor context, ApplicationDbContext dbContextn) : base(unitOfWork)
+    public PaymentABLService(IUnitOfWork unitOfWork, IHttpContextAccessor context, ApplicationDbContext dbContextn) : base(unitOfWork)
     {
-        _repository = UnitOfWork.GetRepository<ReceiptRepository>();
+        _repository = UnitOfWork.GetRepository<PaymentABLRepository>();
         _context = context;
         _DbContext = dbContextn;
     }
 
 
-    public async override Task<Response<IList<ReceiptRes>>> GetAll(Pagination? paginate)
+    public async override Task<Response<IList<PaymentABLRes>>> GetAll(Pagination? paginate)
     {
         try
         {
@@ -47,18 +47,9 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
 
             var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Items));
 
-            var Party = await _DbContext.Party.ToListAsync();
-
-            var result = data.Adapt<List<ReceiptRes>>();
-
-            foreach (var item in result)
+            return new Response<IList<PaymentABLRes>>
             {
-                if (!string.IsNullOrWhiteSpace(item.Party))
-                    item.Party = Party.FirstOrDefault(t => t.Id.ToString() == item.Party)?.Name;
-            }
-            return new Response<IList<ReceiptRes>>
-            {
-                Data = result,
+                Data = data.Adapt<List<PaymentABLRes>>(),
                 Misc = pag,
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
@@ -66,7 +57,7 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
         }
         catch (Exception e)
         {
-            return new Response<IList<ReceiptRes>>
+            return new Response<IList<PaymentABLRes>>
             {
                 StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
@@ -74,27 +65,28 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
         }
     }
 
-    public async override Task<Response<Guid>> Add(ReceiptReq reqModel)
+
+    public async override Task<Response<Guid>> Add(PaymentABLReq reqModel)
     {
         try
         {
-            var entity = reqModel.Adapt<Receipt>();
+            var entity = reqModel.Adapt<PaymentABL>();
 
-            var GetlastNo = await UnitOfWork._context.Receipt
+            var GetlastNo = await UnitOfWork._context.PaymentABL
      .OrderByDescending(p => p.Id)
      .FirstOrDefaultAsync();
 
-            if (GetlastNo == null || GetlastNo.ReceiptNo == "REC516552277" || GetlastNo.ReceiptNo == "")
+            if (GetlastNo == null || GetlastNo.PaymentNo == "" || GetlastNo.PaymentNo == "REC516552277")
             {
-                entity.ReceiptNo = "1";
+                entity.PaymentNo = "1";
             }
             else
             {
-                int NewNo = int.Parse(GetlastNo.ReceiptNo) + 1;
-                entity.ReceiptNo = NewNo.ToString();
+                int NewNo = int.Parse(GetlastNo.PaymentNo) + 1;
+                entity.PaymentNo = NewNo.ToString();
             }
 
-            var ss = await Repository.Add((Receipt)(entity as IMinBase ??
+            var ss = await Repository.Add((PaymentABL)(entity as IMinBase ??
              throw new InvalidOperationException(
              "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
             await UnitOfWork.SaveAsync();
@@ -115,29 +107,29 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
         }
     }
 
-    public async virtual Task<Response<ReceiptRes>> Get(Guid id)
+    public async virtual Task<Response<PaymentABLRes>> Get(Guid id)
     {
         try
         {
             var entity = await Repository.Get(id, query => query.Include(p => p.Items));
             if (entity == null)
             {
-                return new Response<ReceiptRes>
+                return new Response<PaymentABLRes>
                 {
-                    StatusMessage = $"{typeof(Receipt).Name} Not found",
+                    StatusMessage = $"{typeof(PaymentABL).Name} Not found",
                     StatusCode = HttpStatusCode.NoContent
                 };
             }
-            return new Response<ReceiptRes>
+            return new Response<PaymentABLRes>
             {
-                Data = entity.Adapt<ReceiptRes>(),
+                Data = entity.Adapt<PaymentABLRes>(),
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
             };
         }
         catch (Exception e)
         {
-            return new Response<ReceiptRes>
+            return new Response<PaymentABLRes>
             {
                 StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
@@ -145,7 +137,7 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
         }
     }
 
-    public async Task<ReceiptStatus> UpdateStatusAsync(Guid id, string status)
+    public async Task<PaymentAblStatus> UpdateStatusAsync(Guid id, string status)
     {
         if (status == null || id == null)
         {
@@ -158,23 +150,28 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
             throw new ArgumentException($"Status must be one of: {string.Join(", ", validStatuses)}");
         }
 
-        var Receipt = await _DbContext.Receipt.Where(p => p.Id == id).FirstOrDefaultAsync();
+        var PaymentABL = await _DbContext.PaymentABL.Where(p => p.Id == id).FirstOrDefaultAsync();
 
-        if (Receipt == null)
+        if (PaymentABL == null)
         {
-            throw new KeyNotFoundException($"Receipt with ID {id} not found.");
+            throw new KeyNotFoundException($"PaymentABL with ID {id} not found.");
         }
 
-        Receipt.Status = status;
-        Receipt.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
-        Receipt.UpdationDate = DateTime.UtcNow.ToString("o");
+        PaymentABL.Status = status;
+        PaymentABL.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
+        PaymentABL.UpdationDate = DateTime.UtcNow.ToString("o");
 
         await UnitOfWork.SaveAsync();
 
-        return new ReceiptStatus
+        return new PaymentAblStatus
         {
             Id = id,
             Status = status,
         };
+    }
+
+    Task<PaymentABLService> IPaymentABLService.UpdateStatusAsync(Guid id, string status)
+    {
+        throw new NotImplementedException();
     }
 }

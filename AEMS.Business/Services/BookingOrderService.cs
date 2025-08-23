@@ -20,6 +20,7 @@ namespace IMS.Business.Services;
 
 public interface IBookingOrderService : IBaseService<BookingOrderReq, BookingOrderRes, BookingOrder>
 {
+    Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? paginate);
     public Task<BookingOrderStatus> UpdateStatusAsync(Guid id, string status);
 
 }
@@ -168,5 +169,48 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
             Id = id,
             Status = status,
         };
+    }
+
+    public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? paginate)
+    {
+        try
+        {
+            var pagination = paginate ?? new Pagination();
+
+            var (pag, data) = await Repository.GetAll(
+                pagination,
+                query => query.Include(p => p.Consignments)
+            );
+
+            var transporters = await _DbContext.Transporters.ToListAsync(); 
+            var vendors = await _DbContext.Vendor.ToListAsync();
+
+            var result = data.Adapt<List<BookingOrderRes>>();
+
+            foreach (var item in result)
+            {
+                if (!string.IsNullOrWhiteSpace(item.Transporter))
+                    item.Transporter = transporters.FirstOrDefault(t => t.Id.ToString() == item.Transporter)?.Name; // Adjust 'Name' to actual property
+
+                if (!string.IsNullOrWhiteSpace(item.Vendor))
+                    item.Vendor = vendors.FirstOrDefault(v => v.Id.ToString() == item.Vendor)?.Name; // Adjust 'Name' to actual property
+            }
+
+            return new Response<IList<BookingOrderRes>>
+            {
+                Data = result,
+                Misc = pag,
+                StatusMessage = "Fetched successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<IList<BookingOrderRes>>
+            {
+                StatusMessage = e.InnerException?.Message ?? e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
     }
 }

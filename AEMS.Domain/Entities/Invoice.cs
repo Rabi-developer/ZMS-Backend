@@ -6,8 +6,6 @@ namespace ZMS.Domain.Entities
 {
     public class Invoice : GeneralBase
     {
-       
-
         public Guid? Id { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? InvoiceDate { get; set; }

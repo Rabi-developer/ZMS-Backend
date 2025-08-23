@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using ZMS.Domain.Entities;  
-using IMS.Domain.Migrations;
-
+using ZMS.Domain.Entities;
+/*using IMS.Domain.Migrations;
+*/
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]

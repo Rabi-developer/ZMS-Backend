@@ -2,8 +2,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace ZMS.Business.DTOs.Requests
+namespace IMS.Business.DTOs.Requests
 {
+
     public class SalesTaxReq
     {
         public Guid? Id { get; set; }

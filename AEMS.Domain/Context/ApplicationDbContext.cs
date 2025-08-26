@@ -96,6 +96,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
     public DbSet<Charges> Charges { get; set; }
     public DbSet<Receipt> Receipt { get; set; }
     public DbSet<PaymentABL> PaymentABL { get; set; }
+    public DbSet<BiltyPaymentInvoice> BiltyPaymentInvoice { get; set; }
 
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

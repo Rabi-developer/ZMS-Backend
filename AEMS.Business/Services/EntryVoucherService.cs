@@ -129,19 +129,19 @@ namespace IMS.Business.Services
                         }
 
 
-                            detail.CurrentBalance1 = (float?)(account1.FixedAmount - account1.Paid);
+                        detail.CurrentBalance1 = (float?)(account1.FixedAmount - account1.Paid);
                         detail.ProjectedBalance1 = detail.CurrentBalance1 + (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0);
                         detail.CurrentBalance2 = (float?)(account2.FixedAmount - account2.Paid);
                         detail.ProjectedBalance2 = detail.CurrentBalance2 + (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0);
-                        if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
-                        {
-                            throw new Exception($"Insufficient balance for account(s): {account1.Description}, {account2.Description}");
-                        }
+                        /* if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
+                         {
+                             throw new Exception($"Insufficient balance for account(s): {account1.Description}, {account2.Description}");
+                         }*/
 
-                        account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
-                        account1.Paid += (decimal)(detail.Credit1 ?? 0);
-                        account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
-                        account2.Paid += (decimal)(detail.Credit2 ?? 0);
+                        /*  account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
+                          account1.Paid += (decimal)(detail.Credit1 ?? 0);
+                          account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
+                          account2.Paid += (decimal)(detail.Credit2 ?? 0);*/
 
                         await UpdateAccount(account1);
                         await UpdateAccount(account2);
@@ -264,15 +264,15 @@ namespace IMS.Business.Services
                         detail.ProjectedBalance1 = detail.CurrentBalance1 + (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0);
                         detail.CurrentBalance2 = (float?)(account2.FixedAmount - account2.Paid);
                         detail.ProjectedBalance2 = detail.CurrentBalance2 + (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0);
-                        if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
+                        /*if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
                         {
                             throw new Exception($"Insufficient balance for account(s): {account1.Description}, {account2.Description}");
-                        }
+                        }*/
 
-                        account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
-                        account1.Paid += (decimal)(detail.Credit1 ?? 0);
-                        account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
-                        account2.Paid += (decimal)(detail.Credit2 ?? 0);
+                        /* account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
+                         account1.Paid += (decimal)(detail.Credit1 ?? 0);
+                         account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
+                         account2.Paid += (decimal)(detail.Credit2 ?? 0);*/
 
                         await UpdateAccount(account1);
                         await UpdateAccount(account2);

@@ -25,6 +25,7 @@ namespace IMS.Business.Services
         Task<Response<IList<EntryVoucherRes>>> GetAll(Pagination? paginate);
         Task<EntryVoucherStatus> UpdateStatusAsync(Guid id, string status);
         Task<Response<EntryVoucherRes>> Update(Guid id, EntryVoucherReq reqModel);
+
     }
 
     public class EntryVoucherService : BaseService<EntryVoucherReq, EntryVoucherRes, EntryVoucherRepository, EntryVoucher>, IEntryVoucherService
@@ -40,7 +41,7 @@ namespace IMS.Business.Services
             _DbContext = dbContext;
         }
 
-        public async override Task<Response<IList<EntryVoucherRes>>> GetAll(Pagination? paginate)
+        public override async Task<Response<IList<EntryVoucherRes>>> GetAll(Pagination? paginate)
         {
             try
             {
@@ -87,8 +88,9 @@ namespace IMS.Business.Services
             }
         }
 
-        public async virtual Task<Response<Guid>> Add(EntryVoucherReq reqModel)
+        public async override Task<Response<Guid>> Add(EntryVoucherReq reqModel)
         {
+            using var transaction = await _DbContext.Database.BeginTransactionAsync();
             try
             {
                 var entity = reqModel.Adapt<EntryVoucher>();
@@ -128,20 +130,21 @@ namespace IMS.Business.Services
                             throw new Exception("Invalid account ID(s) provided.");
                         }
 
-
                         detail.CurrentBalance1 = (float?)(account1.FixedAmount - account1.Paid);
                         detail.ProjectedBalance1 = detail.CurrentBalance1 + (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0);
                         detail.CurrentBalance2 = (float?)(account2.FixedAmount - account2.Paid);
                         detail.ProjectedBalance2 = detail.CurrentBalance2 + (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0);
-                        /* if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
-                         {
-                             throw new Exception($"Insufficient balance for account(s): {account1.Description}, {account2.Description}");
-                         }*/
 
-                        /*  account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
-                          account1.Paid += (decimal)(detail.Credit1 ?? 0);
-                          account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
-                          account2.Paid += (decimal)(detail.Credit2 ?? 0);*/
+                        /*if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
+                        {
+                            throw new Exception($"Insufficient balance for account(s): {account1.Description}, {account2.Description}");
+                        }*/
+
+                        // Update account balances
+                        account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
+                        account1.Paid += (decimal)(detail.Credit1 ?? 0);
+                        account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
+                        account2.Paid += (decimal)(detail.Credit2 ?? 0);
 
                         await UpdateAccount(account1);
                         await UpdateAccount(account2);
@@ -153,6 +156,7 @@ namespace IMS.Business.Services
                 var savedEntity = await Repository.Add((EntryVoucher)(entity as IMinBase ??
                     throw new InvalidOperationException("Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
                 await UnitOfWork.SaveAsync();
+                await transaction.CommitAsync();
 
                 return new Response<Guid>
                 {
@@ -163,6 +167,7 @@ namespace IMS.Business.Services
             }
             catch (Exception e)
             {
+                await transaction.RollbackAsync();
                 return new Response<Guid>
                 {
                     StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
@@ -171,7 +176,7 @@ namespace IMS.Business.Services
             }
         }
 
-        public async virtual Task<Response<EntryVoucherRes>> Get(Guid id)
+        public async override Task<Response<EntryVoucherRes>> Get(Guid id)
         {
             try
             {
@@ -220,8 +225,9 @@ namespace IMS.Business.Services
             }
         }
 
-        public async virtual Task<Response<EntryVoucherRes>> Update(Guid id, EntryVoucherReq reqModel)
+        public async Task<Response<EntryVoucherRes>> Update(Guid id, EntryVoucherReq reqModel)
         {
+            using var transaction = await _DbContext.Database.BeginTransactionAsync();
             try
             {
                 var existingEntity = await Repository.Get(id, query => query.Include(v => v.VoucherDetails));
@@ -264,15 +270,17 @@ namespace IMS.Business.Services
                         detail.ProjectedBalance1 = detail.CurrentBalance1 + (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0);
                         detail.CurrentBalance2 = (float?)(account2.FixedAmount - account2.Paid);
                         detail.ProjectedBalance2 = detail.CurrentBalance2 + (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0);
-                        /*if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
+
+                       /* if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
                         {
                             throw new Exception($"Insufficient balance for account(s): {account1.Description}, {account2.Description}");
                         }*/
 
-                        /* account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
-                         account1.Paid += (decimal)(detail.Credit1 ?? 0);
-                         account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
-                         account2.Paid += (decimal)(detail.Credit2 ?? 0);*/
+                        // Update account balances
+                        account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
+                        account1.Paid += (decimal)(detail.Credit1 ?? 0);
+                        account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
+                        account2.Paid += (decimal)(detail.Credit2 ?? 0);
 
                         await UpdateAccount(account1);
                         await UpdateAccount(account2);
@@ -281,8 +289,9 @@ namespace IMS.Business.Services
                     }
                 }
 
-                await Repository.Update(existingEntity, e => { return existingEntity; });
+                await Repository.Update(existingEntity, e => existingEntity);
                 await UnitOfWork.SaveAsync();
+                await transaction.CommitAsync();
 
                 // Map to response DTO and enrich account names
                 var result = existingEntity.Adapt<EntryVoucherRes>();
@@ -312,6 +321,7 @@ namespace IMS.Business.Services
             }
             catch (Exception e)
             {
+                await transaction.RollbackAsync();
                 return new Response<EntryVoucherRes>
                 {
                     StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,

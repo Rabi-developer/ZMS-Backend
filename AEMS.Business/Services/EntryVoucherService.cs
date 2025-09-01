@@ -25,7 +25,6 @@ namespace IMS.Business.Services
         Task<Response<IList<EntryVoucherRes>>> GetAll(Pagination? paginate);
         Task<EntryVoucherStatus> UpdateStatusAsync(Guid id, string status);
         Task<Response<EntryVoucherRes>> Update(Guid id, EntryVoucherReq reqModel);
-
     }
 
     public class EntryVoucherService : BaseService<EntryVoucherReq, EntryVoucherRes, EntryVoucherRepository, EntryVoucher>, IEntryVoucherService
@@ -60,11 +59,16 @@ namespace IMS.Business.Services
                             {
                                 var account1 = await GetAccountById(detail.Account1);
                                 detail.Account1 = account1?.Description ?? detail.Account1;
+                                // Recalculate latest balances if needed (uncomment if you want real-time instead of historical snapshot)
+                                // detail.CurrentBalance1 = (float?)(account1.FixedAmount - account1.Paid);
+                                // detail.ProjectedBalance1 = detail.CurrentBalance1 + (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0);
                             }
                             if (!string.IsNullOrWhiteSpace(detail.Account2))
                             {
                                 var account2 = await GetAccountById(detail.Account2);
                                 detail.Account2 = account2?.Description ?? detail.Account2;
+                                // detail.CurrentBalance2 = (float?)(account2.FixedAmount - account2.Paid);
+                                // detail.ProjectedBalance2 = detail.CurrentBalance2 + (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0);
                             }
                         }
                     }
@@ -88,7 +92,7 @@ namespace IMS.Business.Services
             }
         }
 
-        public async override Task<Response<Guid>> Add(EntryVoucherReq reqModel)
+        public override async Task<Response<Guid>> Add(EntryVoucherReq reqModel)
         {
             using var transaction = await _DbContext.Database.BeginTransactionAsync();
             try
@@ -113,44 +117,70 @@ namespace IMS.Business.Services
                 entity.CreatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
                 entity.CreationDate = DateTime.UtcNow.ToString("o");
 
-                // Calculate balances for VoucherDetails
+                // Collect unique accounts and simulate balances in memory
+                var accountBalances = new Dictionary<Guid, float>(); // Changed to float
+                var deltaFixed = new Dictionary<Guid, float>(); // Changed to float
+                var deltaPaid = new Dictionary<Guid, float>(); // Changed to float
+                var uniqueAccountIds = reqModel.VoucherDetails?.SelectMany(d => new[] { d.Account1, d.Account2 })
+                    .Where(id => !string.IsNullOrWhiteSpace(id) && Guid.TryParse(id, out _))
+                    .Distinct()
+                    .Select(Guid.Parse)
+                    .ToHashSet() ?? new HashSet<Guid>();
+
+                // Load initial balances for all unique accounts
+                foreach (var guidId in uniqueAccountIds)
+                {
+                    var account = await GetAccountById(guidId.ToString());
+                    if (account == null) throw new Exception($"Account {guidId} not found.");
+                    var balance = (float)(account.FixedAmount - account.Paid); // Cast to float
+                    accountBalances[guidId] = balance;
+                    deltaFixed[guidId] = 0;
+                    deltaPaid[guidId] = 0;
+                }
+
+                // Process details: set balances using simulation, accumulate deltas
+                entity.VoucherDetails = new List<VoucherDetail>();
                 if (reqModel.VoucherDetails != null)
                 {
-                    entity.VoucherDetails = new List<VoucherDetail>();
                     foreach (var detailReq in reqModel.VoucherDetails)
                     {
                         var detail = detailReq.Adapt<VoucherDetail>();
                         detail.Id = Guid.NewGuid();
 
-                        var account1 = await GetAccountById(detail.Account1);
-                        var account2 = await GetAccountById(detail.Account2);
+                        var account1Id = Guid.Parse(detail.Account1);
+                        var account2Id = Guid.Parse(detail.Account2);
 
-                        if (account1 == null || account2 == null)
-                        {
-                            throw new Exception("Invalid account ID(s) provided.");
-                        }
+                        detail.CurrentBalance1 = accountBalances[account1Id];
+                        var delta1 = (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0); // float - float
+                        detail.ProjectedBalance1 = detail.CurrentBalance1 + delta1;
+                        accountBalances[account1Id] += delta1; // float += float
+                        deltaFixed[account1Id] += (float)(detail.Debit1 ?? 0);
+                        deltaPaid[account1Id] += (float)(detail.Credit1 ?? 0);
 
-                        detail.CurrentBalance1 = (float?)(account1.FixedAmount - account1.Paid);
-                        detail.ProjectedBalance1 = detail.CurrentBalance1 + (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0);
-                        detail.CurrentBalance2 = (float?)(account2.FixedAmount - account2.Paid);
-                        detail.ProjectedBalance2 = detail.CurrentBalance2 + (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0);
+                        detail.CurrentBalance2 = accountBalances[account2Id];
+                        var delta2 = (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0); // float - float
+                        detail.ProjectedBalance2 = detail.CurrentBalance2 + delta2;
+                        accountBalances[account2Id] += delta2; // float += float
+                        deltaFixed[account2Id] += (float)(detail.Debit2 ?? 0);
+                        deltaPaid[account2Id] += (float)(detail.Credit2 ?? 0);
 
-                        /*if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
-                        {
-                            throw new Exception($"Insufficient balance for account(s): {account1.Description}, {account2.Description}");
-                        }*/
-
-                        // Update account balances
-                        account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
-                        account1.Paid += (decimal)(detail.Credit1 ?? 0);
-                        account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
-                        account2.Paid += (decimal)(detail.Credit2 ?? 0);
-
-                        await UpdateAccount(account1);
-                        await UpdateAccount(account2);
+                        // Uncomment to check insufficient balance
+                        // if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
+                        // {
+                        //     throw new Exception($"Insufficient balance for account(s).");
+                        // }
 
                         entity.VoucherDetails.Add(detail);
                     }
+                }
+
+                // Apply all deltas to accounts once at the end
+                foreach (var guidId in uniqueAccountIds)
+                {
+                    var account = await GetAccountById(guidId.ToString());
+                    account.FixedAmount += deltaFixed[guidId];
+                    account.Paid += deltaPaid[guidId];
+                    await UpdateAccount(account); // Updates in memory; SaveAsync commits all
                 }
 
                 var savedEntity = await Repository.Add((EntryVoucher)(entity as IMinBase ??
@@ -176,7 +206,7 @@ namespace IMS.Business.Services
             }
         }
 
-        public async override Task<Response<EntryVoucherRes>> Get(Guid id)
+        public override async Task<Response<EntryVoucherRes>> Get(Guid id)
         {
             try
             {
@@ -240,6 +270,31 @@ namespace IMS.Business.Services
                     };
                 }
 
+                // Revert old details' effects on accounts
+                foreach (var oldDetail in existingEntity.VoucherDetails)
+                {
+                    if (!string.IsNullOrWhiteSpace(oldDetail.Account1) && Guid.TryParse(oldDetail.Account1, out var guid1))
+                    {
+                        var account1 = await GetAccountById(oldDetail.Account1);
+                        if (account1 != null)
+                        {
+                            account1.FixedAmount -= (float)(oldDetail.Debit1 ?? 0); // Cast to float
+                            account1.Paid -= (float)(oldDetail.Credit1 ?? 0); // Cast to float
+                            await UpdateAccount(account1);
+                        }
+                    }
+                    if (!string.IsNullOrWhiteSpace(oldDetail.Account2) && Guid.TryParse(oldDetail.Account2, out var guid2))
+                    {
+                        var account2 = await GetAccountById(oldDetail.Account2);
+                        if (account2 != null)
+                        {
+                            account2.FixedAmount -= (float)(oldDetail.Debit2 ?? 0); // Cast to float
+                            account2.Paid -= (float)(oldDetail.Credit2 ?? 0); // Cast to float
+                            await UpdateAccount(account2);
+                        }
+                    }
+                }
+
                 // Map updated fields from request to existing entity
                 reqModel.Adapt(existingEntity);
                 existingEntity.Id = id;
@@ -250,7 +305,26 @@ namespace IMS.Business.Services
                 _DbContext.Set<VoucherDetail>().RemoveRange(existingEntity.VoucherDetails);
                 existingEntity.VoucherDetails = new List<VoucherDetail>();
 
-                // Process new VoucherDetails and calculate balances
+                // Same as Add: simulate balances and accumulate deltas for new details
+                var accountBalances = new Dictionary<Guid, float>(); // Changed to float
+                var deltaFixed = new Dictionary<Guid, float>(); // Changed to float
+                var deltaPaid = new Dictionary<Guid, float>(); // Changed to float
+                var uniqueAccountIds = reqModel.VoucherDetails?.SelectMany(d => new[] { d.Account1, d.Account2 })
+                    .Where(id => !string.IsNullOrWhiteSpace(id) && Guid.TryParse(id, out _))
+                    .Distinct()
+                    .Select(Guid.Parse)
+                    .ToHashSet() ?? new HashSet<Guid>();
+
+                foreach (var guidId in uniqueAccountIds)
+                {
+                    var account = await GetAccountById(guidId.ToString());
+                    if (account == null) throw new Exception($"Account {guidId} not found.");
+                    var balance = (float)(account.FixedAmount - account.Paid); // Cast to float
+                    accountBalances[guidId] = balance;
+                    deltaFixed[guidId] = 0;
+                    deltaPaid[guidId] = 0;
+                }
+
                 if (reqModel.VoucherDetails != null)
                 {
                     foreach (var detailReq in reqModel.VoucherDetails)
@@ -258,35 +332,40 @@ namespace IMS.Business.Services
                         var detail = detailReq.Adapt<VoucherDetail>();
                         detail.Id = Guid.NewGuid();
 
-                        var account1 = await GetAccountById(detail.Account1);
-                        var account2 = await GetAccountById(detail.Account2);
+                        var account1Id = Guid.Parse(detail.Account1);
+                        var account2Id = Guid.Parse(detail.Account2);
 
-                        if (account1 == null || account2 == null)
-                        {
-                            throw new Exception("Invalid account ID(s) provided.");
-                        }
+                        detail.CurrentBalance1 = accountBalances[account1Id];
+                        var delta1 = (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0); // float - float
+                        detail.ProjectedBalance1 = detail.CurrentBalance1 + delta1;
+                        accountBalances[account1Id] += delta1; // float += float
+                        deltaFixed[account1Id] += (float)(detail.Debit1 ?? 0);
+                        deltaPaid[account1Id] += (float)(detail.Credit1 ?? 0);
 
-                        detail.CurrentBalance1 = (float?)(account1.FixedAmount - account1.Paid);
-                        detail.ProjectedBalance1 = detail.CurrentBalance1 + (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0);
-                        detail.CurrentBalance2 = (float?)(account2.FixedAmount - account2.Paid);
-                        detail.ProjectedBalance2 = detail.CurrentBalance2 + (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0);
+                        detail.CurrentBalance2 = accountBalances[account2Id];
+                        var delta2 = (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0); // float - float
+                        detail.ProjectedBalance2 = detail.CurrentBalance2 + delta2;
+                        accountBalances[account2Id] += delta2; // float += float
+                        deltaFixed[account2Id] += (float)(detail.Debit2 ?? 0);
+                        deltaPaid[account2Id] += (float)(detail.Credit2 ?? 0);
 
-                       /* if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
-                        {
-                            throw new Exception($"Insufficient balance for account(s): {account1.Description}, {account2.Description}");
-                        }*/
-
-                        // Update account balances
-                        account1.FixedAmount += (decimal)(detail.Debit1 ?? 0);
-                        account1.Paid += (decimal)(detail.Credit1 ?? 0);
-                        account2.FixedAmount += (decimal)(detail.Debit2 ?? 0);
-                        account2.Paid += (decimal)(detail.Credit2 ?? 0);
-
-                        await UpdateAccount(account1);
-                        await UpdateAccount(account2);
+                        // Uncomment to check insufficient balance
+                        // if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
+                        // {
+                        //     throw new Exception($"Insufficient balance for account(s).");
+                        // }
 
                         existingEntity.VoucherDetails.Add(detail);
                     }
+                }
+
+                // Apply deltas
+                foreach (var guidId in uniqueAccountIds)
+                {
+                    var account = await GetAccountById(guidId.ToString());
+                    account.FixedAmount += deltaFixed[guidId];
+                    account.Paid += deltaPaid[guidId];
+                    await UpdateAccount(account);
                 }
 
                 await Repository.Update(existingEntity, e => existingEntity);
@@ -377,8 +456,8 @@ namespace IMS.Business.Services
                 {
                     Id = asset.Id.ToString(),
                     Description = asset.Description,
-                    FixedAmount = decimal.TryParse(asset.FixedAmount, out var fixedAmount) ? fixedAmount : 0,
-                    Paid = decimal.TryParse(asset.Paid, out var paid) ? paid : 0
+                    FixedAmount = float.TryParse(asset.FixedAmount, out var fixedAmount) ? fixedAmount : 0, // Changed to float
+                    Paid = float.TryParse(asset.Paid, out var paid) ? paid : 0 // Changed to float
                 };
             }
 
@@ -389,8 +468,8 @@ namespace IMS.Business.Services
                 {
                     Id = liability.Id.ToString(),
                     Description = liability.Description,
-                    FixedAmount = decimal.TryParse(liability.FixedAmount, out var fixedAmount) ? fixedAmount : 0,
-                    Paid = decimal.TryParse(liability.Paid, out var paid) ? paid : 0
+                    FixedAmount = float.TryParse(liability.FixedAmount, out var fixedAmount) ? fixedAmount : 0, // Changed to float
+                    Paid = float.TryParse(liability.Paid, out var paid) ? paid : 0 // Changed to float
                 };
             }
 
@@ -401,8 +480,8 @@ namespace IMS.Business.Services
                 {
                     Id = revenue.Id.ToString(),
                     Description = revenue.Description,
-                    FixedAmount = decimal.TryParse(revenue.FixedAmount, out var fixedAmount) ? fixedAmount : 0,
-                    Paid = decimal.TryParse(revenue.Paid, out var paid) ? paid : 0
+                    FixedAmount = float.TryParse(revenue.FixedAmount, out var fixedAmount) ? fixedAmount : 0, // Changed to float
+                    Paid = float.TryParse(revenue.Paid, out var paid) ? paid : 0 // Changed to float
                 };
             }
 
@@ -413,8 +492,8 @@ namespace IMS.Business.Services
                 {
                     Id = expense.Id.ToString(),
                     Description = expense.Description,
-                    FixedAmount = decimal.TryParse(expense.FixedAmount, out var fixedAmount) ? fixedAmount : 0,
-                    Paid = decimal.TryParse(expense.Paid, out var paid) ? paid : 0
+                    FixedAmount = float.TryParse(expense.FixedAmount, out var fixedAmount) ? fixedAmount : 0, // Changed to float
+                    Paid = float.TryParse(expense.Paid, out var paid) ? paid : 0 // Changed to float
                 };
             }
 
@@ -425,8 +504,8 @@ namespace IMS.Business.Services
                 {
                     Id = equity.Id.ToString(),
                     Description = equity.Description,
-                    FixedAmount = decimal.TryParse(equity.FixedAmount, out var fixedAmount) ? fixedAmount : 0,
-                    Paid = decimal.TryParse(equity.Paid, out var paid) ? paid : 0
+                    FixedAmount = float.TryParse(equity.FixedAmount, out var fixedAmount) ? fixedAmount : 0, // Changed to float
+                    Paid = float.TryParse(equity.Paid, out var paid) ? paid : 0 // Changed to float
                 };
             }
 
@@ -446,7 +525,6 @@ namespace IMS.Business.Services
                 asset.FixedAmount = account.FixedAmount.ToString();
                 asset.Paid = account.Paid.ToString();
                 _DbContext.Update(asset);
-                await _DbContext.SaveChangesAsync();
                 return;
             }
 
@@ -456,7 +534,6 @@ namespace IMS.Business.Services
                 liability.FixedAmount = account.FixedAmount.ToString();
                 liability.Paid = account.Paid.ToString();
                 _DbContext.Update(liability);
-                await _DbContext.SaveChangesAsync();
                 return;
             }
 
@@ -466,7 +543,6 @@ namespace IMS.Business.Services
                 revenue.FixedAmount = account.FixedAmount.ToString();
                 revenue.Paid = account.Paid.ToString();
                 _DbContext.Update(revenue);
-                await _DbContext.SaveChangesAsync();
                 return;
             }
 
@@ -476,7 +552,6 @@ namespace IMS.Business.Services
                 expense.FixedAmount = account.FixedAmount.ToString();
                 expense.Paid = account.Paid.ToString();
                 _DbContext.Update(expense);
-                await _DbContext.SaveChangesAsync();
                 return;
             }
 
@@ -486,7 +561,6 @@ namespace IMS.Business.Services
                 equity.FixedAmount = account.FixedAmount.ToString();
                 equity.Paid = account.Paid.ToString();
                 _DbContext.Update(equity);
-                await _DbContext.SaveChangesAsync();
                 return;
             }
         }
@@ -495,8 +569,8 @@ namespace IMS.Business.Services
         {
             public string Id { get; set; }
             public string Description { get; set; }
-            public decimal FixedAmount { get; set; }
-            public decimal Paid { get; set; }
+            public float FixedAmount { get; set; } // Changed to float
+            public float Paid { get; set; } // Changed to float
         }
     }
 }

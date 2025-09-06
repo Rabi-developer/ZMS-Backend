@@ -53,6 +53,7 @@ namespace ZMS.Domain.Entities
         public Guid? Id { get; set; }
         public string? Desc { get; set; }
         public float? Qty { get; set; }
+        public float? Rate { get; set; }
         public string? QtyUnit { get; set; }
         public float? Weight { get; set; }
         public string? WeightUnit { get; set; }

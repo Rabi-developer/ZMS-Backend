@@ -15,6 +15,11 @@ namespace ZMS.Domain.Entities
         public string? ChequeDate { get; set; }
         public string? PaidTo { get; set; }
         public float? PaidAmount { get; set; }
+        public float? Advanced {  get; set; }
+        public string? AdvancedDate { get; set; }
+        public float? PDC {  get; set; }
+        public string? PDCDate {  get; set; }
+        public float? PaymentAmount {  get; set; }
         public string? Remarks { get; set; }
         public string? CreatedBy { get; set; }
         public string? CreationDate { get; set; }

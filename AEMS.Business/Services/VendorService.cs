@@ -44,6 +44,9 @@ public class VendorService : BaseService<VendorReq, VendorRes, VendorRepository,
             var lastVendor = await _DbContext.Vendor
                 .OrderByDescending(x => x.VendorNumber)
                 .FirstOrDefaultAsync();
+            if (lastVendor.VendorNumber == null || lastVendor.VendorNumber == "V1758220209914196") {
+                lastVendor.VendorNumber = "0";
+            }
 
             string newVendorNumber = lastVendor == null
                 ? "1"

@@ -123,7 +123,7 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
         {
             var entity = reqModel.Adapt<Consignment>();
 
-            var GetlastNo = await UnitOfWork._context.Consignment
+          /*  var GetlastNo = await UnitOfWork._context.Consignment
      .OrderByDescending(p => p.Id)
      .FirstOrDefaultAsync();
 
@@ -136,7 +136,7 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
                 int NewNo = int.Parse(GetlastNo.ReceiptNo) + 1;
                 entity.ReceiptNo = NewNo.ToString();
             }
-
+*/
             var ss = await Repository.Add((Consignment)(entity as IMinBase ??
              throw new InvalidOperationException(
              "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));

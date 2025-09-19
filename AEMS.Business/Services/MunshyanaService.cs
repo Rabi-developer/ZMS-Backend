@@ -46,6 +46,10 @@ public class MunshyanaService : BaseService<MunshyanaReq, MunshyanaRes, Munshyan
                 .OrderByDescending(x => x.MunshyanaNumber)
                 .FirstOrDefaultAsync();
 
+            if (lastMunshyana.MunshyanaNumber == null || lastMunshyana.MunshyanaNumber == "M1758222863648799")
+            {
+                lastMunshyana.MunshyanaNumber = "0";
+            }
             string newMunshyanaNumber = lastMunshyana == null
                 ? "1"
                 : (int.Parse(lastMunshyana.MunshyanaNumber) + 1).ToString("D1");

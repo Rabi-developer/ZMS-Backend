@@ -44,7 +44,10 @@ public class BrookerService : BaseService<BrookerReq, BrookerRes, BrookerReposit
             var lastBrooker = await _DbContext.Brooker
                 .OrderByDescending(x => x.BrookerNumber)
                 .FirstOrDefaultAsync();
-
+            if (lastBrooker.BrookerNumber == null || lastBrooker.BrookerNumber == "B175822076159395")
+            {
+                lastBrooker.BrookerNumber = "0";
+            }
             string newBrookerNumber = lastBrooker == null
                 ? "1"
                 : (int.Parse(lastBrooker.BrookerNumber) + 1).ToString("D1");

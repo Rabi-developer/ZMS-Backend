@@ -44,6 +44,10 @@ public class TransporterService : BaseService<TransporterReq, TransporterRes, Tr
             var lastTransporter = await _DbContext.Transporters
                 .OrderByDescending(x => x.TransporterNumber)
                 .FirstOrDefaultAsync();
+            if (lastTransporter.TransporterNumber == null || lastTransporter.TransporterNumber == "T1758281857701166")
+            {
+                lastTransporter.TransporterNumber = "0";
+            }
 
             string newTransporterNumber = lastTransporter == null
                 ? "1"

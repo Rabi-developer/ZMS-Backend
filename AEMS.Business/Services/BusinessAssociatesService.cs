@@ -44,6 +44,10 @@ public class BusinessAssociateService : BaseService<BusinessAssociateReq, Busine
             var lastBusinessAssociate = await _DbContext.BusinessAssociate
                 .OrderByDescending(x => x.BusinessAssociateNumber)
                 .FirstOrDefaultAsync();
+            if (lastBusinessAssociate.BusinessAssociateNumber == null || lastBusinessAssociate.BusinessAssociateNumber == "BA1758222418874226")
+            {
+                lastBusinessAssociate.BusinessAssociateNumber = "0";
+            }
 
             string newBusinessAssociateNumber = lastBusinessAssociate == null
                 ? "1"

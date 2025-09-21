@@ -45,17 +45,25 @@ public class MunshyanaService : BaseService<MunshyanaReq, MunshyanaRes, Munshyan
             var lastMunshyana = await _DbContext.Munshyana
                 .OrderByDescending(x => x.MunshyanaNumber)
                 .FirstOrDefaultAsync();
-
-            if (lastMunshyana.MunshyanaNumber == null || lastMunshyana.MunshyanaNumber == "M1758222863648799")
+            var num = "1";
+            if (lastMunshyana == null)
             {
-                lastMunshyana.MunshyanaNumber = "0";
+                 num = "1";
             }
-            string newMunshyanaNumber = lastMunshyana == null
-                ? "1"
-                : (int.Parse(lastMunshyana.MunshyanaNumber) + 1).ToString("D1");
+
+            if (lastMunshyana != null)
+            {
+                if (lastMunshyana.MunshyanaNumber == null || lastMunshyana.MunshyanaNumber == "M1758222863648799")
+                {
+                    lastMunshyana.MunshyanaNumber = "0";
+                }
+                 num = lastMunshyana == null
+                    ? "1"
+                    : (int.Parse(lastMunshyana.MunshyanaNumber) + 1).ToString("D1");
+            }
 
             var entity = reqModel.Adapt<Munshyana>();
-            entity.MunshyanaNumber = newMunshyanaNumber;
+            entity.MunshyanaNumber = num;
             entity.Id = Guid.NewGuid();
             await Repository.Add(entity);
             await UnitOfWork.SaveAsync();

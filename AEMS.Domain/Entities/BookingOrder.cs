@@ -41,6 +41,8 @@ namespace ZMS.Domain.Entities
     public class RelatedConsignment
     {
         public Guid? Id { get; set; }
+        public Guid? BookingOrderId { get; set; }
+        public BookingOrder BookingOrder { get; set; }
         public string? BiltyNo { get; set; }
         public string? ReceiptNo { get; set; }
         public string? Consignor { get; set; }

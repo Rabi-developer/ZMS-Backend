@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ZMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250921083534_ABLBookingorder")]
+    partial class ABLBookingorder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -468,7 +471,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ced2c3d1-f697-4794-bf41-557f8bcb61b0",
+                            ConcurrencyStamp = "50ffb932-c885-472d-b762-58149524fcd7",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@AEMS.com",
@@ -480,7 +483,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@AEMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAECBJktVfE20/fltwGRoxVrYzX9c0XlpXzSdYUQBgvjUa8IceWqV+lDcLimGDgvwN/g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEK2eG4Po5D3/Yz3P6axfYeuHxYBi03fbM49V9p5qrp1w4ElSpBMLM3XqqMk7czB5A==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,

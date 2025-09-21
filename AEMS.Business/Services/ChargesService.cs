@@ -51,11 +51,11 @@ public class ChargesService : BaseService<ChargesReq, ChargesRes, ChargesReposit
 
             var result = data.Adapt<List<ChargesRes>>();
 
-            foreach (var item in result)
+           /* foreach (var item in result)
             {
                 if (!string.IsNullOrWhiteSpace(item.OrderNo))
                     item.OrderNo = OrderNo.FirstOrDefault(t => t.Id.ToString() == item.OrderNo)?.OrderNo;
-            }
+            }*/
             return new Response<IList<ChargesRes>>
             {
                 Data = result,

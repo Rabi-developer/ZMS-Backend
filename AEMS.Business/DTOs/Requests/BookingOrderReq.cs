@@ -36,7 +36,7 @@ namespace ZMS.Business.DTOs.Requests
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
         public string? Status { get; set; }
-        public List<RelatedConsignmentReq>? Consignments { get; set; }
+    
 
     }
 

@@ -36,7 +36,7 @@ namespace ZMS.Domain.Entities
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
         public string? Status { get; set; }
-        public List<RelatedConsignmentRes>? Consignments { get; set; }
+       
 
 
     }

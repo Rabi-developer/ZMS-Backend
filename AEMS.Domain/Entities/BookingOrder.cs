@@ -35,14 +35,12 @@ namespace ZMS.Domain.Entities
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
         public string? Status { get; set; }
-        public List<RelatedConsignment>? Consignments { get; set; }
     }
 
-    public class RelatedConsignment
+    public class RelatedConsignment : GeneralBase
     {
-        public Guid? Id { get; set; }
         public Guid? BookingOrderId { get; set; }
-        public BookingOrder BookingOrder { get; set; }
+        public BookingOrder? BookingOrder { get; set; }
         public string? BiltyNo { get; set; }
         public string? ReceiptNo { get; set; }
         public string? Consignor { get; set; }

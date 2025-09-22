@@ -138,11 +138,11 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
             var transporters = await _DbContext.Transporters.ToListAsync();
             var vendors = await _DbContext.Vendor.ToListAsync();
 
-            if (!string.IsNullOrWhiteSpace(result.Transporter))
+          /*  if (!string.IsNullOrWhiteSpace(result.Transporter))
                 result.Transporter = transporters.FirstOrDefault(t => t.Id.ToString() == result.Transporter)?.Name;
 
             if (!string.IsNullOrWhiteSpace(result.Vendor))
-                result.Vendor = vendors.FirstOrDefault(v => v.Id.ToString() == result.Vendor)?.Name;
+                result.Vendor = vendors.FirstOrDefault(v => v.Id.ToString() == result.Vendor)?.Name;*/
 
             return new Response<BookingOrderRes>
             {

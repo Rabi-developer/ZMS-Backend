@@ -11,6 +11,7 @@ using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using ZMS.Business.DTOs.Requests;
@@ -86,6 +87,145 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
         }
     }
 
+    public async override Task<Response<ConsignmentRes>> Update(ConsignmentReq reqModel)
+    {
+        try
+        {
+            var existingEntity = await UnitOfWork._context.Consignment
+                .Include(c => c.Items)
+                .FirstOrDefaultAsync(p => p.Id == reqModel.Id);
+
+            if (existingEntity == null)
+            {
+                return new Response<ConsignmentRes>
+                {
+                    StatusMessage = "Consignment not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+            // Update main entity fields (but keep CreatedDate etc.)
+            existingEntity.ConsignmentMode = reqModel.ConsignmentMode;
+            existingEntity.ReceiptNo = reqModel.ReceiptNo;
+            existingEntity.OrderNo = reqModel.OrderNo;
+            existingEntity.BiltyNo = reqModel.BiltyNo;
+            existingEntity.Date = reqModel.Date;
+            existingEntity.ConsignmentNo = reqModel.ConsignmentNo;
+            existingEntity.Consignor = reqModel.Consignor;
+            existingEntity.ConsignmentDate = reqModel.ConsignmentDate;
+            existingEntity.CreditAllowed = reqModel.CreditAllowed;
+            existingEntity.Consignee = reqModel.Consignee;
+            existingEntity.ReceiverName = reqModel.ReceiverName;
+            existingEntity.ReceiverContactNo = reqModel.ReceiverContactNo;
+            existingEntity.ShippingLine = reqModel.ShippingLine;
+            existingEntity.ContainerNo = reqModel.ContainerNo;
+            existingEntity.Port = reqModel.Port;
+            existingEntity.Destination = reqModel.Destination;
+            existingEntity.FreightFrom = reqModel.FreightFrom;
+            existingEntity.TotalQty = reqModel.TotalQty;
+            existingEntity.Freight = reqModel.Freight;
+            existingEntity.SbrTax = reqModel.SbrTax;
+            existingEntity.SprAmount = reqModel.SprAmount;
+            existingEntity.DeliveryCharges = reqModel.DeliveryCharges;
+            existingEntity.InsuranceCharges = reqModel.InsuranceCharges;
+            existingEntity.TollTax = reqModel.TollTax;
+            existingEntity.OtherCharges = reqModel.OtherCharges;
+            existingEntity.TotalAmount = reqModel.TotalAmount;
+            existingEntity.ReceivedAmount = reqModel.ReceivedAmount;
+            existingEntity.IncomeTaxDed = reqModel.IncomeTaxDed;
+            existingEntity.IncomeTaxAmount = reqModel.IncomeTaxAmount;
+            existingEntity.DeliveryDate = reqModel.DeliveryDate;
+            existingEntity.Remarks = reqModel.Remarks;
+            existingEntity.UpdatedBy = reqModel.UpdatedBy;
+            existingEntity.UpdationDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            existingEntity.Status = reqModel.Status;
+
+            // ✅ Handle Items
+            if (reqModel.Items != null)
+            {
+                // 1. Update existing + add new
+                foreach (var reqItem in reqModel.Items)
+                {
+                    if (reqItem.Id.HasValue)
+                    {
+                        var existingItem = existingEntity.Items
+                            .FirstOrDefault(x => x.Id == reqItem.Id.Value);
+
+                        if (existingItem != null)
+                        {
+                            // Update tracked entity (no new instance created)
+                            existingItem.Desc = reqItem.Desc;
+                            existingItem.Qty = reqItem.Qty;
+                            existingItem.Rate = reqItem.Rate;
+                            existingItem.QtyUnit = reqItem.QtyUnit;
+                            existingItem.Weight = reqItem.Weight;
+                            existingItem.WeightUnit = reqItem.WeightUnit;
+                        }
+                        else
+                        {
+                            // Id provided but not in DB → add as new
+                            existingEntity.Items.Add(new ConsignmentItem
+                            {
+                                Id = reqItem.Id.Value,
+                                Desc = reqItem.Desc,
+                                Qty = reqItem.Qty,
+                                Rate = reqItem.Rate,
+                                QtyUnit = reqItem.QtyUnit,
+                                Weight = reqItem.Weight,
+                                WeightUnit = reqItem.WeightUnit
+                            });
+                        }
+                    }
+                    else
+                    {
+                        // New item (no Id)
+                        existingEntity.Items.Add(new ConsignmentItem
+                        {
+                            Id = Guid.NewGuid(),
+                            Desc = reqItem.Desc,
+                            Qty = reqItem.Qty,
+                            Rate = reqItem.Rate,
+                            QtyUnit = reqItem.QtyUnit,
+                            Weight = reqItem.Weight,
+                            WeightUnit = reqItem.WeightUnit
+                        });
+                    }
+                }
+
+                // 2. Remove deleted items
+                var reqItemIds = reqModel.Items
+                    .Where(i => i.Id.HasValue)
+                    .Select(i => i.Id.Value)
+                    .ToList();
+
+                var toRemove = existingEntity.Items
+                    .Where(x => !reqItemIds.Contains((Guid)x.Id))
+                    .ToList();
+
+                foreach (var removeItem in toRemove)
+                {
+                    UnitOfWork._context.Remove(removeItem);
+                }
+            }
+
+            await UnitOfWork.SaveAsync();
+
+            return new Response<ConsignmentRes>
+            {
+                Data = existingEntity.Adapt<ConsignmentRes>(),
+                StatusMessage = "Updated successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<ConsignmentRes>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
 
 
     public async virtual Task<Response<ConsignmentRes>> Get(Guid id)

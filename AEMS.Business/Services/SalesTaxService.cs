@@ -46,7 +46,10 @@ public class SalesTaxService : BaseService<SalesTaxReq, SalesTaxRes, SalesTaxRep
             var lastSalesTax = await _DbContext.SalesTax
                 .OrderByDescending(x => x.SalesTaxNumber)
                 .FirstOrDefaultAsync();
-
+            if (lastSalesTax.SalesTaxNumber == null || lastSalesTax.SalesTaxNumber == "ST1758628297503894")
+            {
+                lastSalesTax.SalesTaxNumber = "0";
+            }
             string newSalesTaxNumber = lastSalesTax == null
                 ? "1"
                 : (int.Parse(lastSalesTax.SalesTaxNumber) + 1).ToString("D1");

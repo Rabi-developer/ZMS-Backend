@@ -26,7 +26,7 @@ namespace ZMS.Domain.Entities
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
         public string? Status { get; set; }
-        public List<PaymentABLItem>? Items { get; set; }
+        public List<PaymentABLItem>? PaymentABLItem { get; set; }
     }
 
     public class PaymentABLItem

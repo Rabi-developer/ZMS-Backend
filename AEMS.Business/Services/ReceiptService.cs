@@ -81,13 +81,14 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
             var entity = reqModel.Adapt<Receipt>();
 
             var GetlastNo = await UnitOfWork._context.Receipt
-     .OrderByDescending(p => p.Id)
-     .FirstOrDefaultAsync();
+            .OrderByDescending(p => p.Id)
+            .FirstOrDefaultAsync();
 
-            if (GetlastNo == null || GetlastNo.ReceiptNo == "REC516552277" || GetlastNo.ReceiptNo == "")
+            if (GetlastNo.ReceiptNo == null || GetlastNo.ReceiptNo == "REC1758707358926542")
             {
-                entity.ReceiptNo = "1";
+                GetlastNo.ReceiptNo = "0";
             }
+            
             else
             {
                 int NewNo = int.Parse(GetlastNo.ReceiptNo) + 1;

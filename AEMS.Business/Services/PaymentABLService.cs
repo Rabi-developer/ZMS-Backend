@@ -45,7 +45,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
             var pagination = paginate ?? new Pagination();
             //TODO: Get Pagination from the Query
 
-            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Items));
+            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.PaymentABLItem));
 
             return new Response<IList<PaymentABLRes>>
             {
@@ -111,7 +111,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
     {
         try
         {
-            var entity = await Repository.Get(id, query => query.Include(p => p.Items));
+            var entity = await Repository.Get(id, query => query.Include(p => p.PaymentABLItem));
             if (entity == null)
             {
                 return new Response<PaymentABLRes>

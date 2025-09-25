@@ -20,18 +20,21 @@ namespace ZMS.Domain.Entities
     public class BiltyPaymentInvoiceLineRes
     {
         public Guid? Id { get; set; }
-        public string VehicleNo { get; set; }
-        public string OrderNo { get; set; }
-        public float Amount { get; set; }
+        public bool IsAdditionalLine { get; set; }
+        public string? VehicleNo { get; set; }
+        public string? OrderNo { get; set; }
+        public float? Amount { get; set; }
+        public string? NameCharges { get; set; }
+        public float? AmountCharges { get; set; }
         public string? Munshayana { get; set; }
         public string? Broker { get; set; }
         public string? DueDate { get; set; }
         public string? Remarks { get; set; }
     }
-}
 
-public class BillPaymentInvoicesStatus
-{
-    public Guid? Id { get; set; }
-    public string? Status { get; set; }
+    public class BillPaymentInvoicesStatus
+    {
+        public Guid? Id { get; set; }
+        public string? Status { get; set; }
+    }
 }

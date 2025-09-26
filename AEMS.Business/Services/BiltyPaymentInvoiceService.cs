@@ -47,14 +47,19 @@ public class BiltyPaymentInvoiceService : BaseService<BiltyPaymentInvoiceReq, Bi
 
             var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Lines));
 
-            var OrderNo = await _DbContext.BookingOrder.ToListAsync();
+            /*var OrderNo = await _DbContext.BookingOrder.ToListAsync();*/
+            var Broker = await _DbContext.Brooker.ToListAsync();
+
 
             var result = data.Adapt<List<BiltyPaymentInvoiceRes>>();
 
             foreach (var item in result)
             {
-               /* if (!string.IsNullOrWhiteSpace(item.OrderNo))
-                    item.OrderNo = OrderNo.FirstOrDefault(t => t.Id.ToString() == item.OrderNo)?.OrderNo;*/
+                foreach (var lines in item.Lines)
+                {
+                    if (!string.IsNullOrWhiteSpace(lines.Broker))
+                        lines.Broker = Broker.FirstOrDefault(t => t.Id.ToString() == lines.Broker).Name;
+                }
             }
             return new Response<IList<BiltyPaymentInvoiceRes>>
             {
@@ -83,9 +88,12 @@ public class BiltyPaymentInvoiceService : BaseService<BiltyPaymentInvoiceReq, Bi
             var entity = reqModel.Adapt<BiltyPaymentInvoice>();
 
             var GetlastNo = await UnitOfWork._context.BiltyPaymentInvoice
-     .OrderByDescending(p => p.Id)
-     .FirstOrDefaultAsync();
-
+           .OrderByDescending(p => p.Id)
+           .FirstOrDefaultAsync();
+            if (GetlastNo.InvoiceNo == null || GetlastNo.InvoiceNo == "NV1758801917652188")
+            {
+                GetlastNo.InvoiceNo = "0";
+            }
             if (GetlastNo == null || GetlastNo.InvoiceNo == "")
             {
                 entity.InvoiceNo = "1";

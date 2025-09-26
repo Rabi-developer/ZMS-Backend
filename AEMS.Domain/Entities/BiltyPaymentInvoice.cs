@@ -26,7 +26,7 @@ namespace ZMS.Domain.Entities
         public float? Amount { get; set; }
         public string? NameCharges { get; set; }
         public float? AmountCharges { get; set; }
-        public string? Munshayana { get; set; }
+        public float? Munshayana { get; set; }
         public string? Broker { get; set; }
         public string? DueDate { get; set; }
         public string? Remarks { get; set; }

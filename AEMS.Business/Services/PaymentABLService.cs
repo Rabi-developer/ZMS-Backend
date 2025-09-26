@@ -46,7 +46,35 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
             //TODO: Get Pagination from the Query
 
             var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.PaymentABLItem));
+            var charges = await _DbContext.Charges
+                .Include(c => c.Lines)
+                .ToListAsync();
 
+            var result = data.Adapt<List<PaymentABLRes>>();
+
+            foreach (var item in result)
+            {
+                foreach (var line in item.PaymentABLItem)
+                {
+                    if (!string.IsNullOrWhiteSpace(line.Charges))
+                    {
+                        
+                        var chargeLine = charges
+                            .SelectMany(c => c.Lines)
+                            .FirstOrDefault(cl => cl.Id.ToString() == line.Charges);
+
+                        if (chargeLine != null)
+                        {
+                          
+                            line.Charges = chargeLine.Charge;
+                        }
+                        else
+                        {
+                            line.Charges = "Charge Not Found";
+                        }
+                    }
+                }
+            }
             return new Response<IList<PaymentABLRes>>
             {
                 Data = data.Adapt<List<PaymentABLRes>>(),

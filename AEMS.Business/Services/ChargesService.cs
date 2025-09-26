@@ -47,15 +47,19 @@ public class ChargesService : BaseService<ChargesReq, ChargesRes, ChargesReposit
 
             var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Lines));
 
-            var OrderNo = await _DbContext.BookingOrder.ToListAsync();
+            var Charge = await _DbContext.Munshyana.ToListAsync();
+
 
             var result = data.Adapt<List<ChargesRes>>();
 
-           /* foreach (var item in result)
+            foreach (var item in result)
             {
-                if (!string.IsNullOrWhiteSpace(item.OrderNo))
-                    item.OrderNo = OrderNo.FirstOrDefault(t => t.Id.ToString() == item.OrderNo)?.OrderNo;
-            }*/
+                foreach (var lines in item.Lines)
+                {
+                    if (!string.IsNullOrWhiteSpace(lines.Charge))
+                        lines.Charge = Charge.FirstOrDefault(t => t.Id.ToString() == lines.Charge).ChargesDesc;
+                }
+            }
             return new Response<IList<ChargesRes>>
             {
                 Data = result,

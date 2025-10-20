@@ -54,5 +54,6 @@ namespace ZMS.Business.DTOs.Requests
         public decimal? RecvAmount { get; set; }
         public string? DelDate { get; set; }
         public string? Status { get; set; }
+        public string? Files { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace IMS.Domain.Entities
         public ICollection<AblAssests>? Children { get; set; } = new List<AblAssests>();
         public string? DueDate { get; set; }
         public string FixedAmount { get; set; }
+
         public string Paid { get; set; }
     }
 }

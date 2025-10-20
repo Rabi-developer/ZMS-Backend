@@ -40,18 +40,19 @@ public class TransporterService : BaseService<TransporterReq, TransporterRes, Tr
     public override async Task<Response<Guid>> Add(TransporterReq reqModel)
     {
         try
+        { 
+              var lastTransporter = await _DbContext.Transporters
+              .OrderByDescending(x => x.TransporterNumber)
+              .FirstOrDefaultAsync();
+        if (lastTransporter.TransporterNumber == null || lastTransporter.TransporterNumber == "T1758281857701166")
         {
-            var lastTransporter = await _DbContext.Transporters
-                .OrderByDescending(x => x.TransporterNumber)
-                .FirstOrDefaultAsync();
-            if (lastTransporter.TransporterNumber == null || lastTransporter.TransporterNumber == "T1758281857701166")
-            {
                 lastTransporter.TransporterNumber = "0";
-            }
-
-            string newTransporterNumber = lastTransporter == null
-                ? "1"
-                : (int.Parse(lastTransporter.TransporterNumber) + 1).ToString("D1");
+        }
+        string newTransporterNumber = lastTransporter == null
+            ? "1"
+            : (int.Parse(lastTransporter.TransporterNumber) + 1).ToString("D1");
+ 
+           
 
             var entity = reqModel.Adapt<Transporter>();
             entity.TransporterNumber = newTransporterNumber;

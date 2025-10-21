@@ -263,27 +263,47 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
         {
             var entity = reqModel.Adapt<Consignment>();
 
-          /*  var GetlastNo = await UnitOfWork._context.Consignment
-     .OrderByDescending(p => p.Id)
-     .FirstOrDefaultAsync();
+            var lastConsignment = await UnitOfWork._context.Consignment
+                .OrderByDescending(p => p.Id).Where (p => p.IsDeleted != true,)
+                .FirstOrDefaultAsync();
 
-            if (GetlastNo == null || GetlastNo.ReceiptNo == "REC516552277" || GetlastNo.ReceiptNo == "")
+            if (lastConsignment == null ||
+                string.IsNullOrEmpty(lastConsignment.ReceiptNo))
             {
                 entity.ReceiptNo = "1";
             }
+            else if (int.TryParse(lastConsignment.ReceiptNo, out int receiptCurrentNo))
+            {
+                entity.ReceiptNo = (receiptCurrentNo + 1).ToString();
+            }
             else
             {
-                int NewNo = int.Parse(GetlastNo.ReceiptNo) + 1;
-                entity.ReceiptNo = NewNo.ToString();
+                entity.ReceiptNo = "1";
             }
-*/
-            var ss = await Repository.Add((Consignment)(entity as IMinBase ??
-             throw new InvalidOperationException(
-             "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+
+            string lastConsignmentNo = lastConsignment?.ConsignmentNo ?? "";
+            if (string.IsNullOrEmpty(lastConsignmentNo))
+            {
+                entity.ConsignmentNo = "1";
+            }
+            else if (int.TryParse(lastConsignmentNo, out int consignmentCurrentNo))
+            {
+                entity.ConsignmentNo = (consignmentCurrentNo + 1).ToString();
+            }
+            else
+            {
+                // Fallback if parsing fails (e.g., corrupted data)
+                entity.ConsignmentNo = "1";
+            }
+
+            var addedEntity = await Repository.Add((Consignment)(entity as IMinBase ??
+                throw new InvalidOperationException(
+                    "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+
             await UnitOfWork.SaveAsync();
+
             return new Response<Guid>
             {
-
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };
@@ -292,12 +312,11 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
         {
             return new Response<Guid>
             {
-                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusMessage = e.InnerException?.Message ?? e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
     }
-
     public async Task<ConsignmentStatus> UpdateStatusAsync(Guid id, string status)
     {
         if (status == null || id == null)

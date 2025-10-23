@@ -6,6 +6,7 @@ using IMS.Domain.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
+using ZMS.API.Middleware;
 
 namespace IMS.API.Controllers;
 
@@ -19,7 +20,7 @@ public class OrganizationController : BaseMinController<OrganizationController, 
     }
 
     [HttpPost]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+    [Permission("Organization", "Create")]
     public async Task<IActionResult> Post([FromBody] OrganizationReq req)
     {
         string name = User.Identity.Name;
@@ -36,7 +37,7 @@ public class OrganizationController : BaseMinController<OrganizationController, 
     }
 
     [HttpGet]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "ReadOrganization")]
+    [Permission("Organization", "Read")]
     public async Task<IActionResult> Get([FromQuery] Pagination pagination)
     {
         bool isSuperAdmin = User.IsInRole("SuperAdmin");
@@ -54,7 +55,7 @@ public class OrganizationController : BaseMinController<OrganizationController, 
     }
 
     [HttpGet("{id:guid}")]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "ReadOrganization")]
+    [Permission("Organization", "Read")]
     public async Task<IActionResult> Get(Guid id)
     {
         var result = await Service.Get(id);
@@ -69,7 +70,7 @@ public class OrganizationController : BaseMinController<OrganizationController, 
     }
 
     [HttpPut]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "ReadOrganization")]
+    [Permission("Organization", "Update")]
     public async Task<IActionResult> Put([FromBody] OrganizationUpdateReq req)
     {
         var result = await Service.Update(req);
@@ -84,7 +85,7 @@ public class OrganizationController : BaseMinController<OrganizationController, 
     }
 
     [HttpDelete("{id:guid}")]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "ReadOrganization")]
+    [Permission("Organization", "Delete")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await Service.Delete(id);

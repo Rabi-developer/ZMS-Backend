@@ -6,6 +6,7 @@ using IMS.Domain.Context;
 using IMS.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ZMS.API.Utilities.Auth;
 
 namespace IMS.API.Utilities;
 
@@ -24,8 +25,8 @@ public static class ServicesInjector
 
         // Other service registrationss
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddAEMSAuthentication();
-        builder.Services.AddAEMSAuthorization();
+        builder.Services.AddZMSAuthorization();
+        builder.Services.AddZMSAuthentication();
 
 
         #region For Repositories DI
@@ -38,7 +39,7 @@ public static class ServicesInjector
         builder.Services.AddTransient<IAddressService, AddressService>();
         builder.Services.AddTransient<IBranchService, BranchService>();
         builder.Services.AddTransient<IRoleService, RoleService>();
-        builder.Services.AddTransient<IUsersService, UsersService>();
+        /*builder.Services.AddTransient<IUsersService, UsersService>();*/
         builder.Services.AddTransient<ILevelService, LevelService>();
         builder.Services.AddTransient<IPaymentService, PaymentService>();
         builder.Services.AddTransient<IStockService, StockService>();

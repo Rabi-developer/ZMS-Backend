@@ -10,13 +10,15 @@ using System;
 using System.Threading.Tasks;
 using ZMS.Domain.Entities;
 using ZMS.Business.DTOs.Requests;
+using Microsoft.AspNetCore.Authorization;
+using ZMS.API.Middleware;
 /*using IMS.Domain.Migrations;
 */
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class EntryVoucherController : BaseController<EntryVoucherController, IEntryVoucherService, EntryVoucherReq, EntryVoucherRes, EntryVoucher>
 {
     public EntryVoucherController(ILogger<EntryVoucherController> logger, IEntryVoucherService service) : base(logger, service)
@@ -25,6 +27,8 @@ public class EntryVoucherController : BaseController<EntryVoucherController, IEn
     }
 
     [HttpPost("status")]
+    [Permission("Organization", "Update")]
+
     public async Task<IActionResult> UpdateStatus([FromBody] EntryVoucherStatus contractstatus)
     {
         try

@@ -8,12 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using ZMS.Business.DTOs.Requests;
 using ZMS.Business.DTOs.Responses;
 using ZMS.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class UnitofMeasureController : BaseController<UnitofMeasureController, IUnitofMeasureService, UnitofMeasureReq, UnitofMeasureRes, UnitofMeasure>
 {
     /// <inheritdoc />

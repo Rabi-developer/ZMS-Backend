@@ -1,4 +1,4 @@
-﻿using IMS.Business.DTOs.Requests;
+﻿/*using IMS.Business.DTOs.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -94,3 +94,4 @@ namespace IMS.API.Controllers
     }
 
 }
+*/

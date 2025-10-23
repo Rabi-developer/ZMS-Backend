@@ -1,4 +1,5 @@
 ﻿using IMS.Business.DTOs.Requests;
+using IMS.Business.DTOs.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,10 +25,16 @@ namespace IMS.Business.DTOs.Responses
         public string ClaimValue { get; set; }
     }
 
-    public class RoleAssign {
-     public Guid RoleId { get; set; }
-    public Guid UserId { get; set; }
+    public class RoleAssign
+    {
+        public Guid RoleId { get; set; }
+        public Guid UserId { get; set; }
 
     }
-    
+    public class ResPerm
+    {
+        public string ResourceName { get; set; }
+        public string Description { get; set; }
+    }
+
 }

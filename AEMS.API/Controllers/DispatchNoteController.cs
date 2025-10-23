@@ -12,12 +12,14 @@ using ZMS.Domain.Entities;
 /*using IMS.Domain.Migrations;
 */
 using ZMS.Business.DTOs.Responses;
+using Microsoft.AspNetCore.Authorization;
+using ZMS.API.Middleware;
 
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class DispatchNoteController : BaseController<DispatchNoteController, IDispatchNoteService, DispatchNoteReq, DispatchNoteRes, DispatchNote>
 {
     public DispatchNoteController(ILogger<DispatchNoteController> logger, IDispatchNoteService service) : base(logger, service)
@@ -27,6 +29,7 @@ public class DispatchNoteController : BaseController<DispatchNoteController, IDi
 
 
     [HttpPost("History")]
+    [Permission("Organization", "Read")]
     public async Task<IActionResult> getBySellerBuyer(HistoryDispatchNote HistoryDispatchNotes)
     {
         var data = await Service.getBySellerBuyer(HistoryDispatchNotes.Seller, HistoryDispatchNotes.Buyer);
@@ -37,6 +40,8 @@ public class DispatchNoteController : BaseController<DispatchNoteController, IDi
         return BadRequest();
     }
     [HttpPost("Status")]
+    [Permission("Organization", "Update")]
+
     public async Task<IActionResult> UpdateStatus([FromBody] DispatchNoteStatus dispatchnotestatus)
     {
         try

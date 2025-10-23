@@ -2,7 +2,7 @@
 //using ClaimTypes = AEMS.Domain.Base.ClaimTypes;
 
 
-namespace IMS.API.Utilities.Auth;
+namespace IMS.API.Utilities.Auth;   
 
 public static class Helpers
 {

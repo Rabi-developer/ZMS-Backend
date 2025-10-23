@@ -264,7 +264,7 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
             var entity = reqModel.Adapt<Consignment>();
 
             var lastConsignment = await UnitOfWork._context.Consignment
-                .OrderByDescending(p => p.Id).Where (p => p.IsDeleted != true,)
+                .OrderByDescending(p => p.Id).Where (p => p.IsDeleted != true)
                 .FirstOrDefaultAsync();
 
             if (lastConsignment == null ||

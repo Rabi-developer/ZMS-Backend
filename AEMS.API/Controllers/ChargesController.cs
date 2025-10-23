@@ -9,13 +9,15 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using ZMS.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using ZMS.API.Middleware;
 /*using IMS.Domain.Migrations;
 */
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class ChargesController : BaseController<ChargesController, IChargesService, ChargesReq, ChargesRes, Charges>
 {
     public ChargesController(ILogger<ChargesController> logger, IChargesService service) : base(logger, service)
@@ -24,6 +26,7 @@ public class ChargesController : BaseController<ChargesController, IChargesServi
     }
 
     [HttpPost("status")]
+    [Permission("Organization", "Update")]
     public async Task<IActionResult> UpdateStatus([FromBody] ChargesStatus contractstatus)
     {
         try

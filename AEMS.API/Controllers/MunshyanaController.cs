@@ -12,12 +12,13 @@ using ZMS.Domain.Entities;
 /*using IMS.Domain.Migrations;
 */
 using ZMS.Business.DTOs.Requests;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class MunshyanaController : BaseController<MunshyanaController, IMunshyanaService, MunshyanaReq, MunshyanaRes, Munshyana>
 {
     public MunshyanaController(ILogger<MunshyanaController> logger, IMunshyanaService service) : base(logger, service)

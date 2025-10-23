@@ -9,13 +9,14 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using ZMS.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 /*using ZMS.Domain.Migrations;*/
 
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class BrookerController : BaseController<BrookerController, IBrookerService, BrookerReq, BrookerRes, Brooker>
 {
     public BrookerController(ILogger<BrookerController> logger, IBrookerService service) : base(logger, service)

@@ -1,5 +1,7 @@
 ﻿using IMS.Business.Utitlity;
 using IMS.Domain.Base;
+using IMS.Business.Utitlity;
+using IMS.Domain.Base;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -9,135 +11,214 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace IMS.API.Utilities.Auth;
+namespace ZMS.API.Utilities.Auth;
 
 public static class AuthCore
 {
-    public static string UpdateJwtToken(this HttpContext httpContext, string? issuer = null,
-        string? audience = null)
+    private const int DefaultTokenExpiryHours = 1;
+    private static readonly TimeSpan ClockSkew = TimeSpan.FromMinutes(1);
+
+    /// <summary>
+    /// Updates an existing JWT token with extended expiration
+    /// </summary>
+    public static string UpdateJwtToken(this HttpContext httpContext, string? issuer = null, string? audience = null)
     {
-        var authToken = httpContext.Request.Headers["Authorization"].ToString();
-        authToken = authToken.Replace("Bearer", "", true, CultureInfo.InvariantCulture).Trim();
+        var authToken = httpContext.GetBearerToken();
         if (string.IsNullOrEmpty(authToken))
         {
-            return "";
+            return string.Empty;
         }
 
-        var jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(authToken);
+        var jwtSecurityToken = ReadJwtToken(authToken);
         if (jwtSecurityToken == null)
         {
-            return "";
+            return string.Empty;
         }
 
-        var authSigningKey =
-            new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secrets.AuthenticationSchemeSecretKey));
-        var tokenExpiryTimeInHour = Convert.ToInt64(1);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Issuer = issuer ?? Secrets.AuthenticationSchemeIssuer,
-            Audience = audience ?? Secrets.AuthenticationSchemeAudience,
-            Subject = new ClaimsIdentity(jwtSecurityToken.Claims),
-            Expires = DateTime.Now.AddHours(tokenExpiryTimeInHour),
-            SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        };
+        var tokenDescriptor = CreateTokenDescriptor(
+            jwtSecurityToken.Claims,
+            issuer,
+            audience,
+            DateTime.UtcNow.AddHours(DefaultTokenExpiryHours));
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        return GenerateToken(tokenDescriptor);
     }
 
-    public static string GenerateToken(IEnumerable<Claim> claims,
-        string? issuer = null,
-        string? audience = null)
+    /// <summary>
+    /// Generates a new JWT token with the specified claims
+    /// </summary>
+    public static string GenerateToken(IEnumerable<Claim> claims, string? issuer = null, string? audience = null)
     {
-        var authSigningKey =
-            new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secrets.AuthenticationSchemeSecretKey));
-        var tokenExpiryTimeInHour = Convert.ToInt64(9);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Issuer = issuer ?? Secrets.AuthenticationSchemeIssuer,
-            Audience = audience ?? Secrets.AuthenticationSchemeAudience,
-            Expires = DateTime.UtcNow.AddHours(tokenExpiryTimeInHour),
-            SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
-            Subject = new ClaimsIdentity(claims)
-        };
+        var tokenDescriptor = CreateTokenDescriptor(
+            claims,
+            issuer,
+            audience,
+            DateTime.UtcNow.AddHours(DefaultTokenExpiryHours));
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        return GenerateToken(tokenDescriptor);
     }
 
-    public static AuthenticationBuilder AddAEMSAuthentication(this IServiceCollection services,
-        string? issuer = null, string? audience = null)
+    /// <summary>
+    /// Configures JWT Bearer authentication
+    /// </summary>
+    public static AuthenticationBuilder AddZMSAuthentication(this IServiceCollection services,
+     string? issuer = null,
+     string? audience = null)
     {
-        return services.AddLogging(builder => builder.AddConsole()).AddAuthentication("Bearer").AddJwtBearer(x =>
-        {
-            x.RequireHttpsMetadata = true;
-            x.SaveToken = true;
-            x.TokenValidationParameters = new TokenValidationParameters
+        return services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                ValidateIssuer = true,
-                ValidIssuer = issuer ?? Secrets.AuthenticationSchemeIssuer,
-                ValidateAudience = true,
-                ValidAudience = audience ?? Secrets.AuthenticationSchemeAudience,
-                ValidateIssuerSigningKey = true,
-                RequireExpirationTime = false,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero,
-                IssuerSigningKey =
-                    new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secrets.AuthenticationSchemeSecretKey))
-            };
-        });
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer ?? Secrets.AuthenticationSchemeIssuer,
+                    ValidateAudience = true,
+                    ValidAudience = audience ?? Secrets.AuthenticationSchemeAudience,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(Secrets.AuthenticationSchemeSecretKey)),
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        if (context.Exception is SecurityTokenInvalidSigningKeyException)
+                        {
+                            context.Response.Headers.Append("Invalid-Signing-Key", "true");
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+            });
     }
 
-    public static IServiceCollection AddAEMSAuthorization(this IServiceCollection services)
+    /// <summary>
+    /// Configures authorization policies
+    /// </summary>
+    public static IServiceCollection AddZMSAuthorization(this IServiceCollection services)
     {
         return services.AddAuthorization(options =>
         {
-            var policyBuilder = new AuthorizationPolicyBuilder();
-            var defaultPolicy = policyBuilder
+
+            // Default policy
+            options.DefaultPolicy = new AuthorizationPolicyBuilder()
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
-            options.DefaultPolicy = defaultPolicy;
-            options.AddPolicy("SuperAdmin",
-            policy =>
+
+            // SuperAdmin policy
+            options.AddPolicy("SuperAdmin", policy =>
             {
                 policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim(ClaimStore.ResourceClaim(ClaimStore.Resources.All), ClaimStore.Actions.All);
+                policy.RequireClaim(Claimstore.ResourceClaim(Claimstore.Resources.All), Claimstore.Actions.All);
             });
-            foreach (var resource in ClaimStore.Resources.List)
+
+            // Dynamic policies for each resource and action
+            foreach (var resource in Claimstore.Resources.List)
             {
-                foreach (var action in ClaimStore.Actions.All)
+                // Individual action policies (Create, Read, Update, Delete)
+                foreach (var action in Claimstore.Actions.All)
                 {
-                    options.AddPolicy($"{action}{resource.ResourceName}",
-                        policy =>
-                        {
-                            policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.RequireClaim(ClaimStore.ResourceClaim(resource.ResourceName), action);
-                        });
+                    options.AddPolicy($"{action}{resource.ResourceName}", policy =>
+                    {
+                        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireClaim(Claimstore.ResourceClaim(resource.ResourceName), action);
+                    });
                 }
 
-                options.AddPolicy($"Manage{resource.ResourceName}",
-                    policy =>
-                    {
-                        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-                        policy.RequireAuthenticatedUser();
-                        policy.RequireClaim(ClaimStore.ResourceClaim(resource.ResourceName),
-                            ClaimStore.Actions.Manage);
-                    });
-                options.AddPolicy($"All{resource.ResourceName}",
-                    policy =>
-                    {
-                        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-                        policy.RequireAuthenticatedUser();
-                        policy.RequireClaim(ClaimStore.ResourceClaim(resource.ResourceName),
-                            ClaimStore.Actions.All);
-                    });
+                // Manage policy (all actions except All)
+                options.AddPolicy($"Manage{resource.ResourceName}", policy =>
+                {
+                    policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(Claimstore.ResourceClaim(resource.ResourceName),
+                        Claimstore.Actions.Manage);
+                });
+
+                // All actions policy
+                options.AddPolicy($"All{resource.ResourceName}", policy =>
+                {
+                    policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(Claimstore.ResourceClaim(resource.ResourceName),
+                        Claimstore.Actions.All);
+                });
             }
         });
     }
-}
 
+    #region Private Helper Methods
+
+    private static string GetBearerToken(this HttpContext httpContext)
+    {
+        var authToken = httpContext.Request.Headers["Authorization"].ToString();
+        return authToken.Replace("Bearer", "", true, CultureInfo.InvariantCulture).Trim();
+    }
+
+    private static JwtSecurityToken? ReadJwtToken(string token)
+    {
+        try
+        {
+            return new JwtSecurityTokenHandler().ReadJwtToken(token);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static SecurityTokenDescriptor CreateTokenDescriptor(
+        IEnumerable<Claim> claims,
+        string? issuer,
+        string? audience,
+        DateTime expires)
+    {
+        return new SecurityTokenDescriptor
+        {
+            Issuer = issuer ?? Secrets.AuthenticationSchemeIssuer,
+            Audience = audience ?? Secrets.AuthenticationSchemeAudience,
+            Subject = new ClaimsIdentity(claims),
+            Expires = expires,
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secrets.AuthenticationSchemeSecretKey)),
+                SecurityAlgorithms.HmacSha256)
+        };
+    }
+
+    private static string GenerateToken(SecurityTokenDescriptor tokenDescriptor)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
+
+    private static TokenValidationParameters CreateTokenValidationParameters(string? issuer, string? audience)
+    {
+        return new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = issuer ?? Secrets.AuthenticationSchemeIssuer,
+            ValidateAudience = true,
+            ValidAudience = audience ?? Secrets.AuthenticationSchemeAudience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.ASCII.GetBytes(Secrets.AuthenticationSchemeSecretKey)),
+            RequireExpirationTime = true,
+            ValidateLifetime = true,
+            ClockSkew = ClockSkew,
+
+            // Additional security best practices
+            NameClaimType = ClaimTypes.Name,
+            RoleClaimType = ClaimTypes.Role
+        };
+    }
+
+    #endregion
+}

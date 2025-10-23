@@ -9,12 +9,13 @@ using IMS.Domain.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using ZMS.API.Middleware;
 
 namespace IMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class BranchController : BaseController<BranchController, IBranchService, BranchReq, BranchRes, Branch>
 {
     /// <inheritdoc />
@@ -23,7 +24,7 @@ public class BranchController : BaseController<BranchController, IBranchService,
     }
 
     [HttpGet]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "ReadOrganization")]
+    [Permission("Organization", "Read")]
     public async override Task<IActionResult> Get([FromQuery] Pagination pagination)
     {
         bool isSuperAdmin = User.IsInRole("SuperAdmin");
@@ -42,7 +43,7 @@ public class BranchController : BaseController<BranchController, IBranchService,
 
     #region BranchSettings
     [HttpPost("Setting")]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+    [Permission("Organization", "Update")]
     public async Task<IActionResult> UpdateSetting([FromForm] BranchSettingReq req)
     {
         var result = await Service.SaveSetting(req);
@@ -57,7 +58,7 @@ public class BranchController : BaseController<BranchController, IBranchService,
     }
 
     [HttpGet("Setting/{id:guid}")]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+    [Permission("Organization", "Read")]
     public async Task<IActionResult> GetSetting(Guid id)
     {
         var result = await Service.GetSetting(id);
@@ -74,6 +75,7 @@ public class BranchController : BaseController<BranchController, IBranchService,
     [HttpGet("logo/{id:guid}")]
     [AllowAnonymous]
     [Produces("image/jpeg")]
+    [Permission("Organization", "Read")]
     public async Task<MemoryStream> Get(Guid id)
     {
         MemoryStream s = new MemoryStream();

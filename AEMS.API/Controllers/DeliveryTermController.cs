@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using ZMS.Business.DTOs.Requests;
 using ZMS.Business.DTOs.Responses;
 using ZMS.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
+
 public class DeliveryTermController : BaseController<DeliveryTermController, IDeliveryTermService, DeliveryTermReq, DeliveryTermRes, DeliveryTerm>
 {
     /// <inheritdoc />

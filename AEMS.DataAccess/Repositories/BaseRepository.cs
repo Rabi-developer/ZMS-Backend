@@ -4,6 +4,10 @@ using IMS.Domain.Context;
 using IMS.Domain.Utilities;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using IMS.Domain.Base;
+using IMS.Domain.Context;
+using IMS.Domain.Utilities.Exceptions;
+using IMS.Domain.Utilities;
 
 namespace IMS.DataAccess.Repositories;
 
@@ -47,6 +51,14 @@ public interface IBaseRepository<TEntity> : IDisposable where TEntity : IMinBase
     /// <param name="id">Valid Id of the Entity</param>
     /// <returns></returns>
     public Task<bool> Delete(Guid id);
+
+    public Task<(Pagination, IList<TEntity>)> GetAllByUser(
+        Pagination pagination, bool onlyUsers = false,
+    Guid? userId = null,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeFunc = null,
+
+        Func<IQueryable<TEntity>, Guid, IQueryable<TEntity>>? userFilterFunc = null
+    );
 }
 
 public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
@@ -104,6 +116,35 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
         pagination = pagination.Combine(total, totalPages);
         return (pagination, res);
     }
+
+    public async Task<(Pagination, IList<TEntity>)> GetAllByUser(
+    Pagination pagination, bool onlyUsers = false,
+    Guid? userId = null,
+    Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeFunc = null,
+
+    Func<IQueryable<TEntity>, Guid, IQueryable<TEntity>>? userFilterFunc = null)
+    {
+        var total = 0;
+        var totalPages = 0;
+
+        IQueryable<TEntity> query = includeFunc?.Invoke(DbSet) ?? DbSet;
+
+        query = query.Where(f => f.IsDeleted != true);
+
+        // Apply user filtering if onlyUsers is true and userFilterFunc is provided
+        if (onlyUsers && userId.HasValue && userFilterFunc != null)
+        {
+            query = userFilterFunc(query, userId.Value);
+        }
+
+        var res = await query
+            .Paginate((int)pagination.PageIndex, (int)pagination.PageSize, ref total, ref totalPages)
+            .ToListAsync();
+
+        pagination = pagination.Combine(total, totalPages);
+        return (pagination, res);
+    }
+
 
     public async Task<TEntity> Update(TEntity model, Func<TEntity, TEntity>? func)
     {

@@ -1,4 +1,6 @@
 ﻿using IMS.Domain.Base;
+using IMS.Domain.Base;
+using IMS.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,6 +20,7 @@ public class ApplicationUser : IdentityUser<Guid>, IMinBase
     public Attachment? ProfilePicture { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public Guid CreatedBy { get; set; }
+    public Guid? UserId { get; set; }
 }
 
 public class AppRole : IdentityRole<Guid>

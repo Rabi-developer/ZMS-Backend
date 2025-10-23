@@ -1,9 +1,14 @@
-﻿using IMS.API.Utilities.Auth;
+﻿using ZMS.API.Middleware;
+using IMS.API.Utilities.Auth;
 using IMS.Business.Services;
 using IMS.Business.Utitlity;
 using IMS.Domain.Utilities;
+using IMS.Domain.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using ZMS.API.Middleware;
+using IMS.Business.Services;
 
 namespace IMS.API.Base;
 
@@ -17,6 +22,7 @@ namespace IMS.API.Base;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class BaseController<TController, TService, TReq, TRes, T> : ControllerBase where TService : IBaseService<TReq, TRes, T>
 {
     private readonly ILogger<TController> _logger;
@@ -44,10 +50,14 @@ public class BaseController<TController, TService, TReq, TRes, T> : ControllerBa
     [ProducesDefaultResponseType(typeof(string))]
     [ProducesResponseType(typeof(bool), 201)]
     [ProducesResponseType(typeof(string), 404)]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+
+    [Permission("Role", "Read")]
     public virtual async Task<IActionResult> Get([FromQuery] Pagination pagination)
     {
-        var result = await Service.GetAll(pagination);
+        bool isSuperAdmin = User.IsInRole("SuperAdmin");
+        var userId = User.GetUserId();
+        pagination.RefId = userId.ToString();
+        var result = await Service.GetAllByUser(pagination, (Guid)userId, !isSuperAdmin);
         if (result.StatusCode == HttpStatusCode.OK || result.StatusCode == HttpStatusCode.Created)
         {
             return Ok(result);
@@ -67,7 +77,7 @@ public class BaseController<TController, TService, TReq, TRes, T> : ControllerBa
     /// 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(bool), 200)]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+    [AllowAnonymous]
     public virtual async Task<IActionResult> Get(Guid id)
     {
         var result = await Service.Get(id);
@@ -82,6 +92,7 @@ public class BaseController<TController, TService, TReq, TRes, T> : ControllerBa
     }
 
     [HttpPost]
+    [Permission("Role", "Create")]
     public virtual async Task<IActionResult> Post(TReq model)
     {
 
@@ -97,6 +108,7 @@ public class BaseController<TController, TService, TReq, TRes, T> : ControllerBa
     }
 
     [HttpPut]
+    [Permission("Role", "Update")]
     public virtual async Task<IActionResult> Put(TReq model)
     {
         var result = await Service.Update(model);
@@ -111,6 +123,7 @@ public class BaseController<TController, TService, TReq, TRes, T> : ControllerBa
     }
 
     [HttpDelete("{id:guid}")]
+    [Permission("Role", "Delete")]
     public virtual async Task<IActionResult> Delete(Guid id)
     {
         var result = await Service.Delete(id);

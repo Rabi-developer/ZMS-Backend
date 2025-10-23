@@ -10,12 +10,14 @@ using System;
 using System.Threading.Tasks;
 using ZMS.Domain.Entities;
 using System.Net;
+using ZMS.API.Middleware;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ZMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+    [Authorize]
     public class PaymentController : BaseController<PaymentController, IPaymentService, PaymentReq, PaymentRes, Payment>
     {
         public PaymentController(ILogger<PaymentController> logger, IPaymentService service) : base(logger, service)
@@ -23,6 +25,7 @@ namespace ZMS.API.Controllers
         }
 
         [HttpPost("History")]
+        [Permission("Organization", "Read")]
         public async Task<IActionResult> GetBySellerBuyer(HistoryPayment historyPayment)
         {
             var data = await Service.GetBySellerBuyer(historyPayment.Seller, historyPayment.Buyer);
@@ -34,6 +37,8 @@ namespace ZMS.API.Controllers
         }
 
         [HttpPost("Status")]
+        [Permission("Organization", "Update")]
+
         public async Task<IActionResult> UpdateStatus([FromBody] PaymentStatus paymentStatus)
         {
             try
@@ -56,6 +61,7 @@ namespace ZMS.API.Controllers
         }
 
         [HttpGet("PaymentNumbers")]
+        [Permission("Organization", "Read")]
         public async Task<IActionResult> GetPaymentNumbers()
         {
             var result = await Service.GetPaymentNumbers();
@@ -67,6 +73,7 @@ namespace ZMS.API.Controllers
         }
 
         [HttpGet("ChequeNumbers/{paymentId}")]
+        [Permission("Organization", "Read")]
         public async Task<IActionResult> GetChequeNumbers(Guid paymentId)
         {
             var result = await Service.GetChequeNumbers(paymentId);

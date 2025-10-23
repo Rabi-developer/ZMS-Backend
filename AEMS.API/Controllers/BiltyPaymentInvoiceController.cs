@@ -9,13 +9,15 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using ZMS.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using ZMS.API.Middleware;
 /*using IMS.Domain.Migrations;
 */
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class BiltyPaymentInvoiceController : BaseController<BiltyPaymentInvoiceController, IBiltyPaymentInvoiceService, BiltyPaymentInvoiceReq, BiltyPaymentInvoiceRes, BiltyPaymentInvoice>
 {
     public BiltyPaymentInvoiceController(ILogger<BiltyPaymentInvoiceController> logger, IBiltyPaymentInvoiceService service) : base(logger, service)
@@ -24,6 +26,7 @@ public class BiltyPaymentInvoiceController : BaseController<BiltyPaymentInvoiceC
     }
 
     [HttpPost("status")]
+    [Permission("Organization", "Update")]
     public async Task<IActionResult> UpdateStatus([FromBody] BillPaymentInvoicesStatus contractstatus)
     {
         try

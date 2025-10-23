@@ -1,6 +1,8 @@
-﻿namespace IMS.Domain.Base;
+﻿using IMS.Domain.Base;
 
-public static class ClaimStore
+namespace IMS.Domain.Base;
+
+public static class Claimstore
 {
     //#region AuthModule
     //public const string RefreshToken = "RefreshToken";
@@ -34,11 +36,11 @@ public static class ClaimStore
     public const string UserId = "UserId";
     public const string AccessLevelClaim = "AccessLevel";
     public const string AccessLevelDetailsClaim = "AccessLevelDetails";
-    public const string ResourceClaimPrefix = "Resource_";
+
 
     public static string ResourceClaim(string resource)
     {
-        return ResourceClaimPrefix + resource;
+        return resource;
     }
 
     public static class Actions
@@ -92,15 +94,24 @@ public static class ClaimStore
         public static string Organization = "Organization";
         public static string OrganizationUser = "OrganizationUser";
         public static string Branch = "Branch";
+        public static string Stock = "Stock";
         public static string Department = "Department";
-    
+
         public static string Section = "Section";
+        public static string Bank = "Bank";
         public static string Address = "Address";
-  
+        public static string Room = "Room";
+
+        public static string Hotel = "Hotel";
+
         public static string UsersManagement = "UsersManagement";
-  
+
         public static string Role = "Role";
-        
+        public static string Agent = "Agent";
+        public static string AgentWork = "AgentWork";
+        public static string Brand = "Brand";
+        public static string Booking = "Booking";
+
 
         public static IList<ResPerm> List = new List<ResPerm>
         {
@@ -114,11 +125,39 @@ public static class ClaimStore
                 ResourceName = ProfileConfiguration,
 
             },
+              new()
+            {
+                ResourceName = Booking,
+
+
+            },
+
+               new()
+            {
+                ResourceName = Agent,
+
+            },
+                 new()
+            {
+                ResourceName = AgentWork,
+
+            },
+                   new()
+            {
+                ResourceName = Bank,
+
+            },
             new()
             {
                 ResourceName = Branch,
 
             },
+              new()
+            {
+                ResourceName = Room,
+
+            },
+
             new()
             {
                 ResourceName = Organization,
@@ -129,31 +168,31 @@ public static class ClaimStore
                 ResourceName = OrganizationUser,
 
             },
-           
+
             new()
             {
                 ResourceName = UsersManagement,
 
             },
-           
-          
+
+
             new()
             {
                 ResourceName = Role,
 
             },
-           
+
             new()
             {
                 ResourceName = Home,
 
             },
-           
+
             new()
             {
             ResourceName = Department,
             },
-           
+
             new ()
             {
             ResourceName = Section,
@@ -162,7 +201,7 @@ public static class ClaimStore
             {
             ResourceName = Address ,
             },
-           
+
         };
 
         public static string SpecificResources(string resource, params string[] resourceIds)
@@ -184,18 +223,19 @@ public static class ClaimStore
         return resourceClaim;
     }
 
-    public static (string, string, string[])[] ExtractResourceClaim(string resourceClaim)
+    public static string[] ExtractResourceClaim(string resourceClaim)
     {
-        var s = resourceClaim.Split("&")
-            .Select(f => (f.Split(";")[0].TrimStart('['), f.Split(";")[1], f.Split(";")[2].TrimEnd(']').Split('|')))
-            .ToArray();
-        return s;
+        // Split the string by commas and remove leading/trailing whitespace from each permission
+        var permissions = resourceClaim.Split(',')
+                                       .Select(p => p.Trim())
+                                       .ToArray();
+        return permissions;
     }
 
     public class BaseRoleReq
     {
-        // <role,claims>
-        // claims ->  <resource, action, accessLevel>
+        // <role,Claims>
+        // Claims ->  <resource, action, accessLevel>
         public IDictionary<string, string[]> Claims = new Dictionary<string, string[]>();
     }
 }

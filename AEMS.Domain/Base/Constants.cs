@@ -9,5 +9,8 @@ public static class Constants
     public const string STUDENT = "Student";
     public const string FACULTY = "Faculty";
     public const string GUARDIAN = "Guardian";
+    public const string Customer = "Customer";
+    public const string Owner = "Owner";
+    public const string User = "User";
 }
 

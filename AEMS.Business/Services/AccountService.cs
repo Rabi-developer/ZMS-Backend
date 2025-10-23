@@ -6,492 +6,421 @@ using IMS.DataAccess.UnitOfWork;
 using IMS.Domain.Base;
 using IMS.Domain.Context;
 using IMS.Domain.Entities;
+using IMS.Domain.Utilities;
+using IMS.Business.DTOs.Requests;
+using IMS.Business.DTOs.Responses;
+using IMS.Business.Services;
+using IMS.Business.Utitlity;
+using IMS.DataAccess.Repositories;
+using IMS.DataAccess.UnitOfWork;
+using IMS.Domain.Context;
+using IMS.Domain.Entities;
+using IMS.Domain.Utilities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
-namespace IMS.Business.Services;
-public interface IAccountService : IBaseMinService
+namespace IMS.Business.Services
 {
-    Task<Response<LoginRes>> Login(LoginReq loginReq);
-    Task<Response<LoginRes>> Register(SignUpReq registerReq);
-    Task<Response<ApplicationUserRes>> CreateWithRole(ApplicationUserReq userReq);
-    Task<Response<ApplicationUserRes>> UpdateApplicationUser(ApplicationUserReq userReq);
-    //Task<IActionResult> Register(RegisterReq registerReq);
-    //Task<IActionResult> ConfirmEmail(string email, string token);
-    //Task<IActionResult> ResendVerificationEmail();
-}
-public class AccountService : BaseMinService<AppUserRepository>, IAccountService
-{
-    private readonly IConfiguration _configuration;
-    //private readonly IEmailSender _emailSender;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<AppRole> _roleManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-
-    public AccountService(
-        IUnitOfWork unitOfWork,
-        UserManager<ApplicationUser> userManager,
-        RoleManager<AppRole> roleManager,
-        SignInManager<ApplicationUser> signInManager,
-        IConfiguration configuration,
-        ApplicationDbContext context
-        //IEmailSender emailSender,
-        //IHttpContextAccessor httpContextAccessor
-        ) : base(unitOfWork)
+    public interface IAccountService : IBaseMinService
     {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _signInManager = signInManager;
-        _configuration = configuration;
-        //_emailSender = emailSender;
+        Task<Response<LoginRes>> Login(LoginReq loginReq);
+        Task<Response<LoginRes>> Register(SignUpReq registerReq);
+        Task<Response<ApplicationUserRes>> CreateWithRole(CreateUserWithRoleReq userReq);
+        Task<Response<ApplicationUserRes>> UpdateApplicationUser(UpdateUserReq userReq);
+        public Task<Response<IList<ApplicationUserRes>>> GetAll(Pagination? pagination);
     }
 
-    /// <summary>
-    /// Asynchronously logs in a user.
-    /// </summary>
-    /// <param name="loginReq">The login request containing the user's credentials.</param>
-    /// <returns>An IActionResult that represents the result of the login operation.</returns>
-    /// <remarks>
-    /// This method first checks if the username in the login request is an email address. If it is, it attempts to find a user with that email address. If it's not, it attempts to find a user with that username.
-    /// If a user is not found, it returns a "User Not Found!" message.
-    /// If the user is found but is not active, it returns a "You are Disabled" message along with the user's disabled comments.
-    /// If the user is found and is active, it checks if the user's email is confirmed. If it's not, it returns an "Email is not verified" message.
-    /// If the user's email is confirmed, it attempts to sign in the user with the provided password. If the sign-in fails, it returns an "Invalid Password" message.
-    /// If the sign-in succeeds, it signs in the user and generates a JWT for the user. It also generates a list of abilities for the user based on their role.
-    /// Finally, it returns a success message along with the user's details and the generated JWT.
-    /// </remarks>
-    public async Task<Response<LoginRes>> Login(LoginReq loginReq)
+    public class AccountService : BaseMinService<AppUserRepository>, IAccountService
     {
-        ApplicationUser? user = Helpers.EmailRegex().IsMatch(loginReq.Username)
-        ? await _userManager.FindByEmailAsync(loginReq.Username)
-        : await _userManager.FindByNameAsync(loginReq.Username);
+        private readonly IConfiguration _configuration;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        if (user == null)
+        public AccountService(
+            IUnitOfWork unitOfWork,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<AppRole> roleManager,
+            SignInManager<ApplicationUser> signInManager,
+            IConfiguration configuration,
+            ApplicationDbContext context) : base(unitOfWork)
         {
-            return new Response<LoginRes>
-            {
-                StatusCode = System.Net.HttpStatusCode.Unauthorized,
-                StatusMessage = "User not found"
-            };
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _signInManager = signInManager;
+            _configuration = configuration;
         }
 
-        //var result = await _userManager.CheckPasswordAsync(user, loginReq.Password);
-
-        var result = await _signInManager.PasswordSignInAsync(loginReq.Username, loginReq.Password,
-        true, false);
-
-        if (!result.Succeeded)
+        public async Task<Response<LoginRes>> Login(LoginReq loginReq)
         {
-            return new Response<LoginRes>
-            {
-                StatusCode = System.Net.HttpStatusCode.Unauthorized,
-                StatusMessage = "Invalid Password"
-            };
-        }
+            ApplicationUser? user = Helpers.EmailRegex().IsMatch(loginReq.Username)
+                ? await _userManager.FindByEmailAsync(loginReq.Username)
+                : await _userManager.FindByNameAsync(loginReq.Username);
 
-        //if (user.IsActive == false)
-        //{
-        //    throw new Exception($"User does not active");
-        //}
-
-        // checking email is confirmed or not
-        // var isConfirm = await UserManager.IsEmailConfirmedAsync(user);
-        // if (!isConfirm)
-        // {
-        //     return user.BadRequest("Email is not verified");
-        // }
-        //var roles = await _userManager.GetRolesAsync(user);
-        var context = UnitOfWork._context;
-        //var appRoles = await UnitOfWork._context.Roles.Where(f => roles.Contains(f.Name)).ToListAsync();
-
-        var roleClaims = await (from ur in context.UserRoles
-                                join r in context.Roles on ur.RoleId equals r.Id
-                                join c in context.RoleClaims on r.Id equals c.RoleId
-                                where ur.UserId == user.Id
-                                select new { claims = c, roles = r }).ToListAsync();
-
-
-
-        //var appRoleIds = appRoles.Select(f => f.Id).ToList();
-
-
-        //var roleClaims = await UnitOfWork._context.AppRoleClaims.Where(f => appRoleIds.Contains(f.RoleId)).ToListAsync();
-
-        List<Claim> claims = new List<Claim>();
-
-        claims.AddRange(roleClaims
-                .SelectMany(f => f.claims.ClaimValue!.Split(",")
-                    .Select(ff => new Claim(f.claims.ClaimType!, ff.Trim()))));
-
-        claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-        claims.Add(new Claim(ClaimTypes.Name, user.UserName.ToString()));
-        claims.Add(new Claim(ClaimTypes.Email, user.Email.ToString()));
-        claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roleClaims.Select(x => x.roles))));
-        var token = GenerateToken(claims);
-
-
-
-
-        LoginRes res = new LoginRes
-        {
-            Token = token,
-            UserId = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
-            Roles = string.Join(",", roleClaims.Select(x => x.roles).Select(x => x.Name).Distinct().ToList()),
-            Responsibilities = roleClaims.ToDictionary(x => x.claims.ClaimType, y => y.claims.ClaimValue),
-        };
-
-
-        return new Response<LoginRes>
-        {
-            Data = res,
-            StatusCode = System.Net.HttpStatusCode.OK,
-            StatusMessage = "Created successfully"
-        };
-    }
-
-    public async Task<Response<LoginRes>> Register(SignUpReq registerReq)
-    {
-        var trans = await UnitOfWork.BeginTransactionAsync();
-        try
-        {
-            var user = await _userManager.FindByEmailAsync(registerReq.Email)
-                       ?? await _userManager.FindByNameAsync(registerReq.UserName);
-
-            if (user != null)
+            if (user == null)
             {
                 return new Response<LoginRes>
                 {
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    StatusMessage = "A User with same Username or Email Already Exists!"
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    StatusMessage = "User not found"
                 };
             }
 
-
-            user = new ApplicationUser
+            if (!user.IsActive)
             {
-                UserName = registerReq.UserName,
-                Email = registerReq.Email,
-                FirstName = registerReq.FirstName,
-                LastName = registerReq.LastName,
-                EmailConfirmed = true, // Should Remove it when Verifying via Email!
-                IsActive = true,
-                IsDeleted = false,
-                MiddleName = registerReq.MiddleName,
-                NormalizedEmail = registerReq.Email.ToUpper(),
-                NormalizedUserName = registerReq.UserName.ToUpper(),
-            };
-
-            var userRes = await _userManager.CreateAsync(user, registerReq.Password);
-            if (!userRes.Succeeded)
-            {
-                throw new Exception(string.Join(" ", userRes.Errors.Select(f => f.Description)));
+                return new Response<LoginRes>
+                {
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    StatusMessage = "User account is inactive"
+                };
             }
 
-            await UnitOfWork.SaveAsync();
+            var result = await _signInManager.PasswordSignInAsync(
+                loginReq.Username,
+                loginReq.Password,
+                true,
+                false);
 
-            await _signInManager.SignInAsync(user, true, null);
-            await _userManager.AddToRoleAsync(user, Constants.ORGANIZATIONADMIN);
-            await UnitOfWork.CommitTransactionAsync(trans);
-            var context = UnitOfWork._context;
-            var roleClaims = await (from ur in context.UserRoles
-                                    join r in context.Roles on ur.RoleId equals r.Id
-                                    join c in context.RoleClaims on r.Id equals c.RoleId
+            if (!result.Succeeded)
+            {
+                return new Response<LoginRes>
+                {
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    StatusMessage = "Invalid credentials"
+                };
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var roleClaims = await (from ur in UnitOfWork._context.UserRoles
+                                    join r in UnitOfWork._context.Roles on ur.RoleId equals r.Id
+                                    join c in UnitOfWork._context.RoleClaims on r.Id equals c.RoleId
                                     where ur.UserId == user.Id
-                                    select new { claims = c, roles = r }).ToListAsync();
+                                    select new { Claims = c, roles = r }).ToListAsync();
 
-            //var appRoleIds = appRoles.Select(f => f.Id).ToList();
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("FullName", $"{user.FirstName} {user.LastName}"),
+                new Claim("IsActive", user.IsActive.ToString())
+            };
 
-
-            //var roleClaims = await UnitOfWork._context.AppRoleClaims.Where(f => appRoleIds.Contains(f.RoleId)).ToListAsync();
-
-            List<Claim> claims = new List<Claim>();
-
+            // Add role claims
             claims.AddRange(roleClaims
-                    .SelectMany(f => f.claims.ClaimValue!.Split(",")
-                        .Select(ff => new Claim(f.claims.ClaimType!, ff.Trim()))));
-            claims.Add(new Claim("Id", user.Id.ToString()));
-            claims.Add(new Claim("Name", user.UserName.ToString()));
-            claims.Add(new Claim("Email", user.Email.ToString()));
-            claims.Add(new Claim("Role", string.Join(",", roleClaims.Select(x => x.roles))));
+                .SelectMany(rc => rc.Claims.ClaimValue.Split(",")
+                    .Select(v => new Claim(rc.Claims.ClaimType, v.Trim()))));
+
+            // Add roles
+            claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
 
             var token = GenerateToken(claims);
 
-            LoginRes res = new LoginRes
+            var response = new LoginRes
             {
                 Token = token,
                 UserId = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
-                Roles = string.Join(",", roleClaims.Select(x => x.roles).Select(x => x.Name).Distinct().ToList()),
-                Responsibilities = roleClaims.ToDictionary(x => x.claims.ClaimType, y => y.claims.ClaimValue),
+                FullName = $"{user.FirstName} {user.LastName}",
+                Roles = roles.ToList(),
+                Permissions = roleClaims
+                    .GroupBy(rc => rc.Claims.ClaimType)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.SelectMany(rc => rc.Claims.ClaimValue.Split(",").Select(v => v.Trim())).Distinct().ToList())
             };
 
             return new Response<LoginRes>
             {
-                Data = res,
-                StatusCode = System.Net.HttpStatusCode.Created,
-                StatusMessage = "Created successfully"
+                Data = response,
+                StatusCode = HttpStatusCode.OK,
+                StatusMessage = "Login successful"
             };
         }
-        catch (Exception e)
+
+        public async Task<Response<LoginRes>> Register(SignUpReq registerReq)
         {
-            await UnitOfWork.RollBackTransactionAsync();
-            return new Response<LoginRes>
+
+
+            using var transaction = await UnitOfWork.BeginTransactionAsync();
+            try
             {
-                StatusCode = System.Net.HttpStatusCode.BadRequest,
-                StatusMessage = e.Message
-            };
+                var existingUser = await _userManager.FindByEmailAsync(registerReq.Email)
+                                 ?? await _userManager.FindByNameAsync(registerReq.UserName);
+
+                if (existingUser != null)
+                {
+                    return new Response<LoginRes>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        StatusMessage = "User with this email or username already exists"
+                    };
+                }
+
+                var user = new ApplicationUser
+                {
+                    UserName = registerReq.UserName,
+                    Email = registerReq.Email,
+                    FirstName = registerReq.FirstName,
+                    LastName = registerReq.LastName,
+                    MiddleName = registerReq.MiddleName,
+                    EmailConfirmed = true,
+                    IsActive = true,
+                    IsDeleted = false,
+                    NormalizedEmail = registerReq.Email.ToUpper(),
+                    NormalizedUserName = registerReq.UserName.ToUpper(),
+                };
+
+                var createResult = await _userManager.CreateAsync(user, registerReq.Password);
+                if (!createResult.Succeeded)
+                {
+                    return new Response<LoginRes>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        StatusMessage = string.Join(", ", createResult.Errors.Select(e => e.Description))
+                    };
+                }
+
+                // Assign default role
+                await _userManager.AddToRoleAsync(user, Constants.User);
+
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                await UnitOfWork.CommitTransactionAsync(transaction);
+
+                // Generate token with claims
+                var loginResult = await Login(new LoginReq
+                {
+                    Username = registerReq.UserName,
+                    Password = registerReq.Password
+                });
+
+                return loginResult;
+            }
+            catch (Exception ex)
+            {
+                await UnitOfWork.RollBackTransactionAsync();
+                return new Response<LoginRes>
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    StatusMessage = ex.Message
+                };
+            }
         }
-    }
 
-    public async Task<Response<ApplicationUserRes>> CreateWithRole(ApplicationUserReq userReq)
-    {
-        try
+        public async Task<Response<ApplicationUserRes>> CreateWithRole(CreateUserWithRoleReq userReq)
         {
-            var user = await _userManager.FindByEmailAsync(userReq.Email)
-                       ?? await _userManager.FindByNameAsync(userReq.UserName);
-
-            if (user != null)
+            if (userReq.Role == "SuperAdmin")
             {
                 return new Response<ApplicationUserRes>
                 {
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    StatusMessage = "A User with same Username or Email Already Exists!"
+                    StatusCode = HttpStatusCode.BadRequest,
+                    StatusMessage = "Super Admin Not Allowed."
                 };
             }
-
-            // await using var trans = await UnitOfWork.BeginTransactionAsync();
-
-            user = new ApplicationUser
+            using var transaction = await UnitOfWork.BeginTransactionAsync();
+            try
             {
-                UserName = userReq.UserName,
-                Email = userReq.Email,
-                FirstName = userReq.FirstName,
-                LastName = userReq.LastName,
-                EmailConfirmed = true, // Should Remove it when Verifying via Email!
-                IsActive = true,
-                IsDeleted = false,
-                MiddleName = userReq.MiddleName,
-                NormalizedEmail = userReq.Email.ToUpper(),
-                NormalizedUserName = userReq.UserName.ToUpper(),
-            };
+                var existingUser = await _userManager.FindByEmailAsync(userReq.Email)
+                                 ?? await _userManager.FindByNameAsync(userReq.UserName);
 
-            var userRes = await _userManager.CreateAsync(user, userReq.UserName + "S@123");
-            if (!userRes.Succeeded)
-            {
-                throw new Exception(string.Join(" ", userRes.Errors.Select(f => f.Description)));
+                if (existingUser != null)
+                {
+                    return new Response<ApplicationUserRes>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        StatusMessage = "User with this email or username already exists"
+                    };
+                }
+
+                // Verify role exists
+                var role = await _roleManager.FindByNameAsync(userReq.Role);
+                if (role == null)
+                {
+                    return new Response<ApplicationUserRes>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        StatusMessage = "Specified role does not exist"
+                    };
+                }
+
+                var user = new ApplicationUser
+                {
+                    UserName = userReq.UserName,
+                    Email = userReq.Email,
+                    FirstName = userReq.FirstName,
+                    LastName = userReq.LastName,
+                    MiddleName = userReq.MiddleName,
+                    EmailConfirmed = true,
+                    IsActive = true,
+                    IsDeleted = false,
+                    NormalizedEmail = userReq.Email.ToUpper(),
+                    NormalizedUserName = userReq.UserName.ToUpper(),
+                };
+
+                var createResult = await _userManager.CreateAsync(user, userReq.Password);
+                if (!createResult.Succeeded)
+                {
+                    return new Response<ApplicationUserRes>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        StatusMessage = string.Join(", ", createResult.Errors.Select(e => e.Description))
+                    };
+                }
+
+                // Assign specified role
+                await _userManager.AddToRoleAsync(user, userReq.Role);
+
+                await UnitOfWork.CommitTransactionAsync(transaction);
+
+                return new Response<ApplicationUserRes>
+                {
+                    Data = user.Adapt<ApplicationUserRes>(),
+                    StatusCode = HttpStatusCode.Created,
+                    StatusMessage = "User created successfully"
+                };
             }
-
-            await UnitOfWork.SaveAsync();
-
-            await _userManager.AddToRoleAsync(user, userReq.Role);
-            //await UnitOfWork.CommitTransactionAsync(trans);
-            var res = user.Adapt<ApplicationUserRes>();
-
-            return new Response<ApplicationUserRes>
+            catch (Exception ex)
             {
-                Data = res,
-                StatusCode = System.Net.HttpStatusCode.Created,
-                StatusMessage = "Created successfully"
-            };
+                await UnitOfWork.RollBackTransactionAsync();
+                return new Response<ApplicationUserRes>
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    StatusMessage = ex.Message
+                };
+            }
         }
-        catch (Exception e)
+
+        public async Task<Response<ApplicationUserRes>> UpdateApplicationUser(UpdateUserReq userReq)
         {
-            //await UnitOfWork.RollBackTransactionAsync();
-            return new Response<ApplicationUserRes>
+            try
             {
-                StatusCode = System.Net.HttpStatusCode.BadRequest,
-                StatusMessage = e.Message
-            };
-        }
-    }
+                var user = await _userManager.FindByIdAsync(userReq.Id.ToString());
+                if (user == null)
+                {
+                    return new Response<ApplicationUserRes>
+                    {
+                        StatusCode = HttpStatusCode.NotFound,
+                        StatusMessage = "User not found"
+                    };
+                }
 
-    public async Task<Response<ApplicationUserRes>> UpdateApplicationUser(ApplicationUserReq userReq)
-    {
-        try
-        {
-            var user = await _userManager.FindByIdAsync(userReq.Id.ToString());
+                // Check if email/username is being changed to an existing one
+                var existingUser = await _userManager.FindByEmailAsync(userReq.Email)
+                                  ?? await _userManager.FindByNameAsync(userReq.UserName);
 
-            if (user == null)
+                if (existingUser != null && existingUser.Id != user.Id)
+                {
+                    return new Response<ApplicationUserRes>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        StatusMessage = "User with this email or username already exists"
+                    };
+                }
+
+                // Update user properties
+                user.UserName = userReq.UserName;
+                user.Email = userReq.Email;
+                user.FirstName = userReq.FirstName;
+                user.LastName = userReq.LastName;
+                user.MiddleName = userReq.MiddleName;
+                user.NormalizedEmail = userReq.Email.ToUpper();
+                user.NormalizedUserName = userReq.UserName.ToUpper();
+
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    return new Response<ApplicationUserRes>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        StatusMessage = string.Join(", ", updateResult.Errors.Select(e => e.Description))
+                    };
+                }
+
+                return new Response<ApplicationUserRes>
+                {
+                    Data = user.Adapt<ApplicationUserRes>(),
+                    StatusCode = HttpStatusCode.OK,
+                    StatusMessage = "User updated successfully"
+                };
+            }
+            catch (Exception ex)
             {
                 return new Response<ApplicationUserRes>
                 {
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    StatusMessage = "ApplicationUser not Exists!"
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    StatusMessage = ex.Message
                 };
             }
+        }
 
+        private string GenerateToken(IEnumerable<Claim> claims, string? issuer = null, string? audience = null)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secrets.AuthenticationSchemeSecretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var existing = await _userManager.FindByEmailAsync(userReq.Email)
-                       ?? await _userManager.FindByNameAsync(userReq.UserName);
+            var token = new JwtSecurityToken(
+                issuer: issuer ?? Secrets.AuthenticationSchemeIssuer,
+                audience: audience ?? Secrets.AuthenticationSchemeAudience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: creds);
 
-            if (existing != null && existing.Id != user.Id)
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<Response<IList<ApplicationUserRes>>> GetAll(Pagination? pagination)
+        {
+            // Ensure pagination is not null
+            int pageNumber = pagination?.PageNumber ?? 1;
+            int pageSize = pagination?.PageSize ?? 10;
+
+            // Ensure valid positive values
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 10;
+
+            // Query users with pagination
+            var usersQuery = _userManager.Users
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            var usersList = await usersQuery.ToListAsync();
+
+            var result = new List<ApplicationUserRes>();
+
+            foreach (var user in usersList)
             {
-                return new Response<ApplicationUserRes>
+                var roles = await _userManager.GetRolesAsync(user);
+
+                var mappedUser = new ApplicationUserRes
                 {
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    StatusMessage = "A User with same Username or Email Already Exists!"
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    MiddleName = user.MiddleName,
+                    IsActive = user.IsActive,
+                    Roles = roles.ToList()
                 };
+
+                result.Add(mappedUser);
             }
 
-            // await using var trans = await UnitOfWork.BeginTransactionAsync();
-
-            user.UserName = userReq.UserName;
-            user.Email = userReq.Email;
-            user.FirstName = userReq.FirstName;
-            user.LastName = userReq.LastName;
-            user.MiddleName = userReq.MiddleName;
-            user.NormalizedEmail = userReq.Email.ToUpper();
-            user.NormalizedUserName = userReq.UserName.ToUpper();
-
-
-            var userRes = await _userManager.UpdateAsync(user);
-            if (!userRes.Succeeded)
+            return new Response<IList<ApplicationUserRes>>
             {
-                throw new Exception(string.Join(" ", userRes.Errors.Select(f => f.Description)));
-            }
+                Data = result,
 
-            await UnitOfWork.SaveAsync();
-
-            //await UnitOfWork.CommitTransactionAsync(trans);
-            var res = user.Adapt<ApplicationUserRes>();
-
-            return new Response<ApplicationUserRes>
-            {
-                Data = res,
-                StatusCode = System.Net.HttpStatusCode.Created,
-                StatusMessage = "Updated successfully"
+                StatusMessage = "Users retrieved successfully"
             };
         }
-        catch (Exception e)
-        {
-            //await UnitOfWork.RollBackTransactionAsync();
-            return new Response<ApplicationUserRes>
-            {
-                StatusCode = System.Net.HttpStatusCode.BadRequest,
-                StatusMessage = e.Message
-            };
-        }
+
     }
-
-    //public async Task<IActionResult> ConfirmEmail(string email, string token)
-    //{
-    //    try
-    //    {
-    //        var user = !string.IsNullOrEmpty(email) ? await _userManager.FindByEmailAsync(email) : null;
-    //        if (user == null)
-    //        {
-    //            return new BadRequestObjectResult(new { status = 400, message = "Invalid Email" });
-    //        }
-
-    //        var result = await _userManager.ConfirmEmailAsync(user, token);
-    //        if (!result.Succeeded)
-    //        {
-    //            return new BadRequestObjectResult(new
-    //            { status = 400, message = "Can not Verify Email at this time." });
-    //        }
-
-    //        await _signInManager.SignInAsync(user, new AuthenticationProperties());
-    //        var accessToken = user.GenerateJwt(_configuration);
-    //        var userData = new
-    //        {
-    //            Name = $"{user.FirstName} {user.LastName}",
-    //            user.Role,
-    //            user.UserName,
-    //            user.Email,
-    //            user.ProfilePic,
-    //            user.EmailConfirmed,
-    //            UserId = user.Id,
-    //        };
-    //        return userData.Ok("User Login Successful!", new { AccessToken = accessToken });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return ex.BadRequest();
-    //    }
-    //}
-
-    //public async Task<IActionResult> ResendVerificationEmail()
-    //{
-    //    var userId = Context.GetUserId();
-    //    var user = await _userManager.Users.FirstOrDefaultAsync(f => f.Id == userId);
-    //    if (user == null)
-    //    {
-    //        return user.NotFound("User Not Found!");
-    //    }
-
-    //    var html = await EmailConfirmationTemplate(user);
-    //    await _emailSender.SendEmailAsync(user.Email, "Verify Your Email!", html);
-
-    //    return "Email Send!".Ok();
-    //}
-
-    //private async Task<string> EmailConfirmationTemplate(ApplicationUser user)
-    //{
-    //    // sending mail for email confirmation
-    //    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-    //    token = token.Replace("+", "-");
-    //    var confirmEmailPageLink =
-    //        $"{_configuration["Urls:WebAppBaseUrl"] + _configuration["Urls:WebAppEmailConfirmationEndPoint"]}?email={user.Email}&token={token}";
-    //    var userName = user.FirstName.ToUpper() + " " + user.LastName!.ToUpper();
-    //    var baseTemplate = _emailSender.ReadBaseTemplate();
-    //    var emailVerifyContent = _emailSender.ReadVerifyEmailContent();
-    //    // var availableProperties = _emailSender.ReadAvailableProperties(baseTemplate, emailVerifyContent);
-    //    var ourKeyVal = _emailSender.KeyValueBindings;
-    //    foreach (var emailSenderKeyValueBinding in ourKeyVal)
-    //    {
-    //        ourKeyVal[emailSenderKeyValueBinding.Key] = emailSenderKeyValueBinding.Value switch
-    //        {
-    //            "EMAIL_CONTENT" => emailVerifyContent ?? string.Empty,
-    //            "WEBSITE_URL" => _configuration["Urls:WebAppBaseUrl"] ?? string.Empty,
-    //            "USER_NAME" => userName ?? string.Empty,
-    //            "SUPPORT_EMAIL" => _configuration["EmailSender:UserName"] ?? string.Empty,
-    //            "SOCIAL_FB_ID" => _configuration["Urls:Social_Facebook_Id"] ?? string.Empty,
-    //            "SOCIAL_TI_ID" => _configuration["Urls:Social_Twitter_Id"] ?? string.Empty,
-    //            "SOCIAL_IG_ID" => _configuration["Urls:Social_Instagram_Id"] ?? string.Empty,
-    //            "TOU_URL" => _configuration["Urls:TermOfUse"] ?? string.Empty,
-    //            "PP_URL" => _configuration["Urls:PrivacyPolicy"] ?? string.Empty,
-    //            "VERIFICATION_URL" => confirmEmailPageLink ?? string.Empty,
-    //            _ => ourKeyVal[emailSenderKeyValueBinding.Key]
-    //        };
-    //    }
-
-    //    var finalHtml = $"{baseTemplate}";
-    //    foreach (var (key, value) in ourKeyVal)
-    //    {
-    //        finalHtml = finalHtml.Replace(key, value);
-    //    }
-
-    //    return finalHtml;
-    //}
-
-    private string GenerateToken(IEnumerable<Claim> claims,
-        string? issuer = null,
-        string? audience = null)
-    {
-        var authSigningKey =
-            new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secrets.AuthenticationSchemeSecretKey));
-        var tokenExpiryTimeInHour = Convert.ToInt64(1);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Issuer = issuer ?? Secrets.AuthenticationSchemeIssuer,
-            Audience = audience ?? Secrets.AuthenticationSchemeAudience,
-            Expires = DateTime.UtcNow.AddHours(tokenExpiryTimeInHour),
-            SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
-            Subject = new ClaimsIdentity(claims)
-        };
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-    }
-
 }

@@ -5,12 +5,14 @@ using IMS.Business.DTOs.Responses;
 using IMS.Business.Services;
 using IMS.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using ZMS.API.Middleware;
 
 namespace IMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class ExpenseController : BaseController<ExpenseController, IExpenseService, ExpenseReq, ExpenseRes, Expense>
 {
     /// <inheritdoc />
@@ -18,6 +20,7 @@ public class ExpenseController : BaseController<ExpenseController, IExpenseServi
     {
     }
     [HttpGet("Parent/{ParentId}")]
+    [Permission("Organization", "Read")]
 
     public async Task<IActionResult> getByParentId(Guid ParentId)
     {

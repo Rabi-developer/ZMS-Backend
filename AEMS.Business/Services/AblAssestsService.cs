@@ -19,6 +19,8 @@ namespace IMS.Business.Services;
 public interface IAblAssestsService : IBaseService<AblAssestsReq, AblAssestsRes, AblAssests>
 {
     Task<IList<AblAssests>> GetByParent(Guid ParentId);
+
+
 }
 public class AblAssestsService : BaseService<AblAssestsReq, AblAssestsRes, AblAssestsRepository, AblAssests>, IAblAssestsService
 {

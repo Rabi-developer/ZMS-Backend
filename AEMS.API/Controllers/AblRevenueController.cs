@@ -5,12 +5,14 @@ using IMS.Business.DTOs.Responses;
 using IMS.Business.Services;
 using IMS.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using ZMS.API.Middleware;
 
 namespace IMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class AblRevenueController : BaseController<AblRevenueController, IAblRevenueService, AblRevenueReq, AblRevenueRes, AblRevenue>
 {
     /// <inheritdoc />
@@ -18,7 +20,7 @@ public class AblRevenueController : BaseController<AblRevenueController, IAblRev
     {
     }
     [HttpGet("Parent/{ParentId}")]
-
+    [Permission("Organization", "Read")]
     public async Task<IActionResult> getByParentId(Guid ParentId)
     {
         var data = await Service.GetByParent(ParentId);

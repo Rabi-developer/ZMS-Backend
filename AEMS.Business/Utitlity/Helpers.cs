@@ -9,7 +9,7 @@ public static partial class Helpers
     [GeneratedRegex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")]
     public static partial Regex EmailRegex();
 
-    public static Guid? GetUserId(this ClaimsPrincipal user)
+    public static Guid? GetUserIdN(this ClaimsPrincipal user)
     {
         Guid? uId = null;
         var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);

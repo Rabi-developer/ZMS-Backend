@@ -3,6 +3,9 @@ using IMS.DataAccess.Repositories;
 using IMS.DataAccess.UnitOfWork;
 using IMS.Domain.Base;
 using IMS.Domain.Utilities;
+using IMS.DataAccess.UnitOfWork;
+using IMS.Domain.Base;
+using IMS.Domain.Utilities;
 using Mapster;
 using System.Net;
 
@@ -10,12 +13,12 @@ namespace IMS.Business.Services;
 
 public interface IBaseService<in TDto, TResp, T>
 {
+    public Task<Response<IList<TResp>>> GetAllByUser(Pagination pagination, Guid userId, bool onlyusers);
     public Task<Response<IList<TResp>>> GetAll(Pagination? pagination);
     public Task<Response<TResp>> Get(Guid id);
     public Task<Response<Guid>> Add(TDto model);
     public Task<Response<TResp>> Update(TDto model);
     public Task<Response<bool>> Delete(Guid id);
-    Task<Response<bool>> Delete(string listid);
 }
 
 public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, T>
@@ -30,6 +33,31 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
         Repository = UnitOfWork.GetRepository<TRepository>();
     }
 
+    public async virtual Task<Response<IList<TRes>>> GetAllByUser(Pagination pagination, Guid userId, bool onlyusers = true)
+    {
+        try
+        {
+            var (pag, data) = await Repository.GetAllByUser(pagination, onlyusers, userId);
+
+            var res = data.Adapt<List<TRes>>();
+
+            return new Response<IList<TRes>>
+            {
+                Data = res,
+                Misc = pag,
+                StatusMessage = "Fetch successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<IList<TRes>>
+            {
+                StatusMessage = e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
     public async virtual Task<Response<IList<TRes>>> GetAll(Pagination? paginate)
     {
         try
@@ -92,8 +120,8 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
         {
             var entity = reqModel.Adapt<T>();
             var ss = await Repository.Add((T)(entity as IMinBase ??
-             throw new InvalidOperationException(
-             "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+                                                throw new InvalidOperationException(
+                                                    "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
             await UnitOfWork.SaveAsync();
             return new Response<Guid>
             {
@@ -162,10 +190,5 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
-
-    public Task<Response<bool>> Delete(string listid)
-    {
-        throw new NotImplementedException();
     }
 }

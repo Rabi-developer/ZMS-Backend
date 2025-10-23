@@ -5,11 +5,12 @@ using IMS.Business.DTOs.Responses;
 using IMS.Business.Services;
 using IMS.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IMS.API.Controllers;
 
 [Route("api/[controller]")]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class AddressController : BaseController<AddressController, IAddressService, AddressReq, AddressRes, Address>
 {
     /// <inheritdoc />

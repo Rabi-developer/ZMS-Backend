@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace IMS.API.Utilities.Auth;
+namespace ZMS.API.Utilities.Auth;
 
 public class AuthorizePolicyAttribute : AuthorizeAttribute, IAuthorizationFilter
 {

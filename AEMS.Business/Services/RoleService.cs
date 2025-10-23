@@ -4,11 +4,18 @@ using IMS.DataAccess.UnitOfWork;
 using IMS.Domain.Base;
 using IMS.Domain.Entities;
 using IMS.Domain.Utilities;
+using IMS.Business.DTOs.Requests;
+using IMS.Business.DTOs.Responses;
+using IMS.DataAccess.UnitOfWork;
+using IMS.Domain.Base;
+using IMS.Domain.Entities;
+using IMS.Domain.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace IMS.Business.Services
@@ -20,8 +27,13 @@ namespace IMS.Business.Services
         Task<RoleRes> GetRoleByIdAsync(Guid id);
         Task<List<RoleRes>> GetAllRolesAsync(Pagination? pagination);
         Task DeleteRoleAsync(Guid id);
-        Task<RoleAssign> AssignUser(Guid RoleId, Guid UserId);
-        IList<ResPerm> GetAllResources();
+        Task<RoleAssign> AssignRoleToUser(Guid roleId, Guid userId);
+        Task<RoleAssign> RemoveRoleFromUser(Guid roleId, Guid userId);
+        Task<List<UserRoleRes>> GetUsersInRoleAsync(Guid roleId);
+        Task AddClaimToRole(Guid roleId, string resource, string action, string accessLevel);
+        Task RemoveClaimFromRole(Guid roleId, string resource);
+        Task<bool> UserHasPermission(string userId, string resource, string action);
+
     }
 
     public class RoleService : IRoleService
@@ -30,7 +42,10 @@ namespace IMS.Business.Services
         private readonly RoleManager<AppRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public RoleService(RoleManager<AppRole> roleManager, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
+        public RoleService(
+            RoleManager<AppRole> roleManager,
+            UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
@@ -42,7 +57,8 @@ namespace IMS.Business.Services
             var appRole = new AppRole
             {
                 Id = request.Id,
-                Name = request.Name
+                Name = request.Name,
+
             };
 
             var result = await _roleManager.CreateAsync(appRole);
@@ -51,12 +67,11 @@ namespace IMS.Business.Services
                 throw new Exception("Failed to create role: " + string.Join(", ", result.Errors.Select(e => e.Description)));
             }
 
-            // Add role claims if they exist
             if (request.Claims != null && request.Claims.Any())
             {
                 foreach (var claim in request.Claims)
                 {
-                    await _roleManager.AddClaimAsync(appRole, new System.Security.Claims.Claim(claim.ClaimType, claim.ClaimValue));
+                    await _roleManager.AddClaimAsync(appRole, new Claim(claim.ClaimType, claim.ClaimValue));
                 }
             }
 
@@ -64,6 +79,7 @@ namespace IMS.Business.Services
             {
                 Id = appRole.Id,
                 Name = appRole.Name,
+
                 Claims = request.Claims
             };
         }
@@ -74,13 +90,15 @@ namespace IMS.Business.Services
             if (role == null) throw new KeyNotFoundException("Role not found");
 
             role.Name = request.Name;
+
+
             var result = await _roleManager.UpdateAsync(role);
             if (!result.Succeeded)
             {
                 throw new Exception("Failed to update role: " + string.Join(", ", result.Errors.Select(e => e.Description)));
             }
 
-            // Update claims
+            // Update Claims
             var existingClaims = await _roleManager.GetClaimsAsync(role);
             foreach (var claim in existingClaims)
             {
@@ -91,7 +109,7 @@ namespace IMS.Business.Services
             {
                 foreach (var claim in request.Claims)
                 {
-                    await _roleManager.AddClaimAsync(role, new System.Security.Claims.Claim(claim.ClaimType, claim.ClaimValue));
+                    await _roleManager.AddClaimAsync(role, new Claim(claim.ClaimType, claim.ClaimValue));
                 }
             }
 
@@ -99,6 +117,7 @@ namespace IMS.Business.Services
             {
                 Id = role.Id,
                 Name = role.Name,
+
                 Claims = request.Claims
             };
         }
@@ -111,7 +130,6 @@ namespace IMS.Business.Services
             var claims = await _roleManager.GetClaimsAsync(role);
             var claimsList = claims.Select(c => new RoleClaimReq
             {
-                
                 RoleId = role.Id,
                 ClaimType = c.Type,
                 ClaimValue = c.Value
@@ -121,27 +139,25 @@ namespace IMS.Business.Services
             {
                 Id = role.Id,
                 Name = role.Name,
+
                 Claims = claimsList
             };
         }
 
         public async Task<List<RoleRes>> GetAllRolesAsync(Pagination? pagination)
         {
-            pagination ??= new Pagination(); // Default to a new Pagination object if null
+            pagination ??= new Pagination();
             var total = 0;
             var totalPages = 0;
 
-            // Apply pagination to roles
             var paginatedRoles = await _roleManager.Roles
-                .OrderBy(r => r.Name) // Sorting for consistent pagination
+                .OrderBy(r => r.Name)
                 .Paginate((int)pagination.PageIndex, (int)pagination.PageSize, ref total, ref totalPages)
                 .ToListAsync();
 
-            // Update pagination details
             pagination.Total = total;
             pagination.TotalPages = totalPages;
 
-            // Map roles and claims
             var roleResponses = new List<RoleRes>();
 
             foreach (var role in paginatedRoles)
@@ -158,13 +174,13 @@ namespace IMS.Business.Services
                 {
                     Id = role.Id,
                     Name = role.Name,
+
                     Claims = claimsList
                 });
             }
 
             return roleResponses;
         }
-
 
         public async Task DeleteRoleAsync(Guid id)
         {
@@ -178,51 +194,131 @@ namespace IMS.Business.Services
             }
         }
 
-        public async Task<RoleAssign> AssignUser(Guid RoleId, Guid UserId)
+        public async Task<RoleAssign> AssignRoleToUser(Guid roleId, Guid userId)
         {
-            var user = await _userManager.FindByIdAsync(UserId.ToString());
-            if (user == null)
-                throw new Exception("User not found.");
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) throw new Exception("User not found.");
 
-            // Fetch the role using RoleManager
-            var role = await _roleManager.FindByIdAsync(RoleId.ToString());
-            if (role == null)
-                throw new Exception("Role not found.");
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            if (role == null) throw new Exception("Role not found.");
 
-            // Check if the user is already assigned to this role
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            var currentRole = currentRoles.FirstOrDefault(r => r == role.Name);
-
-            if (currentRole != null)
+            var result = await _userManager.AddToRoleAsync(user, role.Name);
+            if (!result.Succeeded)
             {
-                // If the user is already assigned to this role, remove it
-                var removeResult = await _userManager.RemoveFromRoleAsync(user, role.Name);
-                if (!removeResult.Succeeded)
-                {
-                    var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
-                    throw new Exception($"Failed to remove the role: {errors}");
-                }
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Failed to assign role: {errors}");
             }
 
-            // Assign the new role to the user
-            var addResult = await _userManager.AddToRoleAsync(user, role.Name);
-            if (!addResult.Succeeded)
-            {
-                var errors = string.Join(", ", addResult.Errors.Select(e => e.Description));
-                throw new Exception($"Failed to assign the new role: {errors}");
-            }
-
-            // Return the RoleAssign object
             return new RoleAssign
             {
-                RoleId = RoleId,
-                UserId = UserId
+                RoleId = roleId,
+                UserId = userId
             };
         }
 
-        public IList<ResPerm> GetAllResources()
+        public async Task<RoleAssign> RemoveRoleFromUser(Guid roleId, Guid userId)
         {
-            return ClaimStore.Resources.List;
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) throw new Exception("User not found.");
+
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            if (role == null) throw new Exception("Role not found.");
+
+            var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Failed to remove role: {errors}");
+            }
+
+            return new RoleAssign
+            {
+                RoleId = roleId,
+                UserId = userId
+            };
         }
+
+        public async Task<List<UserRoleRes>> GetUsersInRoleAsync(Guid roleId)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            if (role == null) throw new KeyNotFoundException("Role not found");
+
+            var users = await _userManager.GetUsersInRoleAsync(role.Name);
+            return users.Select(u => new UserRoleRes
+            {
+                UserId = u.Id,
+                UserName = u.UserName,
+                Email = u.Email
+            }).ToList();
+        }
+
+        public async Task AddClaimToRole(Guid roleId, string resource, string action, string accessLevel)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            if (role == null) throw new KeyNotFoundException("Role not found");
+
+            var claimValue = Claimstore.GenerateAccessClaim(
+                (accessLevel, resource, new[] { action }));
+
+            var claim = new Claim(Claimstore.ResourceClaim(resource), claimValue);
+            await _roleManager.AddClaimAsync(role, claim);
+        }
+
+        public async Task RemoveClaimFromRole(Guid roleId, string resource)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            if (role == null) throw new KeyNotFoundException("Role not found");
+
+            var claims = await _roleManager.GetClaimsAsync(role);
+            var claimToRemove = claims.FirstOrDefault(c => c.Type == Claimstore.ResourceClaim(resource));
+
+            if (claimToRemove != null)
+            {
+                await _roleManager.RemoveClaimAsync(role, claimToRemove);
+            }
+        }
+
+        public async Task<bool> UserHasPermission(string userId, string resource, string action)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return false;
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var roleName in roles)
+            {
+                var role = await _roleManager.FindByNameAsync(roleName);
+                if (role != null)
+                {
+                    var claims = await _roleManager.GetClaimsAsync(role);
+                    var resourceClaim = claims.FirstOrDefault(c => c.Type == Claimstore.ResourceClaim(resource));
+
+                    if (resourceClaim != null)
+                    {
+                        var permissions = Claimstore.ExtractResourceClaim(resourceClaim.Value);
+                        if (permissions.Any(p => p.Contains(action)))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
+    }
+
+    public class RoleAssign
+    {
+        public Guid RoleId { get; set; }
+        public Guid UserId { get; set; }
+    }
+
+    public class UserRoleRes
+    {
+        public Guid UserId { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
     }
 }

@@ -5,12 +5,14 @@ using IMS.Business.DTOs.Responses;
 using IMS.Business.Services;
 using IMS.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using ZMS.API.Middleware;
 
 namespace IMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class CapitalAccountController : BaseController<CapitalAccountController, ICapitalAccountService, CapitalAccountReq, CapitalAccountRes, CapitalAccount>
 {
     /// <inheritdoc />
@@ -18,6 +20,7 @@ public class CapitalAccountController : BaseController<CapitalAccountController,
     {
     }
     [HttpGet("Parent/{ParentId}")]
+    [Permission("Organization", "Read")]
 
     public async Task<IActionResult> getByParentId(Guid ParentId)
     {
@@ -29,6 +32,7 @@ public class CapitalAccountController : BaseController<CapitalAccountController,
         return BadRequest();
     }
     [HttpGet("allhierarchy")]
+    [Permission("Organization", "Read")]
     public async Task<IActionResult> GetAllHierarchy()
     {
         var response = await Service.GetAllHierarchy();

@@ -11,12 +11,14 @@ using System.Threading.Tasks;
 using ZMS.Domain.Entities;
 using ZMS.Business.DTOs.Requests;
 using IMS.Business.Utitlity;
+using Microsoft.AspNetCore.Authorization;
+using ZMS.API.Middleware;
 
 namespace ZMS.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[AuthorizeAnyPolicy("AllAll", "AllOrganization", "ManageOrganization", "CreateOrganization")]
+[Authorize]
 public class BookingOrderController : BaseController<BookingOrderController, IBookingOrderService, BookingOrderReq, BookingOrderRes, BookingOrder>
 {
     public BookingOrderController(ILogger<BookingOrderController> logger, IBookingOrderService service) : base(logger, service)
@@ -24,6 +26,7 @@ public class BookingOrderController : BaseController<BookingOrderController, IBo
     }
 
     [HttpPost("status")]
+    [Permission("Organization", "Update")]
     public async Task<IActionResult> UpdateStatus([FromBody] BookingOrderStatus contractstatus)
     {
         try
@@ -46,6 +49,7 @@ public class BookingOrderController : BaseController<BookingOrderController, IBo
     }
 
     [HttpGet("{bookingOrderId}/consignments")]
+    [Permission("Organization", "Read")]
     public async Task<IActionResult> GetConsignmentsByBookingOrderId(Guid bookingOrderId)
     {
         try
@@ -64,6 +68,7 @@ public class BookingOrderController : BaseController<BookingOrderController, IBo
     }
 
     [HttpPost("{bookingOrderId}/consignments")]
+    [Permission("Organization", "Create")]
     public async Task<IActionResult> AddConsignment(Guid bookingOrderId, [FromBody] RelatedConsignmentReq reqModel)
     {
         try
@@ -82,6 +87,7 @@ public class BookingOrderController : BaseController<BookingOrderController, IBo
     }
 
     [HttpPut("{bookingOrderId}/consignments/{consignmentId}")]
+    [Permission("Organization", "Update")]
     public async Task<IActionResult> UpdateConsignment(Guid bookingOrderId, Guid consignmentId, [FromBody] RelatedConsignmentReq reqModel)
     {
         try
@@ -100,6 +106,7 @@ public class BookingOrderController : BaseController<BookingOrderController, IBo
     }
 
     [HttpDelete("{bookingOrderId}/consignments/{consignmentId}")]
+    [Permission("Organization", "Delete")]
     public async Task<IActionResult> DeleteConsignment(Guid bookingOrderId, Guid consignmentId)
     {
         try

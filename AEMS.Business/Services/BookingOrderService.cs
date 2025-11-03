@@ -79,34 +79,46 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
         }
     }
 
-    public async override Task<Response<Guid>> Add(BookingOrderReq reqModel)
-    {
-        try
-        {
-            var entity = reqModel.Adapt<BookingOrder>();
+    //public async override Task<Response<Guid>> Add(BookingOrderReq reqModel)
+    //{
+    //    try
+    //    {
+    //        var entity = reqModel.Adapt<BookingOrder>();
 
-            
+    //        var GetlastNo = await UnitOfWork._context.BookingOrder
+    //            .OrderByDescending(p => p.Id)
+    //            .FirstOrDefaultAsync();
 
-            var ss = await Repository.Add((BookingOrder)(entity as IMinBase ??
-                throw new InvalidOperationException(
-                "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
-            await UnitOfWork.SaveAsync();
-            return new Response<Guid>
-            {
-                Data = ss.Id ?? Guid.Empty,
-                StatusMessage = "Created successfully",
-                StatusCode = HttpStatusCode.Created
-            };
-        }
-        catch (Exception e)
-        {
-            return new Response<Guid>
-            {
-                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
-                StatusCode = HttpStatusCode.InternalServerError
-            };
-        }
-    }
+    //        if (GetlastNo == null || GetlastNo.OrderNo == "")
+    //        {
+    //            entity.OrderNo = "1";
+    //        }
+    //        else
+    //        {
+    //            int NewNo = int.Parse(GetlastNo.OrderNo) + 1;
+    //            entity.OrderNo = NewNo.ToString();
+    //        }
+
+    //        var ss = await Repository.Add((BookingOrder)(entity as IMinBase ??
+    //            throw new InvalidOperationException(
+    //            "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+    //        await UnitOfWork.SaveAsync();
+    //        return new Response<Guid>
+    //        {
+    //            Data = ss.Id ?? Guid.Empty,
+    //            StatusMessage = "Created successfully",
+    //            StatusCode = HttpStatusCode.Created
+    //        };
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return new Response<Guid>
+    //        {
+    //            StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+    //            StatusCode = HttpStatusCode.InternalServerError
+    //        };
+    //    }
+    //}
 
     public async override Task<Response<BookingOrderRes>> Get(Guid id)
     {

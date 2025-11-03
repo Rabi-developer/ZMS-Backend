@@ -6,7 +6,7 @@ namespace IMS.Domain.Entities
     public class Liabilities : GeneralBase
     {
 
-        public Guid? Id { get; set; }
+     
 
         public string? Listid { get; set; }
 

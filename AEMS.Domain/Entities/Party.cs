@@ -9,7 +9,7 @@ namespace IMS.Domain.Entities
     public class Party : GeneralBase
     {
         
-        public Guid? Id { get; set; }
+
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PartyNumber { get; set; }

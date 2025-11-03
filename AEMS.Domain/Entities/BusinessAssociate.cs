@@ -6,7 +6,7 @@ namespace IMS.Domain.Entities
 {
     public class BusinessAssociate : GeneralBase
     {
-        public Guid? Id { get; set; }
+  
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BusinessAssociateNumber { get; set; }
         public string? Name { get; set; }

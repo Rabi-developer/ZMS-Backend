@@ -6,7 +6,7 @@ namespace IMS.Domain.Entities
 {
     public class Brooker : GeneralBase
     {
-        public Guid? Id { get; set; }
+   
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BrookerNumber { get; set; }
         public string? Name { get; set; }

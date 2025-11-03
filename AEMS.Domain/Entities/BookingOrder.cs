@@ -7,7 +7,7 @@ namespace ZMS.Domain.Entities
 {
     public class BookingOrder : GeneralBase
     {
-        public Guid? Id { get; set; }
+       
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderNo { get; set; }
         public string? OrderDate { get; set; }

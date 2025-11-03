@@ -119,13 +119,31 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
         try
         {
             var entity = reqModel.Adapt<T>();
-            var ss = await Repository.Add((T)(entity as IMinBase ??
-                                                throw new InvalidOperationException(
-                                                    "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+            var entityAsBase = entity as IMinBase ?? 
+                throw new InvalidOperationException(
+                    "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.");
+            
+            // Add entity to repository
+            var addedEntity = await Repository.Add((T)entityAsBase);
+            
+            // Save changes to database
             await UnitOfWork.SaveAsync();
+            
+            // Get the actual ID after save - the tracked entity should have the correct ID
+            // Access through IMinBase to get the base class Id property
+            var savedId = ((IMinBase)addedEntity).Id;
+            
+            // If still empty, try to reload from database
+            if (savedId == Guid.Empty)
+            {
+                // Reload the entity to get database-generated values
+                await UnitOfWork._context.Entry(addedEntity).ReloadAsync();
+                savedId = ((IMinBase)addedEntity).Id;
+            }
+            
             return new Response<Guid>
             {
-                Data = ss.Id,
+                Data = savedId,
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };

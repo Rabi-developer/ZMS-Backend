@@ -6,7 +6,7 @@ namespace IMS.Domain.Entities
 {
     public class InspectionNote : GeneralBase
     {
-        public Guid? Id { get; set; }
+  
         public string IrnNumber { get; set; }
         public string IrnDate { get; set; }
         public string Seller { get; set; }

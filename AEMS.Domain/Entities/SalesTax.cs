@@ -6,7 +6,7 @@ namespace IMS.Domain.Entities
 {
     public class SalesTax : GeneralBase
     {
-        public Guid? Id { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SalesTaxNumber { get; set; }
         public string? TaxName { get; set; }

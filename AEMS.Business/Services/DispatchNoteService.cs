@@ -82,7 +82,7 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
 
             return new Response<Guid>
             {
-                Data = entity.Id.Value,
+                Data = entity.Id,
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };
@@ -160,7 +160,7 @@ public class DispatchNoteService : BaseService<DispatchNoteReq, DispatchNoteRes,
             var entity = reqModel.Adapt<DispatchNote>();
 
             // Fetch the existing entity with RelatedContracts
-            var existingEntity = await Repository.Get(entity.Id.Value, query => query.Include(p => p.RelatedContracts));
+            var existingEntity = await Repository.Get(entity.Id, query => query.Include(p => p.RelatedContracts));
             if (existingEntity == null)
             {
                 return new Response<DispatchNoteRes>

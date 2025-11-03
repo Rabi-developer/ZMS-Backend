@@ -62,7 +62,7 @@ public class TransporterService : BaseService<TransporterReq, TransporterRes, Tr
 
             return new Response<Guid>
             {
-                Data = entity.Id.Value,
+                Data = entity.Id,
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };

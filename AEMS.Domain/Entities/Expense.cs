@@ -6,7 +6,6 @@ namespace IMS.Domain.Entities
     public class Expense : GeneralBase
     {
 
-        public Guid? Id { get; set; }
 
         public string? Listid { get; set; }
         public string? Description { get; set; }

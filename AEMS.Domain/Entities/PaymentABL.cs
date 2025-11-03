@@ -7,7 +7,7 @@ namespace ZMS.Domain.Entities
 {
     public class PaymentABL : GeneralBase
     {
-        public Guid? Id { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PaymentNo { get; set; }
         public string? PaymentDate { get; set; }

@@ -59,7 +59,7 @@ namespace IMS.Business.Services
 
                 return new Response<Guid>
                 {
-                    Data = entity.Id.Value,
+                    Data = entity.Id,
                     StatusMessage = "Created successfully",
                     StatusCode = HttpStatusCode.Created
                 };
@@ -137,7 +137,7 @@ namespace IMS.Business.Services
 
                 return new Response<Guid>
                 {
-                    Data = entity.Id.Value,
+                    Data = entity.Id,
                     StatusMessage = "Updated successfully",
                     StatusCode = HttpStatusCode.OK
                 };

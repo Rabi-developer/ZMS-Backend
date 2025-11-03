@@ -7,7 +7,7 @@ namespace IMS.Domain.Entities
 {
     public class Vendor : GeneralBase
     {
-        public Guid? Id { get; set; }
+       
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int VendorNumber { get; set; }
         public string? Name { get; set; }

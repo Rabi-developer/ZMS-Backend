@@ -7,7 +7,7 @@ namespace ZMS.Domain.Entities
 {
     public class Receipt : GeneralBase
     {
-        public Guid? Id { get; set; }
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ReceiptNo { get; set; }
         public string? ReceiptDate { get; set; }

@@ -6,7 +6,7 @@ namespace IMS.Domain.Entities
 {
     public class Transporter : GeneralBase
     {
-        public Guid? Id { get; set; }
+     
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TransporterNumber { get; set; }

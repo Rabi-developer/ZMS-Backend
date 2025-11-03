@@ -62,7 +62,7 @@ public class SalesTaxService : BaseService<SalesTaxReq, SalesTaxRes, SalesTaxRep
 
             return new Response<Guid>
             {
-                Data = entity.Id.Value,
+                Data = entity.Id,
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };

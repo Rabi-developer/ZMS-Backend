@@ -60,7 +60,7 @@ public class VendorService : BaseService<VendorReq, VendorRes, VendorRepository,
 
             return new Response<Guid>
             {
-                Data = entity.Id.Value,
+                Data = entity.Id,
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };

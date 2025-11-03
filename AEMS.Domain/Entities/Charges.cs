@@ -7,7 +7,7 @@ namespace ZMS.Domain.Entities
 {
     public class Charges : GeneralBase
     {
-        public Guid? Id { get; set; }
+  
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ChargeNo { get; set; }
         public string? ChargeDate { get; set; }

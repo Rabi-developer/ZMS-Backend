@@ -7,7 +7,7 @@ namespace ZMS.Domain.Entities
 {
     public class Consignment : GeneralBase
     {
-        public Guid? Id { get; set; }
+       
         public string? ConsignmentMode { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -1,13 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using IMS.Domain.Base;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IMS.Domain.Entities
 {
     public class Vendor : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? VendorNumber { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int VendorNumber { get; set; }
         public string? Name { get; set; }
         public string? Address { get; set; }
         public string? Country { get; set; }

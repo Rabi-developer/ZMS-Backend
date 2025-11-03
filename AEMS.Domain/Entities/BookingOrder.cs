@@ -1,13 +1,15 @@
 ﻿using IMS.Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZMS.Domain.Entities
 {
     public class BookingOrder : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? OrderNo { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int OrderNo { get; set; }
         public string? OrderDate { get; set; }
         public string? Transporter { get; set; }
         public string? Vendor { get; set; }

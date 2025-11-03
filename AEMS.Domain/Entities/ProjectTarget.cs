@@ -42,7 +42,7 @@ public class ProjectTarget : GeneralBase
     public string? Attachments { get; set; }
 
     [Required]
-    public string EmployeeId { get; set; }
+    public Guid EmployeeId { get; set; }
 
     [Required]
     public string EmployeeType { get; set; }

@@ -103,7 +103,7 @@ namespace IMS.Business.Services
                 var lastVoucher = await UnitOfWork._context.EntryVoucher
                     .OrderByDescending(p => p.Id)
                     .FirstOrDefaultAsync();
-
+                /*
                 if (lastVoucher == null || string.IsNullOrWhiteSpace(lastVoucher.VoucherNo))
                 {
                     entity.VoucherNo = "1";
@@ -112,7 +112,7 @@ namespace IMS.Business.Services
                 {
                     int newNo = int.Parse(lastVoucher.VoucherNo) + 1;
                     entity.VoucherNo = newNo.ToString();
-                }
+                }*/
 
                 entity.CreatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
                 entity.CreationDate = DateTime.UtcNow.ToString("o");

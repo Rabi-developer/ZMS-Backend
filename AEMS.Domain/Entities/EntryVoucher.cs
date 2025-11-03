@@ -1,13 +1,15 @@
 ﻿using IMS.Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZMS.Domain.Entities
 {
     public class EntryVoucher : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? VoucherNo { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int VoucherNo { get; set; }
         public string? VoucherDate { get; set; }
         public string? ReferenceNo { get; set; }
         public string? ChequeNo { get; set; }

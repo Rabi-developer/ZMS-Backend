@@ -1,13 +1,15 @@
 ﻿using IMS.Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZMS.Domain.Entities
 {
     public class Charges : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? ChargeNo { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ChargeNo { get; set; }
         public string? ChargeDate { get; set; }
         public string? OrderNo { get; set; }
         public string? CreatedBy { get; set; }

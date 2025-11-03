@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using IMS.Business.Services;
 using ZMS.API.Utilities;
+using IMS.Business.Configurations;
 
 
 
@@ -75,7 +76,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-
+// Configure Mapster to prevent circular references
+MapsterConfig.Configure();
 
 app.UseCors("AllowAll");
 

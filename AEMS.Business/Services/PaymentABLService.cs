@@ -66,7 +66,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
     }
 
 
-    public async override Task<Response<Guid>> Add(PaymentABLReq reqModel)
+  /*  public async override Task<Response<Guid>> Add(PaymentABLReq reqModel)
     {
         try
         {
@@ -105,7 +105,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
     public async virtual Task<Response<PaymentABLRes>> Get(Guid id)
     {

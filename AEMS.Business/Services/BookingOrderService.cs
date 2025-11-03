@@ -79,7 +79,7 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
         }
     }
 
-    public async override Task<Response<Guid>> Add(BookingOrderReq reqModel)
+    /*public async override Task<Response<Guid>> Add(BookingOrderReq reqModel)
     {
         try
         {
@@ -118,7 +118,7 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
     public async override Task<Response<BookingOrderRes>> Get(Guid id)
     {

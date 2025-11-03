@@ -1,12 +1,18 @@
 ﻿using IMS.Domain.Base;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IMS.Domain.Entities
 {
     public class Party : GeneralBase
     {
+        
         public Guid? Id { get; set; }
-        public string? PartyNumber { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int PartyNumber { get; set; }
         public string? Name { get; set; }
         public string? Currency { get; set; }
         public string? Address { get; set; }

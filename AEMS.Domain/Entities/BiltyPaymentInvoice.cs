@@ -1,13 +1,15 @@
 ﻿using IMS.Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZMS.Domain.Entities
 {
     public class BiltyPaymentInvoice : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? InvoiceNo { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int InvoiceNo { get; set; }
         public string PaymentDate { get; set; }
         public string? CreatedBy { get; set; }
         public string? CreationDate { get; set; }

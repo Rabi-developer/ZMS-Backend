@@ -42,6 +42,51 @@ public class AblRevenueService : BaseService<AblRevenueReq, AblRevenueRes, AblRe
         return await Repository.GetByParent(ParentId);
     }
 
+    public override async Task<Response<IList<AblRevenueRes>>> GetAllByUser(Pagination pagination, Guid userId, bool onlyusers = true)
+    {
+        try
+        {
+            var (pag, data) = await Repository.GetAllByUser(pagination, onlyusers, userId);
+
+            // Manually map to prevent circular references
+            var res = data.Select(item => new AblRevenueRes
+            {
+                Id = item.Id,
+                Listid = item.Listid,
+                Description = item.Description,
+                ParentAccountId = item.ParentAccountId,
+                DueDate = item.DueDate,
+                FixedAmount = item.FixedAmount,
+                Paid = item.Paid,
+                CreatedBy = item.CreatedBy,
+                CreatedDateTime = item.CreatedDateTime,
+                ModifiedBy = item.ModifiedBy,
+                ModifiedDateTime = item.ModifiedDateTime,
+                IsActive = item.IsActive,
+                IsDeleted = item.IsDeleted,
+                // Don't load navigation properties here to avoid circular references
+                ParentAccount = null,
+                Children = null
+            }).ToList();
+
+            return new Response<IList<AblRevenueRes>>
+            {
+                Data = res,
+                Misc = pag,
+                StatusMessage = "Fetch successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<IList<AblRevenueRes>>
+            {
+                StatusMessage = e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
     public async override Task<Response<Guid>> Add(AblRevenueReq reqModel)
     {
         try
@@ -157,13 +202,12 @@ public class AblRevenueService : BaseService<AblRevenueReq, AblRevenueRes, AblRe
         {
             var pagination = paginate ?? new Pagination();
 
-            // Include AblRevenueProducts in the query
+            // Get data WITHOUT navigation properties to prevent circular references
             var (pag, data) = await Repository.GetAll(
-           pagination,
-           query => query.Include(x => x.ParentAccount)
-           .AsNoTracking()
-           .OrderBy(x => x.Id)
-);
+               pagination,
+               query => query.AsNoTracking()
+                           .OrderBy(x => x.Id)
+            );
 
             Console.WriteLine($"Fetched {data.Count} records");
 
@@ -178,26 +222,26 @@ public class AblRevenueService : BaseService<AblRevenueReq, AblRevenueRes, AblRe
                 };
             }
 
-
-            // Map the data to the response DTO
-            var AblRevenueResList = data.Adapt<List<AblRevenueRes>>();
-
-            //// Manually map AblRevenueProducts to Products in the response
-            //foreach (var AblRevenueRes in AblRevenueResList)
-            //{
-            //    var AblRevenue = data.FirstOrDefault(t => t.Id == AblRevenueRes.Id);
-            //    if (AblRevenue != null)
-            //    {
-            //        AblRevenueRes.Products = AblRevenue.AblRevenueProducts
-            //            .Select(tp => new AblRevenueProductRes
-            //            {
-            //                ProductId = tp.ProductId,
-            //                Quantity = tp.Quantity,
-            //                Condition = tp.Condition
-            //            })
-            //            .ToList();
-            //    }
-            //}
+            // Manually map to prevent circular references
+            var AblRevenueResList = data.Select(item => new AblRevenueRes
+            {
+                Id = item.Id,
+                Listid = item.Listid,
+                Description = item.Description,
+                ParentAccountId = item.ParentAccountId,
+                DueDate = item.DueDate,
+                FixedAmount = item.FixedAmount,
+                Paid = item.Paid,
+                CreatedBy = item.CreatedBy,
+                CreatedDateTime = item.CreatedDateTime,
+                ModifiedBy = item.ModifiedBy,
+                ModifiedDateTime = item.ModifiedDateTime,
+                IsActive = item.IsActive,
+                IsDeleted = item.IsDeleted,
+                // Don't load navigation properties here to avoid circular references
+                ParentAccount = null,
+                Children = null
+            }).ToList();
 
             return new Response<IList<AblRevenueRes>>
             {

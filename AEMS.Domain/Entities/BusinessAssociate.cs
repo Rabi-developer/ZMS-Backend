@@ -1,12 +1,14 @@
 ﻿using IMS.Domain.Base;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IMS.Domain.Entities
 {
     public class BusinessAssociate : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? BusinessAssociateNumber { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int BusinessAssociateNumber { get; set; }
         public string? Name { get; set; }
         public string? Mobile { get; set; }
         public string? Address { get; set; }

@@ -6,7 +6,6 @@ namespace ZMS.Domain.Entities
     public class ReceiptReq
     {
         public Guid? Id { get; set; }
-        public string? ReceiptNo { get; set; }
         public string? ReceiptDate { get; set; }
         public string? PaymentMode { get; set; }
         public string? BankName { get; set; }

@@ -1,12 +1,14 @@
 ﻿using IMS.Domain.Base;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IMS.Domain.Entities
 {
     public class SalesTax : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? SalesTaxNumber { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int SalesTaxNumber { get; set; }
         public string? TaxName { get; set; }
         public string? TaxType { get; set; }
         public string? Percentage { get; set; }

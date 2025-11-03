@@ -487,7 +487,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "925c46a6-8358-4f0e-8637-7c3ed09f24d9",
+                            ConcurrencyStamp = "a4aa14bb-d0e8-4fb4-baf9-a1632f0de29e",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@ZMS.com",
@@ -499,7 +499,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ZMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEETkpXP4kVEm5JTosXfZI7lMpaV2SYicTqQSeBWZrwrk9YGCRTYh0jdPfjWVEBPpvA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB/9pOCz8aU2PY/fqJNmIvVi/AZDjLgTVyVlpLB5RXhSnkzCO2nqatGG/VtHZV2W/w==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -797,8 +797,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BrookerNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("BrookerNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BrookerNumber"));
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -838,8 +841,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BusinessAssociateNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("BusinessAssociateNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusinessAssociateNumber"));
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -2034,23 +2040,23 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.OrganizationUser", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserId", "OrganizationId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasKey("OrganizationId", "UserId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("OrganizationUsers");
 
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
-                            OrganizationId = new Guid("3ab833eb-917b-4d11-8d13-08dc96dae48d")
+                            OrganizationId = new Guid("3ab833eb-917b-4d11-8d13-08dc96dae48d"),
+                            UserId = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5")
                         });
                 });
 
@@ -2146,8 +2152,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Ntn")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PartyNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PartyNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PartyNumber"));
 
                     b.Property<string>("ReceivableAccount")
                         .HasColumnType("nvarchar(max)");
@@ -2426,11 +2435,7 @@ namespace ZMS.Domain.Migrations
                     b.Property<DateTime?>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("EmployeeId1")
+                    b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EmployeeType")
@@ -2487,7 +2492,7 @@ namespace ZMS.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId1");
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("ProjectTargets");
                 });
@@ -2571,8 +2576,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("ReceivableDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SalesTaxNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("SalesTaxNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SalesTaxNumber"));
 
                     b.Property<string>("TaxName")
                         .HasColumnType("nvarchar(max)");
@@ -3181,8 +3189,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Tel")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TransporterNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("TransporterNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransporterNumber"));
 
                     b.Property<string>("Website")
                         .HasColumnType("nvarchar(max)");
@@ -3300,8 +3311,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Stn")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VendorNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("VendorNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VendorNumber"));
 
                     b.HasKey("Id");
 
@@ -3736,8 +3750,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("CreationDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InvoiceNo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("InvoiceNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceNo"));
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -3878,8 +3895,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("OrderDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OrderNo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("OrderNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderNo"));
 
                     b.Property<string>("ReachedDate")
                         .HasColumnType("nvarchar(max)");
@@ -3974,8 +3994,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("ChargeDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ChargeNo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ChargeNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChargeNo"));
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -4218,8 +4241,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Port")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReceiptNo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ReceiptNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReceiptNo"));
 
                     b.Property<float?>("ReceivedAmount")
                         .HasColumnType("real");
@@ -4600,20 +4626,14 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.DeliveryBreakup", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ContractId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ContractId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("ConversionContractRowId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ConversionContractRowId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DeliveryDate")
@@ -4622,13 +4642,7 @@ namespace ZMS.Domain.Migrations
                     b.Property<Guid?>("DietContractRowId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("DietContractRowId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("MultiWidthContractRowId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("MultiWidthContractRowId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Qty")
@@ -4638,19 +4652,11 @@ namespace ZMS.Domain.Migrations
 
                     b.HasIndex("ContractId");
 
-                    b.HasIndex("ContractId1");
-
                     b.HasIndex("ConversionContractRowId");
-
-                    b.HasIndex("ConversionContractRowId1");
 
                     b.HasIndex("DietContractRowId");
 
-                    b.HasIndex("DietContractRowId1");
-
                     b.HasIndex("MultiWidthContractRowId");
-
-                    b.HasIndex("MultiWidthContractRowId1");
 
                     b.ToTable("DeliveryBreakup");
                 });
@@ -4912,8 +4918,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("VoucherDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VoucherNo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("VoucherNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VoucherNo"));
 
                     b.HasKey("Id");
 
@@ -5191,8 +5200,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("PaymentMode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PaymentNo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PaymentNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentNo"));
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -5337,8 +5349,11 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("ReceiptDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReceiptNo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ReceiptNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReceiptNo"));
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -6079,9 +6094,10 @@ namespace ZMS.Domain.Migrations
                 {
                     b.HasOne("IMS.Domain.Entities.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId1")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_ProjectTarget_Employee");
 
                     b.Navigation("Employee");
                 });
@@ -6248,45 +6264,33 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.DeliveryBreakup", b =>
                 {
-                    b.HasOne("ZMS.Domain.Entities.Contract", null)
+                    b.HasOne("ZMS.Domain.Entities.Contract", "Contract")
                         .WithMany("BuyerDeliveryBreakups")
                         .HasForeignKey("ContractId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("ZMS.Domain.Entities.Contract", null)
-                        .WithMany("SellerDeliveryBreakups")
-                        .HasForeignKey("ContractId1")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ZMS.Domain.Entities.ConversionContractRow", null)
+                    b.HasOne("ZMS.Domain.Entities.ConversionContractRow", "ConversionContractRow")
                         .WithMany("BuyerDeliveryBreakups")
                         .HasForeignKey("ConversionContractRowId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("ZMS.Domain.Entities.ConversionContractRow", null)
-                        .WithMany("SellerDeliveryBreakups")
-                        .HasForeignKey("ConversionContractRowId1")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ZMS.Domain.Entities.DietContractRow", null)
+                    b.HasOne("ZMS.Domain.Entities.DietContractRow", "DietContractRow")
                         .WithMany("BuyerDeliveryBreakups")
                         .HasForeignKey("DietContractRowId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("ZMS.Domain.Entities.DietContractRow", null)
-                        .WithMany("SellerDeliveryBreakups")
-                        .HasForeignKey("DietContractRowId1")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ZMS.Domain.Entities.MultiWidthContractRow", null)
+                    b.HasOne("ZMS.Domain.Entities.MultiWidthContractRow", "MultiWidthContractRow")
                         .WithMany("BuyerDeliveryBreakups")
                         .HasForeignKey("MultiWidthContractRowId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("ZMS.Domain.Entities.MultiWidthContractRow", null)
-                        .WithMany("SellerDeliveryBreakups")
-                        .HasForeignKey("MultiWidthContractRowId1")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.Navigation("Contract");
+
+                    b.Navigation("ConversionContractRow");
+
+                    b.Navigation("DietContractRow");
+
+                    b.Navigation("MultiWidthContractRow");
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.DietContractRow", b =>
@@ -6492,22 +6496,16 @@ namespace ZMS.Domain.Migrations
                     b.Navigation("DietContractRow");
 
                     b.Navigation("MultiWidthContractRow");
-
-                    b.Navigation("SellerDeliveryBreakups");
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.ConversionContractRow", b =>
                 {
                     b.Navigation("BuyerDeliveryBreakups");
-
-                    b.Navigation("SellerDeliveryBreakups");
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.DietContractRow", b =>
                 {
                     b.Navigation("BuyerDeliveryBreakups");
-
-                    b.Navigation("SellerDeliveryBreakups");
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.DispatchNote", b =>
@@ -6528,8 +6526,6 @@ namespace ZMS.Domain.Migrations
             modelBuilder.Entity("ZMS.Domain.Entities.MultiWidthContractRow", b =>
                 {
                     b.Navigation("BuyerDeliveryBreakups");
-
-                    b.Navigation("SellerDeliveryBreakups");
                 });
 
             modelBuilder.Entity("ZMS.Domain.Entities.Payment", b =>

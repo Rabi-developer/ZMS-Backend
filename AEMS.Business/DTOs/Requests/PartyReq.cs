@@ -1,13 +1,14 @@
 ﻿using IMS.Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IMS.Business.DTOs.Requests
 {
-    public class PartyReq : GeneralBase
+    public class PartyReq 
     {
         public Guid? Id { get; set; }
-        public string? PartyNumber { get; set; }
         public string? Name { get; set; }
         public string? Currency { get; set; }
         public string? Address { get; set; }

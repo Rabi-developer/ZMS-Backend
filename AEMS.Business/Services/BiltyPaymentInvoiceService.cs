@@ -81,7 +81,7 @@ public class BiltyPaymentInvoiceService : BaseService<BiltyPaymentInvoiceReq, Bi
 
 
 
-    public async override Task<Response<Guid>> Add(BiltyPaymentInvoiceReq reqModel)
+  /*  public async override Task<Response<Guid>> Add(BiltyPaymentInvoiceReq reqModel)
     {
         try
         {
@@ -123,7 +123,7 @@ public class BiltyPaymentInvoiceService : BaseService<BiltyPaymentInvoiceReq, Bi
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
     public async virtual Task<Response<BiltyPaymentInvoiceRes>> Get(Guid id)
     {
         try

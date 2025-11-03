@@ -1,6 +1,7 @@
 ﻿using IMS.Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZMS.Domain.Entities
 {
@@ -8,7 +9,9 @@ namespace ZMS.Domain.Entities
     {
         public Guid? Id { get; set; }
         public string? ConsignmentMode { get; set; }
-        public string? ReceiptNo { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ReceiptNo { get; set; }
         public string? OrderNo { get; set; }
         public string? BiltyNo { get; set; }
         public string? Date { get; set; }

@@ -7,7 +7,7 @@ namespace IMS.Business.DTOs.Requests
     public class TransporterRes : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? TransporterNumber { get; set; }
+        public int? TransporterNumber { get; set; }
         public string? Name { get; set; }
         public string? Currency { get; set; }
         public string? Address { get; set; }

@@ -7,7 +7,7 @@ namespace ZMS.Domain.Entities
     public class BiltyPaymentInvoiceRes : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? InvoiceNo { get; set; }
+        public int? InvoiceNo { get; set; }
         public string PaymentDate { get; set; }
         public string? CreatedBy { get; set; }
         public string? CreationDate { get; set; }

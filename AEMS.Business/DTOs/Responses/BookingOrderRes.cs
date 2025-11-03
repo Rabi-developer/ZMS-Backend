@@ -8,7 +8,7 @@ namespace ZMS.Domain.Entities
     public class BookingOrderRes
     {
         public Guid? Id { get; set; }
-        public string? OrderNo { get; set; }
+        public int? OrderNo { get; set; }
         public string? OrderDate { get; set; }
         public string? Transporter { get; set; }
         public string? Vendor { get; set; }

@@ -80,7 +80,7 @@ public class ChargesService : BaseService<ChargesReq, ChargesRes, ChargesReposit
 
 
 
-    public async override Task<Response<Guid>> Add(ChargesReq reqModel)
+   /* public async override Task<Response<Guid>> Add(ChargesReq reqModel)
     {
         try
         {
@@ -119,7 +119,7 @@ public class ChargesService : BaseService<ChargesReq, ChargesRes, ChargesReposit
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
     public async virtual Task<Response<ChargesRes>> Get(Guid id)
     {
         try

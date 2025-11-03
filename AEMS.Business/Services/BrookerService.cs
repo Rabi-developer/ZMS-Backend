@@ -37,7 +37,7 @@ public class BrookerService : BaseService<BrookerReq, BrookerRes, BrookerReposit
 
 
 
-    public override async Task<Response<Guid>> Add(BrookerReq reqModel)
+   /* public override async Task<Response<Guid>> Add(BrookerReq reqModel)
     {
         try
         {
@@ -73,6 +73,6 @@ public class BrookerService : BaseService<BrookerReq, BrookerRes, BrookerReposit
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
 }

@@ -39,7 +39,7 @@ public class SalesTaxService : BaseService<SalesTaxReq, SalesTaxRes, SalesTaxRep
 
 
 
-    public override async Task<Response<Guid>> Add(SalesTaxReq reqModel)
+   /* public override async Task<Response<Guid>> Add(SalesTaxReq reqModel)
     {
         try
         {
@@ -75,6 +75,6 @@ public class SalesTaxService : BaseService<SalesTaxReq, SalesTaxRes, SalesTaxRep
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
 }

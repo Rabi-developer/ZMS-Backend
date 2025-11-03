@@ -37,7 +37,7 @@ public class PartyService : BaseService<PartyReq, PartyRes, PartyRepository, Par
 
    
 
-    public override async Task<Response<Guid>> Add(PartyReq reqModel)
+   /* public override async Task<Response<Guid>> Add(PartyReq reqModel)
     {
         try
         {
@@ -70,6 +70,6 @@ public class PartyService : BaseService<PartyReq, PartyRes, PartyRepository, Par
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
 }

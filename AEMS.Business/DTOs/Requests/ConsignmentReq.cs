@@ -10,12 +10,11 @@ namespace ZMS.Domain.Entities
 
         public Guid? Id { get; set; }
         public string? ConsignmentMode { get; set; }
-        public string? ReceiptNo { get; set; }
         public string? OrderNo { get; set; }
         public string? BiltyNo { get; set; }
         public string? Date { get; set; }
-        public string? ConsignmentNo { get; set; }
         public string? Consignor { get; set; }
+        public string? ConsignmentNo { get; set; }
         public string? ConsignmentDate { get; set; }
         public string? CreditAllowed { get; set; }
         public string? Consignee { get; set; }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ZMS.Domain.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class ZMSABL : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -172,6 +172,30 @@ namespace ZMS.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BiltyPaymentInvoice",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InvoiceNo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PaymentDate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BiltyPaymentInvoice", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BlendRatio",
                 columns: table => new
                 {
@@ -189,6 +213,51 @@ namespace ZMS.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BlendRatio", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookingOrder",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderNo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Transporter = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Vendor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ContainerNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DriverName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ContactNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Munshayana = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CargoWeight = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BookedDays = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DetentionDays = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FromLocation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DepartureDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Via1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Via2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ToLocation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpectedReachedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReachedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleMunshyana = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ContractOwner = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingOrder", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -215,7 +284,8 @@ namespace ZMS.Domain.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BrookerNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BrookerNumber = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Mobile = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -236,7 +306,8 @@ namespace ZMS.Domain.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BusinessAssociateNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BusinessAssociateNumber = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Mobile = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -333,6 +404,31 @@ namespace ZMS.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Charges",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ChargeNo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChargeDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrderNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Charges", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommisionInfo",
                 columns: table => new
                 {
@@ -373,6 +469,59 @@ namespace ZMS.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CommisionTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Consignment",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ConsignmentMode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReceiptNo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BiltyNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConsignmentNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Consignor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConsignmentDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreditAllowed = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Consignee = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReceiverName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReceiverContactNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShippingLine = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ContainerNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Port = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Destination = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FreightFrom = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalQty = table.Column<float>(type: "real", nullable: true),
+                    Freight = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SbrTax = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SprAmount = table.Column<float>(type: "real", nullable: true),
+                    DeliveryCharges = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InsuranceCharges = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TollTax = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OtherCharges = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalAmount = table.Column<float>(type: "real", nullable: true),
+                    ReceivedAmount = table.Column<float>(type: "real", nullable: true),
+                    IncomeTaxDed = table.Column<float>(type: "real", nullable: true),
+                    IncomeTaxAmount = table.Column<float>(type: "real", nullable: true),
+                    DeliveryDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Consignment", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -613,6 +762,39 @@ namespace ZMS.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_EndUses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EntryVoucher",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VoucherNo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VoucherDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReferenceNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChequeNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DepositSlipNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentMode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChequeDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaidTo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Narration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EntryVoucher", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -925,7 +1107,8 @@ namespace ZMS.Domain.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PartyNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PartyNumber = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Currency = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -952,6 +1135,42 @@ namespace ZMS.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Party", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentABL",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PaymentNo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PaymentDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentMode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChequeNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChequeDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaidTo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaidAmount = table.Column<float>(type: "real", nullable: true),
+                    Advanced = table.Column<float>(type: "real", nullable: true),
+                    AdvancedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PDC = table.Column<float>(type: "real", nullable: true),
+                    PDCDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentAmount = table.Column<float>(type: "real", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentABL", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1051,6 +1270,40 @@ namespace ZMS.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Receipt",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReceiptNo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReceiptDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentMode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChequeNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChequeDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Party = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReceiptAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SalesTaxOption = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SalesTaxRate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WhtOnSbr = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdationDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Receipt", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Revenues",
                 columns: table => new
                 {
@@ -1081,7 +1334,8 @@ namespace ZMS.Domain.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SalesTaxNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SalesTaxNumber = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     TaxName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TaxType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Percentage = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1289,7 +1543,8 @@ namespace ZMS.Domain.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TransporterNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransporterNumber = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Currency = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1364,7 +1619,8 @@ namespace ZMS.Domain.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VendorNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VendorNumber = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1466,6 +1722,142 @@ namespace ZMS.Domain.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BiltyPaymentInvoiceLine",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsAdditionalLine = table.Column<bool>(type: "bit", nullable: false),
+                    VehicleNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrderNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Amount = table.Column<float>(type: "real", nullable: true),
+                    NameCharges = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AmountCharges = table.Column<float>(type: "real", nullable: true),
+                    Munshayana = table.Column<float>(type: "real", nullable: true),
+                    Broker = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DueDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BiltyPaymentInvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BiltyPaymentInvoiceLine", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BiltyPaymentInvoiceLine_BiltyPaymentInvoice_BiltyPaymentInvoiceId",
+                        column: x => x.BiltyPaymentInvoiceId,
+                        principalTable: "BiltyPaymentInvoice",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RelatedConsignments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BookingOrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    BiltyNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReceiptNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Consignor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Consignee = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Item = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Qty = table.Column<int>(type: "int", nullable: true),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    RecvAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    DelDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Files = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RelatedConsignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RelatedConsignments_BookingOrder_BookingOrderId",
+                        column: x => x.BookingOrderId,
+                        principalTable: "BookingOrder",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChargeLine",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Charge = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BiltyNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Vehicle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaidTo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Contact = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Amount = table.Column<float>(type: "real", nullable: true),
+                    ChargesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChargeLine", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChargeLine_Charges_ChargesId",
+                        column: x => x.ChargesId,
+                        principalTable: "Charges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChargesPayments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PaidAmount = table.Column<float>(type: "real", nullable: true),
+                    BankCash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChqNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChqDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PayNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChargesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChargesPayments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChargesPayments_Charges_ChargesId",
+                        column: x => x.ChargesId,
+                        principalTable: "Charges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConsignmentItem",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Desc = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Qty = table.Column<float>(type: "real", nullable: true),
+                    Rate = table.Column<float>(type: "real", nullable: true),
+                    QtyUnit = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Weight = table.Column<float>(type: "real", nullable: true),
+                    WeightUnit = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConsignmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConsignmentItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConsignmentItem_Consignment_ConsignmentId",
+                        column: x => x.ConsignmentId,
+                        principalTable: "Consignment",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1679,12 +2071,11 @@ namespace ZMS.Domain.Migrations
                     SellerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StepsToComplete = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Attachments = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EmployeeId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EmployeeType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ApprovedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ApprovalDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EmployeeId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1696,9 +2087,38 @@ namespace ZMS.Domain.Migrations
                 {
                     table.PrimaryKey("PK_ProjectTargets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectTargets_Employees_EmployeeId1",
-                        column: x => x.EmployeeId1,
+                        name: "FK_ProjectTarget_Employee",
+                        column: x => x.EmployeeId,
                         principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VoucherDetail",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Account1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Debit1 = table.Column<float>(type: "real", nullable: true),
+                    Credit1 = table.Column<float>(type: "real", nullable: true),
+                    CurrentBalance1 = table.Column<float>(type: "real", nullable: true),
+                    ProjectedBalance1 = table.Column<float>(type: "real", nullable: true),
+                    Narration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Account2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Debit2 = table.Column<float>(type: "real", nullable: true),
+                    Credit2 = table.Column<float>(type: "real", nullable: true),
+                    CurrentBalance2 = table.Column<float>(type: "real", nullable: true),
+                    ProjectedBalance2 = table.Column<float>(type: "real", nullable: true),
+                    EntryVoucherId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VoucherDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VoucherDetail_EntryVoucher_EntryVoucherId",
+                        column: x => x.EntryVoucherId,
+                        principalTable: "EntryVoucher",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1841,6 +2261,32 @@ namespace ZMS.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PaymentABLItem",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VehicleNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrderNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Charges = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrderDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DueDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpenseAmount = table.Column<float>(type: "real", nullable: true),
+                    Balance = table.Column<float>(type: "real", nullable: true),
+                    PaidAmount = table.Column<float>(type: "real", nullable: true),
+                    PaymentABLId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentABLItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaymentABLItem_PaymentABL_PaymentABLId",
+                        column: x => x.PaymentABLId,
+                        principalTable: "PaymentABL",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RelatedInvoice",
                 columns: table => new
                 {
@@ -1863,6 +2309,32 @@ namespace ZMS.Domain.Migrations
                         name: "FK_RelatedInvoice_Payments_PaymentId",
                         column: x => x.PaymentId,
                         principalTable: "Payments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReceiptItem",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BiltyNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BiltyDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BiltyAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    SrbAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ReceiptAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ReceiptId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReceiptItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ReceiptItem_Receipt_ReceiptId",
+                        column: x => x.ReceiptId,
+                        principalTable: "Receipt",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1901,13 +2373,9 @@ namespace ZMS.Domain.Migrations
                     Qty = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeliveryDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ContractId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ContractId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ConversionContractRowId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ConversionContractRowId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DietContractRowId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DietContractRowId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    MultiWidthContractRowId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    MultiWidthContractRowId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    MultiWidthContractRowId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1919,20 +2387,8 @@ namespace ZMS.Domain.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DeliveryBreakup_ConversionContractRow_ConversionContractRowId1",
-                        column: x => x.ConversionContractRowId1,
-                        principalTable: "ConversionContractRow",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_DeliveryBreakup_DietContractRow_DietContractRowId",
                         column: x => x.DietContractRowId,
-                        principalTable: "DietContractRow",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DeliveryBreakup_DietContractRow_DietContractRowId1",
-                        column: x => x.DietContractRowId1,
                         principalTable: "DietContractRow",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -1943,20 +2399,8 @@ namespace ZMS.Domain.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DeliveryBreakup_MultiWidthContractRow_MultiWidthContractRowId1",
-                        column: x => x.MultiWidthContractRowId1,
-                        principalTable: "MultiWidthContractRow",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_DeliveryBreakup_contracts_ContractId",
                         column: x => x.ContractId,
-                        principalTable: "contracts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DeliveryBreakup_contracts_ContractId1",
-                        column: x => x.ContractId1,
                         principalTable: "contracts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -2094,6 +2538,7 @@ namespace ZMS.Domain.Migrations
                     ProfilePictureId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -2149,7 +2594,7 @@ namespace ZMS.Domain.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrganizationUsers", x => new { x.UserId, x.OrganizationId });
+                    table.PrimaryKey("PK_OrganizationUsers", x => new { x.OrganizationId, x.UserId });
                     table.ForeignKey(
                         name: "FK_OrganizationUsers_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -2445,6 +2890,8 @@ namespace ZMS.Domain.Migrations
                 {
                     { new Guid("08f4350a-de87-4bae-90bd-f340b4efe46c"), null, true, false, "Guardian", "GUARDIAN" },
                     { new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9"), null, true, false, "BranchAdmin", "BRANCHADMIN" },
+                    { new Guid("4b060397-f167-419e-a368-402bb48877c8"), null, true, false, "User", "USER" },
+                    { new Guid("a1a1a1a1-0000-1111-2222-333344445555"), null, true, false, "Owner", "OWNER" },
                     { new Guid("bac8928d-02bf-419c-86a4-79947a6cb457"), null, true, false, "Student", "STUDENT" },
                     { new Guid("e900c1de-a4ab-498c-acbd-1097713f19a1"), null, true, false, "OrganizationAdmin", "ORGANIZATIONADMIN" },
                     { new Guid("f166c1de-c4ab-456c-acfd-1050013f19b0"), null, true, false, "SuperAdmin", "SUPERADMIN" }
@@ -2452,28 +2899,41 @@ namespace ZMS.Domain.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "AddressId", "ConcurrencyStamp", "CreatedBy", "CreatedDateTime", "Email", "EmailConfirmed", "FirstName", "IsActive", "IsDeleted", "LastName", "LockoutEnabled", "LockoutEnd", "MiddleName", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureId", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"), 0, null, "aa65a8f0-4bf4-40ac-bb7c-c66fc6bcaae6", new Guid("00000000-0000-0000-0000-000000000000"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@AEMS.com", false, "Super", true, false, "Admin", false, null, null, "ADMIN@AEMS.COM", "SUPERADMIN", "AQAAAAIAAYagAAAAEBy9Cjr9OC8QIQ4lhGVr02vge1MGFzWRIujoQYoxowZcYhq5D+j/Xk0xOuf/sAtK7g==", null, false, null, "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c", false, "SuperAdmin" });
+                columns: new[] { "Id", "AccessFailedCount", "AddressId", "ConcurrencyStamp", "CreatedBy", "CreatedDateTime", "Email", "EmailConfirmed", "FirstName", "IsActive", "IsDeleted", "LastName", "LockoutEnabled", "LockoutEnd", "MiddleName", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureId", "SecurityStamp", "TwoFactorEnabled", "UserId", "UserName" },
+                values: new object[] { new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"), 0, null, "a4aa14bb-d0e8-4fb4-baf9-a1632f0de29e", new Guid("00000000-0000-0000-0000-000000000000"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@ZMS.com", false, "Super", true, false, "Admin", false, null, null, "ADMIN@ZMS.COM", "SUPERADMIN", "AQAAAAIAAYagAAAAEB/9pOCz8aU2PY/fqJNmIvVi/AZDjLgTVyVlpLB5RXhSnkzCO2nqatGG/VtHZV2W/w==", null, false, null, "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c", false, null, "SuperAdmin" });
 
             migrationBuilder.InsertData(
                 table: "Organizations",
                 columns: new[] { "Id", "AddressLine1", "AddressLine2", "City", "Country", "CreatedBy", "CreatedDateTime", "Description", "Email", "IsActive", "IsDeleted", "ModifiedBy", "ModifiedDateTime", "Name", "State", "Website", "Zip" },
-                values: new object[] { new Guid("3ab833eb-917b-4d11-8d13-08dc96dae48d"), "", "", "LHR", "Pakistan", new Guid("00000000-0000-0000-0000-000000000000"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "An Education Management System", "admin@AEMS.com", true, false, null, null, "AEMS", "Punjab", "http://www.AEMS.com", "5400" });
+                values: new object[] { new Guid("3ab833eb-917b-4d11-8d13-08dc96dae48d"), "", "", "LHR", "Pakistan", new Guid("00000000-0000-0000-0000-000000000000"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Commision Based Company", "zms@gmail.com", true, false, null, null, "ZMS", "Punjab", "http://www.ZMS.com", "5400" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
                 columns: new[] { "Id", "ClaimType", "ClaimValue", "Discriminator", "RoleId" },
                 values: new object[,]
                 {
-                    { 1, "Resource_All", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("f166c1de-c4ab-456c-acfd-1050013f19b0") },
-                    { 2, "Resource_Organization", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("e900c1de-a4ab-498c-acbd-1097713f19a1") },
-                    { 3, "Resource_OrganizationUser", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("e900c1de-a4ab-498c-acbd-1097713f19a1") },
-                    { 4, "Resource_Home", "Read", "IdentityRoleClaim<Guid>", new Guid("bac8928d-02bf-419c-86a4-79947a6cb457") },
-                    { 5, "Resource_Home", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9") },
-                    { 6, "Resource_Branch", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9") },
-                    { 7, "Resource_Section", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9") },
-                    { 8, "Resource_Department", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9") },
-                    { 11, "Resource_Home", "Read", "IdentityRoleClaim<Guid>", new Guid("08f4350a-de87-4bae-90bd-f340b4efe46c") }
+                    { 1, "All", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("f166c1de-c4ab-456c-acfd-1050013f19b0") },
+                    { 2, "Organization", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("e900c1de-a4ab-498c-acbd-1097713f19a1") },
+                    { 3, "OrganizationUser", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("e900c1de-a4ab-498c-acbd-1097713f19a1") },
+                    { 4, "Home", "Read", "IdentityRoleClaim<Guid>", new Guid("bac8928d-02bf-419c-86a4-79947a6cb457") },
+                    { 5, "Home", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9") },
+                    { 6, "Branch", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9") },
+                    { 7, "Section", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9") },
+                    { 8, "Department", "Create,Read,Update,Delete,Execute", "IdentityRoleClaim<Guid>", new Guid("0931b2b3-66c1-4a88-a0f4-a1b9fa5dbec9") },
+                    { 11, "Home", "Read", "IdentityRoleClaim<Guid>", new Guid("08f4350a-de87-4bae-90bd-f340b4efe46c") },
+                    { 121, "Hotel", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 131, "Organization", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 141, "Branch", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 151, "Department", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 155, "Room", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 159, "Booking", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 169, "Bank", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 179, "Agent", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 189, "AgentWork", "Read,Create,Update,Execute,Delete", "IdentityRoleClaim<Guid>", new Guid("a1a1a1a1-0000-1111-2222-333344445555") },
+                    { 345, "Hotel", "Read", "IdentityRoleClaim<Guid>", new Guid("4b060397-f167-419e-a368-402bb48877c8") },
+                    { 355, "Room", "Read", "IdentityRoleClaim<Guid>", new Guid("4b060397-f167-419e-a368-402bb48877c8") },
+                    { 365, "Booking", "Read,Create", "IdentityRoleClaim<Guid>", new Guid("4b060397-f167-419e-a368-402bb48877c8") },
+                    { 395, "Bank", "Create,Update", "IdentityRoleClaim<Guid>", new Guid("4b060397-f167-419e-a368-402bb48877c8") }
                 });
 
             migrationBuilder.InsertData(
@@ -2576,6 +3036,11 @@ namespace ZMS.Domain.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BiltyPaymentInvoiceLine_BiltyPaymentInvoiceId",
+                table: "BiltyPaymentInvoiceLine",
+                column: "BiltyPaymentInvoiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Branches_OrganizationId",
                 table: "Branches",
                 column: "OrganizationId");
@@ -2589,6 +3054,21 @@ namespace ZMS.Domain.Migrations
                 name: "IX_CapitalAccounts_ParentAccountId",
                 table: "CapitalAccounts",
                 column: "ParentAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChargeLine_ChargesId",
+                table: "ChargeLine",
+                column: "ChargesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChargesPayments_ChargesId",
+                table: "ChargesPayments",
+                column: "ChargesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConsignmentItem_ConsignmentId",
+                table: "ConsignmentItem",
+                column: "ConsignmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ConversionContractRow_CommisionInfoId",
@@ -2606,19 +3086,9 @@ namespace ZMS.Domain.Migrations
                 column: "ContractId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeliveryBreakup_ContractId1",
-                table: "DeliveryBreakup",
-                column: "ContractId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DeliveryBreakup_ConversionContractRowId",
                 table: "DeliveryBreakup",
                 column: "ConversionContractRowId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DeliveryBreakup_ConversionContractRowId1",
-                table: "DeliveryBreakup",
-                column: "ConversionContractRowId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeliveryBreakup_DietContractRowId",
@@ -2626,19 +3096,9 @@ namespace ZMS.Domain.Migrations
                 column: "DietContractRowId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeliveryBreakup_DietContractRowId1",
-                table: "DeliveryBreakup",
-                column: "DietContractRowId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DeliveryBreakup_MultiWidthContractRowId",
                 table: "DeliveryBreakup",
                 column: "MultiWidthContractRowId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DeliveryBreakup_MultiWidthContractRowId1",
-                table: "DeliveryBreakup",
-                column: "MultiWidthContractRowId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Departments_AddressId",
@@ -2711,9 +3171,14 @@ namespace ZMS.Domain.Migrations
                 column: "LogoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrganizationUsers_OrganizationId",
+                name: "IX_OrganizationUsers_UserId",
                 table: "OrganizationUsers",
-                column: "OrganizationId");
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentABLItem_PaymentABLId",
+                table: "PaymentABLItem",
+                column: "PaymentABLId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Prices_ProductId",
@@ -2741,9 +3206,19 @@ namespace ZMS.Domain.Migrations
                 column: "UnitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectTargets_EmployeeId1",
+                name: "IX_ProjectTargets_EmployeeId",
                 table: "ProjectTargets",
-                column: "EmployeeId1");
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReceiptItem_ReceiptId",
+                table: "ReceiptItem",
+                column: "ReceiptId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RelatedConsignments_BookingOrderId",
+                table: "RelatedConsignments",
+                column: "BookingOrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RelatedContract_DispatchNoteId",
@@ -2794,6 +3269,11 @@ namespace ZMS.Domain.Migrations
                 name: "IX_stringlist_SupplierId",
                 table: "stringlist",
                 column: "SupplierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VoucherDetail_EntryVoucherId",
+                table: "VoucherDetail",
+                column: "EntryVoucherId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserClaims_AspNetUsers_UserId",
@@ -2874,6 +3354,9 @@ namespace ZMS.Domain.Migrations
                 name: "Assets");
 
             migrationBuilder.DropTable(
+                name: "BiltyPaymentInvoiceLine");
+
+            migrationBuilder.DropTable(
                 name: "BlendRatio");
 
             migrationBuilder.DropTable(
@@ -2892,7 +3375,16 @@ namespace ZMS.Domain.Migrations
                 name: "CapitalAccounts");
 
             migrationBuilder.DropTable(
+                name: "ChargeLine");
+
+            migrationBuilder.DropTable(
+                name: "ChargesPayments");
+
+            migrationBuilder.DropTable(
                 name: "CommisionTypes");
+
+            migrationBuilder.DropTable(
+                name: "ConsignmentItem");
 
             migrationBuilder.DropTable(
                 name: "DeliveryBreakup");
@@ -2958,6 +3450,9 @@ namespace ZMS.Domain.Migrations
                 name: "Party");
 
             migrationBuilder.DropTable(
+                name: "PaymentABLItem");
+
+            migrationBuilder.DropTable(
                 name: "PaymentTerms");
 
             migrationBuilder.DropTable(
@@ -2971,6 +3466,12 @@ namespace ZMS.Domain.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProjectTargets");
+
+            migrationBuilder.DropTable(
+                name: "ReceiptItem");
+
+            migrationBuilder.DropTable(
+                name: "RelatedConsignments");
 
             migrationBuilder.DropTable(
                 name: "RelatedContract");
@@ -3030,6 +3531,9 @@ namespace ZMS.Domain.Migrations
                 name: "Vendor");
 
             migrationBuilder.DropTable(
+                name: "VoucherDetail");
+
+            migrationBuilder.DropTable(
                 name: "Weaves");
 
             migrationBuilder.DropTable(
@@ -3040,6 +3544,15 @@ namespace ZMS.Domain.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "BiltyPaymentInvoice");
+
+            migrationBuilder.DropTable(
+                name: "Charges");
+
+            migrationBuilder.DropTable(
+                name: "Consignment");
 
             migrationBuilder.DropTable(
                 name: "ConversionContractRow");
@@ -3057,7 +3570,16 @@ namespace ZMS.Domain.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "PaymentABL");
+
+            migrationBuilder.DropTable(
                 name: "Employees");
+
+            migrationBuilder.DropTable(
+                name: "Receipt");
+
+            migrationBuilder.DropTable(
+                name: "BookingOrder");
 
             migrationBuilder.DropTable(
                 name: "DispatchNotes");
@@ -3073,6 +3595,9 @@ namespace ZMS.Domain.Migrations
 
             migrationBuilder.DropTable(
                 name: "Suppliers");
+
+            migrationBuilder.DropTable(
+                name: "EntryVoucher");
 
             migrationBuilder.DropTable(
                 name: "CommisionInfo");

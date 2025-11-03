@@ -7,7 +7,7 @@ namespace ZMS.Domain.Entities
     public class PaymentABLRes : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? PaymentNo { get; set; }
+        public int? PaymentNo { get; set; }
         public string? PaymentDate { get; set; }
         public string? PaymentMode { get; set; }
         public string? BankName { get; set; }

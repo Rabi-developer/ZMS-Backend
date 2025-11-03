@@ -37,7 +37,7 @@ public class BusinessAssociateService : BaseService<BusinessAssociateReq, Busine
 
 
 
-    public override async Task<Response<Guid>> Add(BusinessAssociateReq reqModel)
+   /* public override async Task<Response<Guid>> Add(BusinessAssociateReq reqModel)
     {
         try
         {
@@ -74,6 +74,6 @@ public class BusinessAssociateService : BaseService<BusinessAssociateReq, Busine
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
 }

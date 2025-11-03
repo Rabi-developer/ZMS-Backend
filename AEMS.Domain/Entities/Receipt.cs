@@ -1,13 +1,15 @@
 ﻿using IMS.Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZMS.Domain.Entities
 {
     public class Receipt : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? ReceiptNo { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ReceiptNo { get; set; }
         public string? ReceiptDate { get; set; }
         public string? PaymentMode { get; set; }
         public string? BankName { get; set; }

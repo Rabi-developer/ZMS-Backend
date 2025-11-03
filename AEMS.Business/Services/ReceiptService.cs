@@ -74,7 +74,7 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
         }
     }
 
-    public async override Task<Response<Guid>> Add(ReceiptReq reqModel)
+    /*public async override Task<Response<Guid>> Add(ReceiptReq reqModel)
     {
         try
         {
@@ -114,7 +114,7 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
     public async virtual Task<Response<ReceiptRes>> Get(Guid id)
     {
@@ -218,8 +218,8 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
                 }
 
                 // Update main entity fields
-                existingEntity.ReceiptNo = reqModel.ReceiptNo;
-                existingEntity.ReceiptDate = reqModel.ReceiptDate;
+/*                existingEntity.ReceiptNo = reqModel.ReceiptNo;
+*/                existingEntity.ReceiptDate = reqModel.ReceiptDate;
                 existingEntity.PaymentMode = reqModel.PaymentMode;
                 existingEntity.BankName = reqModel.BankName;
                 existingEntity.ChequeNo = reqModel.ChequeNo;

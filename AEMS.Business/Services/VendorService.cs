@@ -37,7 +37,7 @@ public class VendorService : BaseService<VendorReq, VendorRes, VendorRepository,
 
 
 
-    public override async Task<Response<Guid>> Add(VendorReq reqModel)
+   /* public override async Task<Response<Guid>> Add(VendorReq reqModel)
     {
         try
         {
@@ -73,6 +73,6 @@ public class VendorService : BaseService<VendorReq, VendorRes, VendorRepository,
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
 }

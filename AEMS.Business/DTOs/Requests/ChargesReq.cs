@@ -7,7 +7,6 @@ namespace ZMS.Domain.Entities
     public class ChargesReq
     {
         public Guid? Id { get; set; }
-        public string? ChargeNo { get; set; }
         public string? ChargeDate { get; set; }
         public string? OrderNo { get; set; }
         public string? CreatedBy { get; set; }

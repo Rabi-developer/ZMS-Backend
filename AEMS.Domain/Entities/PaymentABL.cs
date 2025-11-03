@@ -1,13 +1,15 @@
 ﻿using IMS.Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZMS.Domain.Entities
 {
     public class PaymentABL : GeneralBase
     {
         public Guid? Id { get; set; }
-        public string? PaymentNo { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int PaymentNo { get; set; }
         public string? PaymentDate { get; set; }
         public string? PaymentMode { get; set; }
         public string? BankName { get; set; }

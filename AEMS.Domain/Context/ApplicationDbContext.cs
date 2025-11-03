@@ -200,9 +200,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
         modelBuilder.Entity<OrganizationUser>()
             .HasKey(o => new { o.OrganizationId, o.UserId });
 
-        modelBuilder.Entity<OrganizationUser>()
-            .HasKey(a => new { a.UserId, a.OrganizationId });
-
         modelBuilder.Entity<Level>().HasOne(l => l.Parent)
                   .WithMany()
                   .HasForeignKey(l => l.ParentId)
@@ -212,6 +209,166 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, AppRole, 
                   .WithOne()
                   .HasForeignKey<BranchSetting>(bs => bs.BranchId);
 
+        // Configure AblRevenue self-referencing relationship
+        modelBuilder.Entity<AblRevenue>()
+            .HasOne(x => x.ParentAccount)
+            .WithMany(x => x.Children)
+            .HasForeignKey(x => x.ParentAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Configure ProjectTarget - Employee relationship properly
+        modelBuilder.Entity<ProjectTarget>()
+            .HasOne(pt => pt.Employee)
+            .WithMany()
+            .HasForeignKey(pt => pt.EmployeeId)
+            .HasConstraintName("FK_ProjectTarget_Employee");
+
+        // Configure DeliveryBreakup relationships properly
+        modelBuilder.Entity<DeliveryBreakup>(entity =>
+        {
+            entity.HasKey(d => d.Id);
+            entity.Property(d => d.Id).ValueGeneratedOnAdd();
+            
+            // Configure relationship with Contract
+            entity.HasOne(d => d.Contract)
+                  .WithMany(c => c.BuyerDeliveryBreakups)
+                  .HasForeignKey(d => d.ContractId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            // Configure relationship with ConversionContractRow
+            entity.HasOne(d => d.ConversionContractRow)
+                  .WithMany(c => c.BuyerDeliveryBreakups)
+                  .HasForeignKey(d => d.ConversionContractRowId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            // Configure relationship with DietContractRow
+            entity.HasOne(d => d.DietContractRow)
+                  .WithMany(d => d.BuyerDeliveryBreakups)
+                  .HasForeignKey(d => d.DietContractRowId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            // Configure relationship with MultiWidthContractRow
+            entity.HasOne(d => d.MultiWidthContractRow)
+                  .WithMany(m => m.BuyerDeliveryBreakups)
+                  .HasForeignKey(d => d.MultiWidthContractRowId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configure Contract relationships
+        modelBuilder.Entity<Contract>(entity =>
+        {
+            entity.HasMany(c => c.BuyerDeliveryBreakups)
+                  .WithOne(d => d.Contract)
+                  .HasForeignKey(d => d.ContractId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            // Ignore SellerDeliveryBreakups as we'll handle it differently
+            entity.Ignore(c => c.SellerDeliveryBreakups);
+        });
+
+        // Configure ConversionContractRow relationships
+        modelBuilder.Entity<ConversionContractRow>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.Id).ValueGeneratedOnAdd();
+            
+            entity.HasOne(c => c.Contract)
+                  .WithMany(c => c.ConversionContractRow)
+                  .HasForeignKey(c => c.ContractId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            entity.HasMany(c => c.BuyerDeliveryBreakups)
+                  .WithOne(d => d.ConversionContractRow)
+                  .HasForeignKey(d => d.ConversionContractRowId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            // Ignore SellerDeliveryBreakups to avoid conflicts
+            entity.Ignore(c => c.SellerDeliveryBreakups);
+        });
+
+        // Configure DietContractRow relationships
+        modelBuilder.Entity<DietContractRow>(entity =>
+        {
+            entity.HasKey(d => d.Id);
+            entity.Property(d => d.Id).ValueGeneratedOnAdd();
+            
+            entity.HasOne(d => d.Contract)
+                  .WithMany(c => c.DietContractRow)
+                  .HasForeignKey(d => d.ContractId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            entity.HasMany(d => d.BuyerDeliveryBreakups)
+                  .WithOne(db => db.DietContractRow)
+                  .HasForeignKey(db => db.DietContractRowId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            // Ignore SellerDeliveryBreakups to avoid conflicts
+            entity.Ignore(d => d.SellerDeliveryBreakups);
+        });
+
+        // Configure MultiWidthContractRow relationships
+        modelBuilder.Entity<MultiWidthContractRow>(entity =>
+        {
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Id).ValueGeneratedOnAdd();
+            
+            entity.HasOne(m => m.Contract)
+                  .WithMany(c => c.MultiWidthContractRow)
+                  .HasForeignKey(m => m.ContractId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            entity.HasMany(m => m.BuyerDeliveryBreakups)
+                  .WithOne(d => d.MultiWidthContractRow)
+                  .HasForeignKey(d => d.MultiWidthContractRowId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            // Ignore SellerDeliveryBreakups to avoid conflicts
+            entity.Ignore(m => m.SellerDeliveryBreakups);
+        });
+
+        // Configure decimal properties with proper precision and scale
+        modelBuilder.Entity<EmployeeManagement>()
+            .Property(e => e.Salary)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<Price>(entity =>
+        {
+            entity.Property(p => p.BasePrice).HasColumnType("decimal(18,2)");
+            entity.Property(p => p.DiscountValue).HasColumnType("decimal(18,2)");
+            entity.Property(p => p.RetailPrice).HasColumnType("decimal(18,2)");
+            entity.Property(p => p.SalePrice).HasColumnType("decimal(18,2)");
+            entity.Property(p => p.SpecialOfferPrice).HasColumnType("decimal(18,2)");
+            entity.Property(p => p.TaxRate).HasColumnType("decimal(18,2)");
+        });
+
+        modelBuilder.Entity<ProjectTarget>()
+            .Property(pt => pt.TargetValue)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<Stock>(entity =>
+        {
+            entity.Property(s => s.CurrentStockValue).HasColumnType("decimal(18,2)");
+            entity.Property(s => s.PurchasePrice).HasColumnType("decimal(18,2)");
+        });
+
+        modelBuilder.Entity<Receipt>()
+            .Property(r => r.ReceiptAmount)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<ReceiptItem>(entity =>
+        {
+            entity.Property(r => r.Balance).HasColumnType("decimal(18,2)");
+            entity.Property(r => r.BiltyAmount).HasColumnType("decimal(18,2)");
+            entity.Property(r => r.ReceiptAmount).HasColumnType("decimal(18,2)");
+            entity.Property(r => r.SrbAmount).HasColumnType("decimal(18,2)");
+            entity.Property(r => r.TotalAmount).HasColumnType("decimal(18,2)");
+        });
+
+        modelBuilder.Entity<RelatedConsignment>(entity =>
+        {
+            entity.Property(r => r.RecvAmount).HasColumnType("decimal(18,2)");
+            entity.Property(r => r.TotalAmount).HasColumnType("decimal(18,2)");
+        });
 
         modelBuilder.Seed();
     }

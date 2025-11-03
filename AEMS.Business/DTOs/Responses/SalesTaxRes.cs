@@ -8,7 +8,7 @@ namespace IMS.Business.DTOs.Requests
     public class SalesTaxRes
     {
         public Guid? Id { get; set; }
-        public string? SalesTaxNumber { get; set; }
+        public int? SalesTaxNumber { get; set; }
         public string? TaxName { get; set; }
         public string? TaxType { get; set; }
         public string? Percentage { get; set; }

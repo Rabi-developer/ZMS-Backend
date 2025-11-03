@@ -81,10 +81,22 @@ namespace ZMS.Domain.Entities
 
     public class DeliveryBreakup
     {
-        //
-        public Guid? Id { get; set; } // Changed from Guid?? to Guid?
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string? Qty { get; set; }
         public string? DeliveryDate { get; set; }
+        
+        // Foreign keys to establish relationships properly
+        public Guid? ContractId { get; set; }
+        public Contract? Contract { get; set; }
+        
+        public Guid? ConversionContractRowId { get; set; }
+        public ConversionContractRow? ConversionContractRow { get; set; }
+        
+        public Guid? DietContractRowId { get; set; }
+        public DietContractRow? DietContractRow { get; set; }
+        
+        public Guid? MultiWidthContractRowId { get; set; }
+        public MultiWidthContractRow? MultiWidthContractRow { get; set; }
     }
 
     public class ConversionContractRow

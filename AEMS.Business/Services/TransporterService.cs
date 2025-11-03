@@ -37,7 +37,7 @@ public class TransporterService : BaseService<TransporterReq, TransporterRes, Tr
 
 
 
-    public override async Task<Response<Guid>> Add(TransporterReq reqModel)
+   /* public override async Task<Response<Guid>> Add(TransporterReq reqModel)
     {
         try
         { 
@@ -75,6 +75,6 @@ public class TransporterService : BaseService<TransporterReq, TransporterRes, Tr
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }
+    }*/
 
 }

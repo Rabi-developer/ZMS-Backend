@@ -8,7 +8,6 @@ namespace ZMS.Business.DTOs.Requests
    public class EntryVoucherReq
 {
     public Guid? Id { get; set; }
-    public string? VoucherNo { get; set; }
     public string? VoucherDate { get; set; }
     public string? ReferenceNo { get; set; }
     public string? ChequeNo { get; set; }

@@ -79,25 +79,13 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
         }
     }
 
-    /*public async override Task<Response<Guid>> Add(BookingOrderReq reqModel)
+    public async override Task<Response<Guid>> Add(BookingOrderReq reqModel)
     {
         try
         {
             var entity = reqModel.Adapt<BookingOrder>();
 
-            var GetlastNo = await UnitOfWork._context.BookingOrder
-                .OrderByDescending(p => p.Id)
-                .FirstOrDefaultAsync();
-
-            if (GetlastNo == null || GetlastNo.OrderNo == "")
-            {
-                entity.OrderNo = "1";
-            }
-            else
-            {
-                int NewNo = int.Parse(GetlastNo.OrderNo) + 1;
-                entity.OrderNo = NewNo.ToString();
-            }
+            
 
             var ss = await Repository.Add((BookingOrder)(entity as IMinBase ??
                 throw new InvalidOperationException(
@@ -118,7 +106,7 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
-    }*/
+    }
 
     public async override Task<Response<BookingOrderRes>> Get(Guid id)
     {

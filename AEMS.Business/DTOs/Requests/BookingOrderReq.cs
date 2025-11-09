@@ -44,6 +44,7 @@ namespace ZMS.Business.DTOs.Requests
         public Guid? Id { get; set; }
         public string? BiltyNo { get; set; }
         public Guid? BookingOrderId { get; set; }
+        public Guid? ConsignmentId { get; set; }
         public string? ReceiptNo { get; set; }
         public string? Consignor { get; set; }
         public string? Consignee { get; set; }

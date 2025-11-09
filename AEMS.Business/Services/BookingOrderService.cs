@@ -79,46 +79,33 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
         }
     }
 
-    //public async override Task<Response<Guid>> Add(BookingOrderReq reqModel)
-    //{
-    //    try
-    //    {
-    //        var entity = reqModel.Adapt<BookingOrder>();
+    public async override Task<Response<Guid>> Add(BookingOrderReq reqModel)
+    {
+        try
+        {
+            var entity = reqModel.Adapt<BookingOrder>();
 
-    //        var GetlastNo = await UnitOfWork._context.BookingOrder
-    //            .OrderByDescending(p => p.Id)
-    //            .FirstOrDefaultAsync();
 
-    //        if (GetlastNo == null || GetlastNo.OrderNo == "")
-    //        {
-    //            entity.OrderNo = "1";
-    //        }
-    //        else
-    //        {
-    //            int NewNo = int.Parse(GetlastNo.OrderNo) + 1;
-    //            entity.OrderNo = NewNo.ToString();
-    //        }
-
-    //        var ss = await Repository.Add((BookingOrder)(entity as IMinBase ??
-    //            throw new InvalidOperationException(
-    //            "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
-    //        await UnitOfWork.SaveAsync();
-    //        return new Response<Guid>
-    //        {
-    //            Data = ss.Id ?? Guid.Empty,
-    //            StatusMessage = "Created successfully",
-    //            StatusCode = HttpStatusCode.Created
-    //        };
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        return new Response<Guid>
-    //        {
-    //            StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
-    //            StatusCode = HttpStatusCode.InternalServerError
-    //        };
-    //    }
-    //}
+            var ss = await Repository.Add((BookingOrder)(entity as IMinBase ??
+                throw new InvalidOperationException(
+                "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+            await UnitOfWork.SaveAsync();
+            return new Response<Guid>
+            {
+                Data = ss.Id,
+                StatusMessage = "Created successfully",
+                StatusCode = HttpStatusCode.Created
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<Guid>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
 
     public async override Task<Response<BookingOrderRes>> Get(Guid id)
     {
@@ -244,9 +231,26 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
                 };
             }
 
+            var ConsignmentGet = await _DbContext.Consignment.Where(p=>p.Id == reqModel.ConsignmentId).FirstOrDefaultAsync();
+            if (ConsignmentGet ==null)
+            {
+                return new Response<Guid>
+                {
+                    StatusMessage = $"Consignment Not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+            
+
+
             var entity = reqModel.Adapt<RelatedConsignment>();
             entity.BookingOrderId = bookingOrderId;
-         //   entity.CreatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
+
+            entity.ReceiptNo = ConsignmentGet.ReceiptNo.ToString();
+
+            entity.BiltyNo = ConsignmentGet.BiltyNo;
+            entity.RecvAmount = (decimal)ConsignmentGet.ReceivedAmount;
+            
             entity.ModifiedDateTime = DateTime.UtcNow;
 
             _DbContext.RelatedConsignments.Add(entity);

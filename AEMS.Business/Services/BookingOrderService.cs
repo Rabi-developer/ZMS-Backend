@@ -15,6 +15,8 @@ using System.Net;
 using System.Threading.Tasks;
 using ZMS.Business.DTOs.Requests;
 using ZMS.Domain.Entities;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace IMS.Business.Services;
 
@@ -22,7 +24,7 @@ public interface IBookingOrderService : IBaseService<BookingOrderReq, BookingOrd
 {
     Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? paginate);
     Task<BookingOrderStatus> UpdateStatusAsync(Guid id, string status);
-    Task<Response<IList<RelatedConsignmentRes>>> GetConsignmentsByBookingOrderIdAsync(Guid bookingOrderId);
+    Task<Response<IList<RelatedConsignmentRes>>> GetConsignmentsByBookingOrderIdAsync(Guid bookingOrderId, bool includeDetails = false);
     Task<Response<Guid>> AddConsignmentAsync(Guid bookingOrderId, RelatedConsignmentReq reqModel);
     Task<Response<Guid>> UpdateConsignmentAsync(Guid bookingOrderId, Guid consignmentId, RelatedConsignmentReq reqModel);
     Task<Response<bool>> DeleteConsignmentAsync(Guid bookingOrderId, Guid consignmentId);
@@ -181,12 +183,12 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
         };
     }
 
-    public async Task<Response<IList<RelatedConsignmentRes>>> GetConsignmentsByBookingOrderIdAsync(Guid bookingOrderId)
+    public async Task<Response<IList<RelatedConsignmentRes>>> GetConsignmentsByBookingOrderIdAsync(Guid bookingOrderId, bool includeDetails = false)
     {
         try
         {
-            var bookingOrderExists = await _DbContext.BookingOrder.AnyAsync(b => b.Id == bookingOrderId);
-            if (!bookingOrderExists)
+            var bookingOrder = await _DbContext.BookingOrder.FirstOrDefaultAsync(b => b.Id == bookingOrderId);
+            if (bookingOrder == null)
             {
                 return new Response<IList<RelatedConsignmentRes>>
                 {
@@ -199,6 +201,67 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
                 .Where(c => c.BookingOrderId == bookingOrderId)
                 .ToListAsync();
             var result = consignments.Adapt<List<RelatedConsignmentRes>>();
+
+            // BookingOrder OrderNo as string for matching
+            var bookingOrderNo = bookingOrder.OrderNo.ToString();
+
+            if (includeDetails && result != null && result.Count > 0)
+            {
+                // Attempt to enrich each related consignment with data from Consignment table
+                foreach (var rc in result)
+                {
+                    try
+                    {
+                        Consignment? cons = null;
+
+                        // Try match by ReceiptNo (RelatedConsignment stores as string)
+                        if (!string.IsNullOrWhiteSpace(rc.ReceiptNo) && int.TryParse(rc.ReceiptNo, out var receiptNo))
+                        {
+                            cons = await _DbContext.Consignment.FirstOrDefaultAsync(x => x.ReceiptNo == receiptNo);
+                        }
+
+                        // If not found by receipt, try match by BiltyNo
+                        if (cons == null && !string.IsNullOrWhiteSpace(rc.BiltyNo))
+                        {
+                            cons = await _DbContext.Consignment.FirstOrDefaultAsync(x => x.BiltyNo == rc.BiltyNo);
+                        }
+
+                        // If not found yet, try matching by BookingOrder.OrderNo -> Consignment.OrderNo
+                        if (cons == null && !string.IsNullOrWhiteSpace(bookingOrderNo))
+                        {
+                            cons = await _DbContext.Consignment.FirstOrDefaultAsync(x => x.OrderNo == bookingOrderNo);
+                        }
+
+                        if (cons != null)
+                        {
+                            // populate fields from consignment
+                            rc.BiltyNo = string.IsNullOrWhiteSpace(cons.BiltyNo) ? rc.BiltyNo : cons.BiltyNo;
+                            rc.ReceiptNo = (cons.ReceiptNo).ToString();
+                            rc.Consignor = string.IsNullOrWhiteSpace(cons.Consignor) ? rc.Consignor : cons.Consignor;
+                            rc.Consignee = string.IsNullOrWhiteSpace(cons.Consignee) ? rc.Consignee : cons.Consignee;
+                            // Map item/qty/amounts
+                            rc.Item = string.IsNullOrWhiteSpace(rc.Item) ? null : rc.Item; // keep existing if present
+                            if (cons.Items != null && cons.Items.Count > 0)
+                            {
+                                // if RelatedConsignment has no item/qty, try to fill from first item
+                                rc.Item ??= cons.Items.First().Desc;
+                                if ((rc.Qty == null || rc.Qty == 0) && cons.Items.First().Qty.HasValue)
+                                    rc.Qty = (int?)Convert.ToInt32(cons.Items.First().Qty.Value);
+                            }
+
+                            rc.TotalAmount = cons.TotalAmount != null ? (decimal?)Convert.ToDecimal(cons.TotalAmount) : rc.TotalAmount;
+                            rc.RecvAmount = cons.ReceivedAmount != null ? (decimal?)Convert.ToDecimal(cons.ReceivedAmount) : rc.RecvAmount;
+                            rc.DelDate = string.IsNullOrWhiteSpace(cons.DeliveryDate) ? rc.DelDate : cons.DeliveryDate;
+                            rc.Status = string.IsNullOrWhiteSpace(cons.Status) ? rc.Status : cons.Status;
+                        }
+                    }
+                    catch
+                    {
+                        // ignore enrichment errors per-item
+                        continue;
+                    }
+                }
+            }
 
             return new Response<IList<RelatedConsignmentRes>>
             {

@@ -9,6 +9,10 @@ using IMS.Domain.Context;
 using IMS.Domain.Utilities.Exceptions;
 using IMS.Domain.Utilities;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace IMS.DataAccess.Repositories;
 
@@ -78,6 +82,28 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
         //                  "HttpContextAccessor Cannot be Null. Verify whether it's properly Injected or not.");
     }
 
+    // Helper to auto-include navigation properties for the entity type
+    protected virtual IQueryable<TEntity> ApplyAutoIncludes(IQueryable<TEntity> query)
+    {
+        var entityType = DbContext.Model.FindEntityType(typeof(TEntity));
+        if (entityType == null)
+            return query;
+
+        foreach (var navigation in entityType.GetNavigations())
+        {
+            try
+            {
+                query = query.Include(navigation.Name);
+            }
+            catch
+            {
+                // ignore include failures for safety
+            }
+        }
+
+        return query;
+    }
+
     public async Task<TEntity> Add(TEntity model)
     {
         // If Id is not set, generate it (EF Core ValueGeneratedOnAdd for GUIDs requires client-side generation)
@@ -112,7 +138,8 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     public async Task<TEntity?> Get(Guid id, Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeFunc)
     {
-        return await (includeFunc?.Invoke(DbSet) ?? DbSet).FirstOrDefaultAsync(c => !c.IsDeleted && c.Id == id);
+        var baseQuery = includeFunc?.Invoke(DbSet) ?? ApplyAutoIncludes(DbSet);
+        return await baseQuery.FirstOrDefaultAsync(c => !c.IsDeleted && c.Id == id);
     }
 
     public async Task<(Pagination, IList<TEntity>)> GetAll(Pagination pagination,
@@ -121,7 +148,9 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
         var total = 0;
         var totalPages = 0;
 
-        var res = await (includeFunc?.Invoke(DbSet) ?? DbSet).Where(f => f.IsDeleted != true)
+        var query = includeFunc?.Invoke(DbSet) ?? ApplyAutoIncludes(DbSet);
+
+        var res = await query.Where(f => f.IsDeleted != true)
             .Paginate((int)pagination.PageIndex, (int)pagination.PageSize, ref total, ref totalPages).ToListAsync();
 
         pagination = pagination.Combine(total, totalPages);
@@ -138,7 +167,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
         var total = 0;
         var totalPages = 0;
 
-        IQueryable<TEntity> query = includeFunc?.Invoke(DbSet) ?? DbSet;
+        IQueryable<TEntity> query = includeFunc?.Invoke(DbSet) ?? ApplyAutoIncludes(DbSet);
 
         query = query.Where(f => f.IsDeleted != true);
 

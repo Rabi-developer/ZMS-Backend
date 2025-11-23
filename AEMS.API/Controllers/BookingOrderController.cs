@@ -50,11 +50,11 @@ public class BookingOrderController : BaseController<BookingOrderController, IBo
 
     [HttpGet("{bookingOrderId}/consignments")]
     [Permission("Organization", "Read")]
-    public async Task<IActionResult> GetConsignmentsByBookingOrderId(Guid bookingOrderId)
+    public async Task<IActionResult> GetConsignmentsByBookingOrderId(Guid bookingOrderId, [FromQuery] bool includeDetails = false)
     {
         try
         {
-            var result = await Service.GetConsignmentsByBookingOrderIdAsync(bookingOrderId);
+            var result = await Service.GetConsignmentsByBookingOrderIdAsync(bookingOrderId, includeDetails);
             return StatusCode((int)result.StatusCode, result);
         }
         catch (Exception ex)

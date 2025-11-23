@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ZMS.Domain.Migrations
 {
     /// <inheritdoc />
-    public partial class idsremoved : Migration
+    public partial class AddOrderProgress_Fixed : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace ZMS.Domain.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                 columns: new[] { "ConcurrencyStamp", "PasswordHash" },
-                values: new object[] { "aa5706b2-8ad6-4792-bd36-f789304bff38", "AQAAAAIAAYagAAAAEI36PXc+X0AtafzG7TurS9Fm2S1sJOoPZ4csj4c3shlPZNTlIZOnP0k8liuXMC2h6A==" });
+                values: new object[] { "1f218215-5132-43e8-b44e-ba51dfc6e313", "AQAAAAIAAYagAAAAEDOacZLbuv8UCwfngybp0s7aYgq+nA8tjnCqxUVdiDlUsBAHcQINTPxH1AHoZ8mRZA==" });
         }
 
         /// <inheritdoc />
@@ -27,7 +27,7 @@ namespace ZMS.Domain.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                 columns: new[] { "ConcurrencyStamp", "PasswordHash" },
-                values: new object[] { "a4aa14bb-d0e8-4fb4-baf9-a1632f0de29e", "AQAAAAIAAYagAAAAEB/9pOCz8aU2PY/fqJNmIvVi/AZDjLgTVyVlpLB5RXhSnkzCO2nqatGG/VtHZV2W/w==" });
+                values: new object[] { "7c71d9f4-4990-49c6-9855-9ad90e14f7cf", "AQAAAAIAAYagAAAAEMZkt8TLj96iOJooIERR8KbzkICcn+tRUVodLjKvc0oWgPgNq/m964oMxsbLwRHKiw==" });
         }
     }
 }

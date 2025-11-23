@@ -1,5 +1,5 @@
 ﻿using IMS.Business.DTOs.Requests;
-using IMS.Business.DTOs.Responses;
+using ZMS.Business.DTOs.Responses;
 using IMS.Business.Utitlity;
 using IMS.DataAccess.Repositories;
 using IMS.DataAccess.UnitOfWork;

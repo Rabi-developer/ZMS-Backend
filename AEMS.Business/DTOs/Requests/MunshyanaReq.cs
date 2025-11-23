@@ -10,7 +10,6 @@ namespace ZMS.Business.DTOs.Requests
     public class MunshyanaReq
     {
         public Guid? Id { get; set; }
-        public string? MunshyanaNumber { get; set; }
         public string? ChargesDesc { get; set; }
         public string? ChargesType { get; set; }
         public string? AccountId { get; set; }

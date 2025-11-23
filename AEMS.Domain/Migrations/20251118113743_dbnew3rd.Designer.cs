@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ZMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251101161021_ZMS-ABL")]
-    partial class ZMSABL
+    [Migration("20251118113743_dbnew3rd")]
+    partial class dbnew3rd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,7 +27,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.AblAssests", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -78,7 +78,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.AblExpense", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -129,7 +129,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.AblLiabilities", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -180,7 +180,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.AblRevenue", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -490,7 +490,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a4aa14bb-d0e8-4fb4-baf9-a1632f0de29e",
+                            ConcurrencyStamp = "7c71d9f4-4990-49c6-9855-9ad90e14f7cf",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@ZMS.com",
@@ -502,7 +502,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ZMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEB/9pOCz8aU2PY/fqJNmIvVi/AZDjLgTVyVlpLB5RXhSnkzCO2nqatGG/VtHZV2W/w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMZkt8TLj96iOJooIERR8KbzkICcn+tRUVodLjKvc0oWgPgNq/m964oMxsbLwRHKiw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -512,7 +512,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Assets", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -601,7 +601,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.BlendRatio", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -793,7 +793,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Brooker", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -837,7 +837,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.BusinessAssociate", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -961,7 +961,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.CapitalAccount", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1167,7 +1167,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Description", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1368,7 +1368,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.EndUse", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1406,7 +1406,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Equality", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1457,7 +1457,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Expense", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1497,7 +1497,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.FabricType", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1535,7 +1535,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Final", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1608,7 +1608,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Gsm", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1646,7 +1646,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.InductionThread", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1745,7 +1745,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.InspectionNote", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1858,7 +1858,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Liabilities", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1898,7 +1898,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Munshyana", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -1933,11 +1933,141 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("MunshyanaNumber")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Munshyana");
+                });
+
+            modelBuilder.Entity("IMS.Domain.Entities.OrderProgress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("BookingCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("BookingOrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("ChargesCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ChargesCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ChargesPaidCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ConsignmentCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ConsignmentCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CurrentStep")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastConsignmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastPaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastReceiptDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderNo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("OrderStatus")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("PaidChargesAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PaidPaymentAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("PaymentCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PaymentCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentNos")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentsCompletedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProgressHints")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProgressPercentage")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ReceiptCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ReceiptCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceiptNos")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalChargesAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalPaymentAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalReceiptAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("VehicleNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingOrderId");
+
+                    b.HasIndex("OrderNo")
+                        .HasDatabaseName("IX_OrderProgress_OrderNo");
+
+                    b.ToTable("OrderProgress");
                 });
 
             modelBuilder.Entity("IMS.Domain.Entities.Organization", b =>
@@ -2065,7 +2195,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Packing", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2103,7 +2233,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Party", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2186,7 +2316,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Peicelength", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2224,7 +2354,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.PickInsertion", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2502,7 +2632,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Revenue", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2542,7 +2672,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.SalesTax", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2675,7 +2805,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Selvege", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2713,7 +2843,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.SelvegeThickness", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2751,7 +2881,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.SelvegeWeaves", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2789,7 +2919,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.SelvegeWidth", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3018,7 +3148,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Stuff", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3131,7 +3261,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Transporter", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3259,7 +3389,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Vendor", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3327,7 +3457,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.Weaves", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3365,7 +3495,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.WeftYarnType", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3403,7 +3533,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("IMS.Domain.Entities.WrapYarnType", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3740,7 +3870,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.BiltyPaymentInvoice", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3837,7 +3967,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.BookingOrder", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -3990,7 +4120,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.Charges", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -4121,7 +4251,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.CommisionType", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -4159,7 +4289,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.Consignment", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -4666,7 +4796,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.DeliveryTerm", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -4779,7 +4909,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.DispatchNote", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -4857,7 +4987,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.EntryVoucher", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -4934,7 +5064,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.Invoice", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -5142,7 +5272,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.PaymentABL", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -5268,7 +5398,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.PaymentTerm", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -5306,7 +5436,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.Receipt", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -5670,7 +5800,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.TransporterCompany", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -5708,7 +5838,7 @@ namespace ZMS.Domain.Migrations
 
             modelBuilder.Entity("ZMS.Domain.Entities.UnitofMeasure", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -6010,6 +6140,16 @@ namespace ZMS.Domain.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ParentAccount");
+                });
+
+            modelBuilder.Entity("IMS.Domain.Entities.OrderProgress", b =>
+                {
+                    b.HasOne("ZMS.Domain.Entities.BookingOrder", "BookingOrder")
+                        .WithMany()
+                        .HasForeignKey("BookingOrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BookingOrder");
                 });
 
             modelBuilder.Entity("IMS.Domain.Entities.OrganizationSetting", b =>

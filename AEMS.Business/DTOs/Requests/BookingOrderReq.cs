@@ -5,11 +5,18 @@ using System.Collections.Generic;
 
 namespace ZMS.Business.DTOs.Requests
 {
-    public class BookingOrderReq
+    public class FileReq
+    {
+        public Guid? Id { get; set; }
+        public string? Files  { get; set; }
+    }
+
+        public class BookingOrderReq
     {
         public Guid? Id { get; set; }
         public string? OrderDate { get; set; }
         public string? Transporter { get; set; }
+
         public string? Vendor { get; set; }
         public string? VehicleNo { get; set; }
         public string? ContainerNo { get; set; }

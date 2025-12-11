@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using ZMS.API.Middleware;
 using IMS.Business.Services;
+using ZMS.Business.DTOs.Requests;
 
 namespace IMS.API.Base;
 
@@ -120,6 +121,18 @@ public class BaseController<TController, TService, TReq, TRes, T> : ControllerBa
         {
             return BadRequest(result);
         }
+    }
+
+
+    [HttpPut("Files/{id}")]
+    public async Task<IActionResult> UpdateBookingOrder([FromBody] FileReq request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await Service.UpdateFileAsync((Guid)request.Id, request);
+        return Ok(result);
+
     }
 
     [HttpDelete("{id:guid}")]

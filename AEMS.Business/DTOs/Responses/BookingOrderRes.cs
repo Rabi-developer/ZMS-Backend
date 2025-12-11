@@ -10,6 +10,7 @@ namespace ZMS.Domain.Entities
         public Guid? Id { get; set; }
         public int? OrderNo { get; set; }
         public string? OrderDate { get; set; }
+        public string? Files { get; set; }
         public string? Transporter { get; set; }
         public string? Vendor { get; set; }
         public string? VehicleNo { get; set; }

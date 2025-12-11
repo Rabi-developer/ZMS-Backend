@@ -9,6 +9,7 @@ namespace ZMS.Domain.Entities
         public Guid? Id { get; set; }
         public int? ChargeNo { get; set; }
         public string? ChargeDate { get; set; }
+        public string? Files { get; set; }
         public string? OrderNo { get; set; }
         public string? CreatedBy { get; set; }
         public string? CreationDate { get; set; }

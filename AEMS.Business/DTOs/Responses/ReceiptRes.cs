@@ -10,6 +10,7 @@ namespace ZMS.Domain.Entities
         public int? ReceiptNo { get; set; }
         public string? ReceiptDate { get; set; }
         public string? PaymentMode { get; set; }
+        public string? Files { get; set; }
         public string? BankName { get; set; }
         public string? ChequeNo { get; set; }
         public string? ChequeDate { get; set; }

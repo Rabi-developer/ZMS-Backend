@@ -10,6 +10,7 @@ namespace ZMS.Domain.Entities
         public Guid? Id { get; set; }
         public string? ConsignmentMode { get; set; }
         public int? ReceiptNo { get; set; }
+        public string? Files { get; set; }
         public string? OrderNo { get; set; }
         public string? BiltyNo { get; set; }
         public string? Date { get; set; }

@@ -8,6 +8,9 @@ using IMS.Domain.Base;
 using IMS.Domain.Utilities;
 using Mapster;
 using System.Net;
+using ZMS.Business.DTOs.Requests;
+using ZMS.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace IMS.Business.Services;
 
@@ -19,6 +22,7 @@ public interface IBaseService<in TDto, TResp, T>
     public Task<Response<Guid>> Add(TDto model);
     public Task<Response<TResp>> Update(TDto model);
     public Task<Response<bool>> Delete(Guid id);
+    Task<Response<TResp>> UpdateFileAsync(Guid id, FileReq reqModel);
 }
 
 public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, T>
@@ -57,6 +61,30 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
+    }
+    public virtual async Task<Response<TRes>> UpdateFileAsync(Guid id, FileReq reqModel)
+    {
+        var get = await Repository.Get(id, null);
+
+        if (get != null)
+        {
+            get.Files = reqModel.Files;
+            UnitOfWork.SaveAsync();
+
+            var data = get.Adapt<TRes>();
+
+            return new Response<TRes>
+            {
+                Data = data,
+                StatusMessage = "Fetch successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        return new Response<TRes>
+        {
+            StatusMessage = "Not Found",
+            StatusCode = HttpStatusCode.InternalServerError
+        };
     }
     public async virtual Task<Response<IList<TRes>>> GetAll(Pagination? paginate)
     {

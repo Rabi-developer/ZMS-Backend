@@ -9,6 +9,7 @@ public interface IMinBase
     public bool IsDeleted { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public Guid CreatedBy { get; set; }
+    public string? Files { get; set; }
 }
 
 public interface IGeneralBase : IMinBase
@@ -25,6 +26,7 @@ public class MinBase : IMinBase
     public bool IsDeleted { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public Guid CreatedBy { get; set; }
+    public string? Files { get; set; }
 }
 
 public class GeneralBase : IGeneralBase
@@ -37,5 +39,6 @@ public class GeneralBase : IGeneralBase
     public Guid CreatedBy { get; set; } 
     public DateTime? ModifiedDateTime { get; set; }
     public Guid? ModifiedBy { get; set; }
+    public string? Files { get; set; }
 }
 

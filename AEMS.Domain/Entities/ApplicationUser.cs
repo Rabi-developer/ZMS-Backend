@@ -21,6 +21,7 @@ public class ApplicationUser : IdentityUser<Guid>, IMinBase
     public DateTime CreatedDateTime { get; set; }
     public Guid CreatedBy { get; set; }
     public Guid? UserId { get; set; }
+    public string? Files { get; set; }
 }
 
 public class AppRole : IdentityRole<Guid>

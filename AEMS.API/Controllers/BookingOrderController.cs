@@ -13,6 +13,9 @@ using ZMS.Business.DTOs.Requests;
 using IMS.Business.Utitlity;
 using Microsoft.AspNetCore.Authorization;
 using ZMS.API.Middleware;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Net;
 
 namespace ZMS.API.Controllers;
 
@@ -123,4 +126,55 @@ public class BookingOrderController : BaseController<BookingOrderController, IBo
             });
         }
     }
-}
+
+    /* [HttpPatch("{id}")]*/
+    /*  public async Task<IActionResult> PartialUpdateBookingOrder(Guid id, [FromBody] JsonElement body)
+      {
+          try
+          {
+              // 1. Get current entity from DB
+              var currentEntity = await _dbContext.BookingOrder.FindAsync(id);
+              if (currentEntity == null)
+                  return NotFound($"BookingOrder with ID {id} not found");
+
+              // 2. Convert current entity → DTO
+              var currentDto = currentEntity.Adapt<BookingOrderReq>();
+              currentDto.Id = id;
+
+              // 3. Apply only the fields from the PATCH body
+              if (body.TryGetProperty("files", out var filesProp))
+              {
+                  currentDto.Files = filesProp.GetString();
+              }
+              // You can add more partial fields later:
+              // if (body.TryGetProperty("status", out var statusProp)) currentDto.Status = ...
+
+              // 4. Call your existing UpdateAsync (reuses all logic!)
+              var result = await _bookingOrderService.UpdateAsync(id, currentDto);
+
+              if (result.StatusCode != HttpStatusCode.OK)
+                  return StatusCode((int)result.StatusCode, result);
+
+              return Ok(new
+              {
+                  message = "Files updated successfully",
+                  files = result.Data?.Files
+              });
+          }
+          catch (Exception ex)
+          {
+              return StatusCode(500, new { message = "Failed to update files", error = ex.Message });
+          }
+      }
+
+  [HttpPut]
+public async Task<IActionResult> UpdateBookingOrder([FromBody] BookingOrderReq request)
+{
+  if (!ModelState.IsValid)
+      return BadRequest(ModelState);
+
+  var result = await _bookingOrderService.UpdateAsync(request.Id, request);
+  return Ok(result);
+}*/
+   
+    }

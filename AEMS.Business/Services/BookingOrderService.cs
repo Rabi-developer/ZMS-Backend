@@ -28,6 +28,10 @@ public interface IBookingOrderService : IBaseService<BookingOrderReq, BookingOrd
     Task<Response<Guid>> AddConsignmentAsync(Guid bookingOrderId, RelatedConsignmentReq reqModel);
     Task<Response<Guid>> UpdateConsignmentAsync(Guid bookingOrderId, Guid consignmentId, RelatedConsignmentReq reqModel);
     Task<Response<bool>> DeleteConsignmentAsync(Guid bookingOrderId, Guid consignmentId);
+    Task<Response<BookingOrderRes>> UpdateAsync(Guid id, BookingOrderReq reqModel);
+
+   
+
 }
 
 public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes, BookingOrderRepository, BookingOrder>, IBookingOrderService
@@ -41,9 +45,13 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
         _repository = UnitOfWork.GetRepository<BookingOrderRepository>();
         _context = context;
         _DbContext = dbContextn;
+
+
     }
 
-    public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? paginate)
+
+
+public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? paginate)
     {
         try
         {
@@ -445,4 +453,62 @@ public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes,
             };
         }
     }
+   
+    public async Task<Response<BookingOrderRes>> UpdateAsync(Guid id, BookingOrderReq reqModel)
+    {
+        try
+        {
+            // 1. Get existing entity
+            var entity = await Repository.Get(id, null);
+            if (entity == null)
+            {
+                return new Response<BookingOrderRes>
+                {
+                    StatusMessage = "BookingOrder not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+            // 2. Map DTO → Entity (including Files!)
+            reqModel.Adapt(entity);
+
+            // 3. Update audit fields
+            entity.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
+            entity.UpdationDate = DateTime.UtcNow.ToString("o");
+
+            // 4. Save
+            await UnitOfWork.SaveAsync();
+
+            // 5. Convert to response DTO
+            var result = entity.Adapt<BookingOrderRes>();
+
+            // 6. Resolve Transporter & Vendor names (optional but good)
+            var transporters = await _DbContext.Transporters.ToListAsync();
+            var vendors = await _DbContext.Vendor.ToListAsync();
+
+            if (!string.IsNullOrWhiteSpace(result.Transporter))
+                result.Transporter = transporters.FirstOrDefault(t => t.Id.ToString() == result.Transporter)?.Name;
+
+            if (!string.IsNullOrWhiteSpace(result.Vendor))
+                result.Vendor = vendors.FirstOrDefault(v => v.Id.ToString() == result.Vendor)?.Name;
+
+            // 7. RETURN THE RESPONSE
+            return new Response<BookingOrderRes>
+            {
+                Data = result,
+                StatusMessage = "Booking Order updated successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<BookingOrderRes>
+            {
+                StatusMessage = e.InnerException?.Message ?? e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
+
 }

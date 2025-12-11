@@ -10,6 +10,7 @@ namespace ZMS.Domain.Entities
         public int? InvoiceNo { get; set; }
         public string PaymentDate { get; set; }
         public string? CreatedBy { get; set; }
+        public string? Files { get; set; }
         public string? CreationDate { get; set; }
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }

@@ -4,6 +4,7 @@ using IMS.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ZMS.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251201064702_paymentAblChange")]
+    partial class paymentAblChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,9 +41,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DueDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FixedAmount")
@@ -94,9 +94,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("DueDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FixedAmount")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -148,9 +145,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("DueDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FixedAmount")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -200,9 +194,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DueDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FixedAmount")
@@ -268,9 +259,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -425,9 +413,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -505,7 +490,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c97ebbd3-567c-44e3-8a63-691f97f51198",
+                            ConcurrencyStamp = "d2c38589-6cf2-4d26-b7ee-c531859795c3",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@ZMS.com",
@@ -517,7 +502,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ZMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELiuFJUiHNArUq2RvHVXYzvlO1ZZlGkiJL8qgIEvJHrDKPMz6EVXE3f7F9EgzKnJsw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDIXjI+eCRQEQhMgLz9lSoE7+6Xr17vjS1TQ/rr5SwgfFs5Q3F0IlkF0a6vyBfFASA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,
@@ -538,9 +523,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -582,9 +564,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<string>("Extension")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -633,9 +612,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -697,9 +673,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -797,9 +770,6 @@ namespace ZMS.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -841,9 +811,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -888,9 +855,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -954,9 +918,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("FaxNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1013,9 +974,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1055,9 +1013,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -1127,9 +1082,6 @@ namespace ZMS.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1181,9 +1133,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("HeadOfDepartment")
                         .HasColumnType("nvarchar(max)");
 
@@ -1229,9 +1178,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -1300,9 +1246,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<string>("EmploymentType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
@@ -1379,9 +1322,6 @@ namespace ZMS.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("HireDate")
                         .HasColumnType("datetime2");
 
@@ -1441,9 +1381,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1483,9 +1420,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DueDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FixedAmount")
@@ -1536,9 +1470,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1579,9 +1510,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1620,9 +1548,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1657,9 +1582,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GstType")
                         .HasColumnType("nvarchar(max)");
@@ -1699,9 +1621,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1738,9 +1657,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -1788,9 +1704,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DispatchQty")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InspectedBy")
@@ -1848,9 +1761,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<string>("DispatchNoteId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InvoiceNumber")
@@ -1912,9 +1822,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1964,9 +1871,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2014,9 +1918,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -2072,9 +1973,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -2181,9 +2079,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2238,9 +2133,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fax")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -2308,9 +2200,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2347,9 +2236,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -2407,9 +2293,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<DateTime?>("EffectiveDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
@@ -2475,9 +2358,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<Guid?>("FeaturedImageId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -2566,9 +2446,6 @@ namespace ZMS.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FinancialHealth")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2639,9 +2516,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2678,9 +2552,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -2759,9 +2630,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("FaxNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2821,9 +2689,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2860,9 +2725,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -2903,9 +2765,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2942,9 +2801,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -2990,9 +2846,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<DateTime?>("ExpiryDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
@@ -3072,9 +2925,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("DestinationLocation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3130,9 +2980,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<DateTime?>("ExpectedDeliveryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3183,9 +3030,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -3239,9 +3083,6 @@ namespace ZMS.Domain.Migrations
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -3322,9 +3163,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Fax")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3388,9 +3226,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3450,9 +3285,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Fax")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3509,9 +3341,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3550,9 +3379,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3589,9 +3415,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -3931,9 +3754,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("CreationDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("InvoiceNo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
@@ -4056,9 +3876,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ExpectedReachedDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FromLocation")
@@ -4196,9 +4013,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("CreationDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -4321,9 +4135,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -4396,9 +4207,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Destination")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Freight")
@@ -4591,9 +4399,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FabricValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Final")
@@ -4875,9 +4680,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -5013,9 +4815,6 @@ namespace ZMS.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -5087,9 +4886,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -5156,9 +4952,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DueDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InvoiceDate")
@@ -5295,9 +5088,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("CreationDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("IncomeTaxAmount")
                         .HasColumnType("nvarchar(max)");
 
@@ -5379,9 +5169,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -5495,9 +5282,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -5543,9 +5327,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreationDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -5903,9 +5684,6 @@ namespace ZMS.Domain.Migrations
                     b.Property<string>("Descriptions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Files")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -5942,9 +5720,6 @@ namespace ZMS.Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Files")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")

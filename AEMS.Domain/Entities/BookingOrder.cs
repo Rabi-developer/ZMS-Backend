@@ -37,6 +37,8 @@ namespace ZMS.Domain.Entities
         public string? UpdatedBy { get; set; }
         public string? UpdationDate { get; set; }
         public string? Status { get; set; }
+      
+
     }
 
     public class RelatedConsignment : GeneralBase
@@ -53,6 +55,5 @@ namespace ZMS.Domain.Entities
         public decimal? RecvAmount { get; set; }
         public string? DelDate { get; set; }
         public string? Status { get; set; }
-        public string? Files { get; set; }
     }
 }

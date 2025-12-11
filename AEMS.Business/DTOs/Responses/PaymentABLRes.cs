@@ -9,17 +9,18 @@ namespace ZMS.Domain.Entities
         public Guid? Id { get; set; }
         public int? PaymentNo { get; set; }
         public string? PaymentDate { get; set; }
+        public string? Files { get; set; }
         public string? PaymentMode { get; set; }
         public string? BankName { get; set; }
         public string? ChequeNo { get; set; }
         public string? ChequeDate { get; set; }
         public string? PaidTo { get; set; }
-        public float? PaidAmount { get; set; }
-        public float? Advanced { get; set; }
+        public string? PaidAmount { get; set; }
+        public string? Advanced { get; set; }
         public string? AdvancedDate { get; set; }
-        public float? PDC { get; set; }
+        public string? PDC { get; set; }
         public string? PDCDate { get; set; }
-        public float? PaymentAmount { get; set; }
+        public string? PaymentAmount { get; set; }
         public string? Remarks { get; set; }
         public string? CreatedBy { get; set; }
         public string? CreationDate { get; set; }

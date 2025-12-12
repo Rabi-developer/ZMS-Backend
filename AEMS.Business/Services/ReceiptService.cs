@@ -38,16 +38,18 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
     }
 
 
-    public async override Task<Response<IList<ReceiptRes>>> GetAll(Pagination? paginate)
+    public async override Task<Response<IList<ReceiptRes>>> GetAllByUser(Pagination pagination, Guid userId, bool onlyusers = true)
     {
         try
         {
-            var pagination = paginate ?? new Pagination();
-            //TODO: Get Pagination from the Query
+            var (pag, data) = await Repository.GetAllByUser(pagination, onlyusers, userId);
 
-            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Items));
+            var res = data.Adapt<List<ReceiptRes>>();
 
             var Party = await _DbContext.Party.ToListAsync();
+/*            var Broker = await _DbContext.Brooker.ToListAsync();
+*/
+
 
             var result = data.Adapt<List<ReceiptRes>>();
 
@@ -56,6 +58,8 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
                 if (!string.IsNullOrWhiteSpace(item.Party))
                     item.Party = Party.FirstOrDefault(t => t.Id.ToString() == item.Party)?.Name;
             }
+            
+
             return new Response<IList<ReceiptRes>>
             {
                 Data = result,
@@ -68,7 +72,7 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
         {
             return new Response<IList<ReceiptRes>>
             {
-                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusMessage = e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }

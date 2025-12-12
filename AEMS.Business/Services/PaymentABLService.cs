@@ -38,18 +38,31 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
     }
 
 
-    public async override Task<Response<IList<PaymentABLRes>>> GetAll(Pagination? paginate)
+    public async override Task<Response<IList<PaymentABLRes>>> GetAllByUser(Pagination pagination, Guid userId, bool onlyusers = true)
     {
         try
         {
-            var pagination = paginate ?? new Pagination();
-            //TODO: Get Pagination from the Query
+            var (pag, data) = await Repository.GetAllByUser(pagination, onlyusers, userId);
 
-            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.PaymentABLItem));
+            var res = data.Adapt<List<PaymentABLRes>>();
+
+            var PaidTo = await _DbContext.BusinessAssociate.ToListAsync();
+            var Broker = await _DbContext.Brooker.ToListAsync();
+
+
+
+
+            var result = data.Adapt<List<PaymentABLRes>>();
+
+            foreach (var item in result)
+            {
+                if (!string.IsNullOrWhiteSpace(item.PaidTo))
+                    item.PaidTo = PaidTo.FirstOrDefault(v => v.Id.ToString() == item.PaidTo)?.Name;
+            }
 
             return new Response<IList<PaymentABLRes>>
             {
-                Data = data.Adapt<List<PaymentABLRes>>(),
+                Data = result,
                 Misc = pag,
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
@@ -59,53 +72,54 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
         {
             return new Response<IList<PaymentABLRes>>
             {
-                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusMessage = e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }
     }
 
 
-  /*  public async override Task<Response<Guid>> Add(PaymentABLReq reqModel)
-    {
-        try
-        {
-            var entity = reqModel.Adapt<PaymentABL>();
 
-            var GetlastNo = await UnitOfWork._context.PaymentABL
-     .OrderByDescending(p => p.Id)
-     .FirstOrDefaultAsync();
+    /*  public async override Task<Response<Guid>> Add(PaymentABLReq reqModel)
+      {
+          try
+          {
+              var entity = reqModel.Adapt<PaymentABL>();
 
-            if (GetlastNo == null || GetlastNo.PaymentNo == "" || GetlastNo.PaymentNo == "REC516552277")
-            {
-                entity.PaymentNo = "1";
-            }
-            else
-            {
-                int NewNo = int.Parse(GetlastNo.PaymentNo) + 1;
-                entity.PaymentNo = NewNo.ToString();
-            }
+              var GetlastNo = await UnitOfWork._context.PaymentABL
+       .OrderByDescending(p => p.Id)
+       .FirstOrDefaultAsync();
 
-            var ss = await Repository.Add((PaymentABL)(entity as IMinBase ??
-             throw new InvalidOperationException(
-             "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
-            await UnitOfWork.SaveAsync();
-            return new Response<Guid>
-            {
+              if (GetlastNo == null || GetlastNo.PaymentNo == "" || GetlastNo.PaymentNo == "REC516552277")
+              {
+                  entity.PaymentNo = "1";
+              }
+              else
+              {
+                  int NewNo = int.Parse(GetlastNo.PaymentNo) + 1;
+                  entity.PaymentNo = NewNo.ToString();
+              }
 
-                StatusMessage = "Created successfully",
-                StatusCode = HttpStatusCode.Created
-            };
-        }
-        catch (Exception e)
-        {
-            return new Response<Guid>
-            {
-                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
-                StatusCode = HttpStatusCode.InternalServerError
-            };
-        }
-    }*/
+              var ss = await Repository.Add((PaymentABL)(entity as IMinBase ??
+               throw new InvalidOperationException(
+               "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+              await UnitOfWork.SaveAsync();
+              return new Response<Guid>
+              {
+
+                  StatusMessage = "Created successfully",
+                  StatusCode = HttpStatusCode.Created
+              };
+          }
+          catch (Exception e)
+          {
+              return new Response<Guid>
+              {
+                  StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                  StatusCode = HttpStatusCode.InternalServerError
+              };
+          }
+      }*/
 
     public async virtual Task<Response<PaymentABLRes>> Get(Guid id)
     {

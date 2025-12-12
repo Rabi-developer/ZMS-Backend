@@ -37,6 +37,47 @@ public class BiltyPaymentInvoiceService : BaseService<BiltyPaymentInvoiceReq, Bi
         _DbContext = dbContextn;
     }
 
+    public async override Task<Response<IList<BiltyPaymentInvoiceRes>>> GetAllByUser(Pagination pagination, Guid userId, bool onlyusers = true)
+    {
+        try
+        {
+            var (pag, data) = await Repository.GetAllByUser(pagination, onlyusers, userId);
+
+            var res = data.Adapt<List<BiltyPaymentInvoiceRes>>();
+
+            var OrderNo = await _DbContext.BookingOrder.ToListAsync();
+            var Broker = await _DbContext.Brooker.ToListAsync();
+
+
+
+            var result = data.Adapt<List<BiltyPaymentInvoiceRes>>();
+
+            foreach (var item in result)
+            {
+                foreach (var lines in item.Lines)
+                {
+                    if (!string.IsNullOrWhiteSpace(lines.Broker))
+                        lines.Broker = Broker.FirstOrDefault(t => t.Id.ToString() == lines.Broker).Name;
+                }
+            }
+
+            return new Response<IList<BiltyPaymentInvoiceRes>>
+            {
+                Data = result,
+                Misc = pag,
+                StatusMessage = "Fetch successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<IList<BiltyPaymentInvoiceRes>>
+            {
+                StatusMessage = e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
 
     public async override Task<Response<IList<BiltyPaymentInvoiceRes>>> GetAll(Pagination? paginate)
     {
@@ -45,10 +86,11 @@ public class BiltyPaymentInvoiceService : BaseService<BiltyPaymentInvoiceReq, Bi
             var pagination = paginate ?? new Pagination();
             //TODO: Get Pagination from the Query
 
-            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Lines));
+            var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.Lines).ThenInclude(p =>p.Broker));
 
             var OrderNo = await _DbContext.BookingOrder.ToListAsync();
             var Broker = await _DbContext.Brooker.ToListAsync();
+
 
 
             var result = data.Adapt<List<BiltyPaymentInvoiceRes>>();

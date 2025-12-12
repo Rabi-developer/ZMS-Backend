@@ -14,8 +14,8 @@ namespace ZMS.Domain.Entities
         public string? BiltyNo { get; set; }
         public string? Date { get; set; }
         public string? Consignor { get; set; }
-        public string? ConsignmentNo { get; set; }
-        public string? ConsignmentDate { get; set; }
+/*        public string? ConsignmentNo { get; set; }
+*/        public string? ConsignmentDate { get; set; }
         public string? CreditAllowed { get; set; }
         public string? Consignee { get; set; }
         public string? ReceiverName { get; set; }

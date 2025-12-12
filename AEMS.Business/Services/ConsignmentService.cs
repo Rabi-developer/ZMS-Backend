@@ -88,6 +88,7 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
         }
     }
 
+
     public async override Task<Response<ConsignmentRes>> Update(ConsignmentReq reqModel)
     {
         try
@@ -110,8 +111,8 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
             existingEntity.OrderNo = reqModel.OrderNo;
             existingEntity.BiltyNo = reqModel.BiltyNo;
             existingEntity.Date = reqModel.Date;
-            existingEntity.ConsignmentNo = reqModel.ConsignmentNo;
-            existingEntity.Consignor = reqModel.Consignor;
+/*            existingEntity.ConsignmentNo = reqModel.ConsignmentNo;
+*/            existingEntity.Consignor = reqModel.Consignor;
             existingEntity.ConsignmentDate = reqModel.ConsignmentDate;
             existingEntity.CreditAllowed = reqModel.CreditAllowed;
             existingEntity.Consignee = reqModel.Consignee;
@@ -257,36 +258,34 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
             };
         }
     }
-    public async virtual Task<Response<Guid>> Add(ConsignmentReq reqModel)
+
+    public async override Task<Response<Guid>> Add(ConsignmentReq reqModel)
     {
         try
         {
             var entity = reqModel.Adapt<Consignment>();
-            var entityAsBase = entity as IMinBase ??
-                throw new InvalidOperationException(
-                    "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.");
 
-            // Add entity to repository
-            var addedEntity = await Repository.Add((Consignment)entityAsBase);
+            var GetlastNo = await UnitOfWork._context.Consignment
+     .OrderByDescending(p => p.Id)
+     .FirstOrDefaultAsync();
 
-            // Save changes to database
-            await UnitOfWork.SaveAsync();
-
-            // Get the actual ID after save - the tracked entity should have the correct ID
-            // Access through IMinBase to get the base class Id property
-            var savedId = ((IMinBase)addedEntity).Id;
-
-            // If still empty, try to reload from database
-            if (savedId == Guid.Empty)
+            if (GetlastNo == null || GetlastNo.ConsignmentNo == "REC516552277" || GetlastNo.ConsignmentNo == "")
             {
-                // Reload the entity to get database-generated values
-                await UnitOfWork._context.Entry(addedEntity).ReloadAsync();
-                savedId = ((IMinBase)addedEntity).Id;
+                entity.ConsignmentNo = "1";
+            }
+            else
+            {
+                int NewNo = int.Parse(GetlastNo.ConsignmentNo) + 1;
+                entity.ConsignmentNo = NewNo.ToString();
             }
 
+            var ss = await Repository.Add((Consignment)(entity as IMinBase ??
+             throw new InvalidOperationException(
+             "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
+            await UnitOfWork.SaveAsync();
             return new Response<Guid>
             {
-                Data = savedId,
+
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };
@@ -300,6 +299,7 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
             };
         }
     }
+
 
 
     public async Task<ConsignmentStatus> UpdateStatusAsync(Guid id, string status)
@@ -334,4 +334,41 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
             Status = status,
         };
     }
+
+
+   /* public override async Task<Response<Guid>> Add(ConsignmentReq reqModel)
+    {
+        try
+        {   
+            var lastConsignmentNo = await _DbContext.Consignment
+                .OrderByDescending(x => x.ConsignmentNo)
+                .FirstOrDefaultAsync();
+
+            string newConsignmentNo = lastConsignmentNo == null
+                ? "1"
+                : (int.Parse(lastConsignmentNo.ConsignmentNo) + 1).ToString("D1");
+
+            var entity = reqModel.Adapt<Consignment>();
+            entity.ConsignmentNo = newConsignmentNo;
+            entity.Id = Guid.NewGuid();
+            await Repository.Add(entity);
+            await UnitOfWork.SaveAsync();
+
+            return new Response<Guid>
+            {
+                StatusMessage = "Created successfully",
+                StatusCode = HttpStatusCode.Created
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<Guid>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }*/
+
 }
+

@@ -40,6 +40,8 @@ namespace IMS.Business.Services
             _DbContext = dbContext;
         }
 
+
+
         public override async Task<Response<IList<EntryVoucherRes>>> GetAll(Pagination? paginate)
         {
             try
@@ -48,6 +50,7 @@ namespace IMS.Business.Services
                 var (pag, data) = await Repository.GetAll(pagination, query => query.Include(p => p.VoucherDetails));
 
                 var result = data.Adapt<List<EntryVoucherRes>>();
+
 
                 foreach (var item in result)
                 {
@@ -103,6 +106,7 @@ namespace IMS.Business.Services
                 var lastVoucher = await UnitOfWork._context.EntryVoucher
                     .OrderByDescending(p => p.Id)
                     .FirstOrDefaultAsync();
+
                 /*
                 if (lastVoucher == null || string.IsNullOrWhiteSpace(lastVoucher.VoucherNo))
                 {
@@ -510,6 +514,45 @@ namespace IMS.Business.Services
             }
 
             return null;
+        }
+        public async override Task<Response<IList<EntryVoucherRes>>> GetAllByUser(Pagination pagination, Guid userId, bool onlyusers = true)
+        {
+            try
+            {
+                var (pag, data) = await Repository.GetAllByUser(pagination, onlyusers, userId);
+
+                var res = data.Adapt<List<EntryVoucherRes>>();
+
+                var PaidTo = await _DbContext.BusinessAssociate.ToListAsync();
+                var Broker = await _DbContext.Brooker.ToListAsync();
+
+
+
+
+                var result = data.Adapt<List<EntryVoucherRes>>();
+
+                foreach (var item in result)
+                {
+                    if (!string.IsNullOrWhiteSpace(item.PaidTo))
+                        item.PaidTo = PaidTo.FirstOrDefault(v => v.Id.ToString() == item.PaidTo)?.Name;
+                }
+
+                return new Response<IList<EntryVoucherRes>>
+                {
+                    Data = result,
+                    Misc = pag,
+                    StatusMessage = "Fetch successfully",
+                    StatusCode = HttpStatusCode.OK
+                };
+            }
+            catch (Exception e)
+            {
+                return new Response<IList<EntryVoucherRes>>
+                {
+                    StatusMessage = e.Message,
+                    StatusCode = HttpStatusCode.InternalServerError
+                };
+            }
         }
 
         private async Task UpdateAccount(Account account)

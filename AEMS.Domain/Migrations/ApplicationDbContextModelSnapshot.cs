@@ -505,7 +505,7 @@ namespace ZMS.Domain.Migrations
                         {
                             Id = new Guid("fc9544a9-4e5c-4032-a27f-3001b29364c5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c97ebbd3-567c-44e3-8a63-691f97f51198",
+                            ConcurrencyStamp = "78e5b756-a871-4645-adc5-aa5a5b2736bc",
                             CreatedBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@ZMS.com",
@@ -517,7 +517,7 @@ namespace ZMS.Domain.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ZMS.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELiuFJUiHNArUq2RvHVXYzvlO1ZZlGkiJL8qgIEvJHrDKPMz6EVXE3f7F9EgzKnJsw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELO+Cda0sOAXcwBgFRaQhnGcrOLNJX09Y36+X8jgF+/rsIU2cSQmwsEQSUK8nzAWgQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "d3290d28-d69c-4f25-bbed-d30a1f7a9d5c",
                             TwoFactorEnabled = false,

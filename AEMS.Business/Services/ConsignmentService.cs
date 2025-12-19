@@ -285,7 +285,7 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
             await UnitOfWork.SaveAsync();
             return new Response<Guid>
             {
-
+                Data = ss.Id,
                 StatusMessage = "Created successfully",
                 StatusCode = HttpStatusCode.Created
             };
@@ -294,6 +294,7 @@ public class ConsignmentService : BaseService<ConsignmentReq, ConsignmentRes, Co
         {
             return new Response<Guid>
             {
+
                 StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
             };

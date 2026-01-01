@@ -29,9 +29,7 @@ public interface IBookingOrderService : IBaseService<BookingOrderReq, BookingOrd
     Task<Response<Guid>> UpdateConsignmentAsync(Guid bookingOrderId, Guid consignmentId, RelatedConsignmentReq reqModel);
     Task<Response<bool>> DeleteConsignmentAsync(Guid bookingOrderId, Guid consignmentId);
     Task<Response<BookingOrderRes>> UpdateAsync(Guid id, BookingOrderReq reqModel);
-
-   
-
+    Task<Response<IList<OrderProgressRes>>> GetOrderProgressAsync(Guid bookingOrderId);
 }
 
 public class BookingOrderService : BaseService<BookingOrderReq, BookingOrderRes, BookingOrderRepository, BookingOrder>, IBookingOrderService
@@ -505,6 +503,193 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
             return new Response<BookingOrderRes>
             {
                 StatusMessage = e.InnerException?.Message ?? e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
+    public async Task<Response<IList<OrderProgressRes>>> GetOrderProgressAsync(Guid bookingOrderId)
+    {
+        try
+        {
+            var bookingOrder = await _DbContext.BookingOrder.FirstOrDefaultAsync(b => b.Id == bookingOrderId);
+            if (bookingOrder == null)
+            {
+                return new Response<IList<OrderProgressRes>>
+                {
+                    StatusMessage = $"BookingOrder with ID {bookingOrderId} not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+            // get related consignments
+            var related = await _DbContext.RelatedConsignments.Where(r => r.BookingOrderId == bookingOrderId).ToListAsync();
+
+            var results = new List<OrderProgressRes>();
+
+            // Preload payments and charges for order matching
+            var orderNoStr = bookingOrder.OrderNo.ToString();
+
+            var payments = await _DbContext.PaymentABL
+                .Include(p => p.PaymentABLItem)
+                .Where(p => p.PaymentABLItem.Any(i => i.OrderNo == orderNoStr))
+                .ToListAsync();
+
+            var chargesForOrder = await _DbContext.Charges
+                .Include(c => c.Lines)
+                .Include(c => c.Payments)
+                .Where(c => c.OrderNo == orderNoStr)
+                .ToListAsync();
+
+            // sum of paid amounts from charges payments
+            var totalPaidFromCharges = chargesForOrder.SelectMany(c => c.Payments ?? new List<ChargesPayments>())
+                .Where(p => p.PaidAmount.HasValue)
+                .Sum(p => p.PaidAmount) ;
+
+            // preload lookup tables
+            var parties = await _DbContext.Party.ToListAsync();
+            var businessAssociates = await _DbContext.BusinessAssociate.ToListAsync();
+            var munshyana = await _DbContext.Munshyana.ToListAsync();
+            var transporters = await _DbContext.Transporters.ToListAsync();
+            var vendors = await _DbContext.Vendor.ToListAsync();
+
+            foreach (var rel in related)
+            {
+                var op = new OrderProgressRes();
+                op.Id = rel.Id;
+
+                // Try to locate Consignment by ReceiptNo, BiltyNo, or OrderNo and include items
+                Consignment? cons = null;
+                if (!string.IsNullOrWhiteSpace(rel.ReceiptNo) && int.TryParse(rel.ReceiptNo, out var recNo))
+                {
+                    cons = await _DbContext.Consignment.Include(c => c.Items).FirstOrDefaultAsync(c => c.ReceiptNo == recNo);
+                }
+                if (cons == null && !string.IsNullOrWhiteSpace(rel.BiltyNo))
+                {
+                    cons = await _DbContext.Consignment.Include(c => c.Items).FirstOrDefaultAsync(c => c.BiltyNo == rel.BiltyNo);
+                }
+                if (cons == null)
+                {
+                    cons = await _DbContext.Consignment.Include(c => c.Items).FirstOrDefaultAsync(c => c.OrderNo == orderNoStr && (string.IsNullOrWhiteSpace(rel.BiltyNo) || c.BiltyNo == rel.BiltyNo));
+                }
+
+                // Fill basic fields from related record and consignment
+                op.biltyNo = cons?.BiltyNo ?? rel.BiltyNo;
+                op.receiptNo = cons != null ? cons.ReceiptNo.ToString() : rel.ReceiptNo;
+                op.orderNo = bookingOrder.OrderNo.ToString();
+                op.orderDate = bookingOrder.OrderDate;
+                op.vehicleNo = bookingOrder.VehicleNo;
+
+                // resolve consignor/consignee names if values are GUIDs referencing Party or BusinessAssociate or Vendor/Transporter
+                string ResolveEntityName(string? idOrValue)
+                {
+                    if (string.IsNullOrWhiteSpace(idOrValue)) return string.Empty;
+                    // if looks like GUID, try lookups
+                    if (Guid.TryParse(idOrValue, out var gid))
+                    {
+                        var p = parties.FirstOrDefault(x => x.Id == gid);
+                        if (p != null && !string.IsNullOrWhiteSpace(p.Name)) return p.Name;
+                        var ba = businessAssociates.FirstOrDefault(x => x.Id == gid);
+                        if (ba != null && !string.IsNullOrWhiteSpace(ba.Name)) return ba.Name;
+                        var t = transporters.FirstOrDefault(x => x.Id == gid);
+                        if (t != null && !string.IsNullOrWhiteSpace(t.Name)) return t.Name;
+                        var v = vendors.FirstOrDefault(x => x.Id == gid);
+                        if (v != null && !string.IsNullOrWhiteSpace(v.Name)) return v.Name;
+                    }
+                    return idOrValue;
+                }
+
+                op.consignor = ResolveEntityName(cons?.Consignor ?? rel.Consignor);
+                op.consignee = ResolveEntityName(cons?.Consignee ?? rel.Consignee);
+
+                // items and qty from consignment items when available
+                if (cons?.Items != null && cons.Items.Count > 0)
+                {
+                    op.items = string.Join(", ", cons.Items.Select(i => i.Desc).Where(x => !string.IsNullOrWhiteSpace(x)));
+                    var totalQty = cons.Items.Where(i => i.Qty.HasValue).Sum(i => (int)Convert.ToInt32(i.Qty.Value));
+                    op.qty = totalQty.ToString();
+                }
+                else if (!string.IsNullOrWhiteSpace(rel.Item))
+                {
+                    op.items = rel.Item;
+                    op.qty = rel.Qty?.ToString() ?? "0";
+                }
+
+                op.totalAmount = cons?.TotalAmount != null ? cons.TotalAmount.ToString() : (rel.TotalAmount?.ToString() ?? "0");
+                op.receivedAmount = cons?.ReceivedAmount != null ? cons.ReceivedAmount.ToString() : (rel.RecvAmount?.ToString() ?? "0");
+                op.deliveryDate = cons?.DeliveryDate ?? rel.DelDate;
+                op.consignmentStatus = cons?.Status ?? rel.Status;
+
+                // Paid Amount: sum from Charges.Payments for this order
+                op.paidAmount = (totalPaidFromCharges != null ? totalPaidFromCharges.ToString() : "0");
+
+                // Charges and Amount - filter lines that match this consignment biltyNo
+                var matchingChargeLines = chargesForOrder.SelectMany(c => c.Lines ?? new List<ChargeLine>())
+                    .Where(l => string.IsNullOrWhiteSpace(l.BiltyNo) || (!string.IsNullOrWhiteSpace(op.biltyNo) && l.BiltyNo == op.biltyNo))
+                    .ToList();
+
+                if (matchingChargeLines.Any())
+                {
+                    // map charge id -> Munshyana.ChargesDesc when possible, and collect amounts
+                    var chargeNames = new List<string>();
+                    var chargeAmounts = new List<string>();
+                    foreach (var cl in matchingChargeLines)
+                    {
+                        string chargeName = cl.Charge ?? string.Empty;
+                        if (!string.IsNullOrWhiteSpace(cl.Charge) && Guid.TryParse(cl.Charge, out var chargeGuid))
+                        {
+                            var m = munshyana.FirstOrDefault(x => x.Id == chargeGuid);
+                            if (m != null && !string.IsNullOrWhiteSpace(m.ChargesDesc)) chargeName = m.ChargesDesc;
+                        }
+                        chargeNames.Add(chargeName);
+
+                        var amt = cl.Amount.HasValue ? cl.Amount.Value.ToString("0.##") : "0";
+                        chargeAmounts.Add(amt);
+                    }
+
+                    op.charges = string.Join(", ", chargeNames);
+                    op.amount = string.Join(", ", chargeAmounts);
+
+                    // determine paidToPerson: prefer PaidTo from charge lines, resolve name
+                    var paidToId = matchingChargeLines.Select(l => l.PaidTo).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+                    if (!string.IsNullOrWhiteSpace(paidToId))
+                        op.paidToPerson = ResolveEntityName(paidToId);
+                }
+                else
+                {
+                    // fallback: first charge line across all charges for order
+                    var firstChargeLine = chargesForOrder.SelectMany(c => c.Lines ?? new List<ChargeLine>()).FirstOrDefault();
+                    if (firstChargeLine != null)
+                    {
+                        op.paidToPerson = ResolveEntityName(firstChargeLine.PaidTo);
+                    }
+                }
+
+                // PaymentNo - find PaymentABL that has an item with same orderNo
+                var payment = payments.SelectMany(p => p.PaymentABLItem ?? new List<PaymentABLItem>())
+                    .FirstOrDefault(i => i.OrderNo == orderNoStr || (!string.IsNullOrWhiteSpace(op.biltyNo) && i.OrderNo == op.biltyNo));
+                if (payment != null)
+                {
+                    var parentPayment = payments.FirstOrDefault(p => p.PaymentABLItem != null && p.PaymentABLItem.Any(it => it.OrderNo == payment.OrderNo));
+                    if (parentPayment != null)
+                        op.paymentNo = parentPayment.PaymentNo.ToString();
+                }
+
+                results.Add(op);
+            }
+
+            return new Response<IList<OrderProgressRes>>
+            {
+                Data = results,
+                StatusMessage = "Fetched successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<IList<OrderProgressRes>>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                 StatusCode = HttpStatusCode.InternalServerError
             };
         }

@@ -88,6 +88,7 @@ public class OrderProgressRes
     public string? deliveryDate { get; set; }
     public string? paidToPerson { get; set; }
     public string? charges { get; set; }
+    public string? amount { get; set; }
     public string? consignmentStatus { get; set; }
 
 }

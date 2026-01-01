@@ -66,3 +66,28 @@ public class BookingOrderStatus
     public Guid? Id { get; set; }
     public string? Status { get; set; }
 }
+
+
+public class OrderProgressRes
+
+{
+    public Guid? Id { get; set; }
+    public string? biltyNo { get; set; }
+    public string? receiptNo { get; set; }
+    public string? paymentNo { get; set; }
+    public string? orderNo { get; set; }
+    public string? orderDate { get; set; }
+    public string? vehicleNo { get; set; }
+    public string? consignor { get; set; }
+    public string? consignee { get; set; }
+    public string? items { get; set; }
+    public string? qty { get; set; }
+    public string? totalAmount { get; set; }
+    public string? receivedAmount { get; set; }
+    public string? paidAmount { get; set; }
+    public string? deliveryDate { get; set; }
+    public string? paidToPerson { get; set; }
+    public string? charges { get; set; }
+    public string? consignmentStatus { get; set; }
+
+}

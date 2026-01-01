@@ -168,12 +168,12 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
                 await UnitOfWork._context.Entry(addedEntity).ReloadAsync();
                 savedId = ((IMinBase)addedEntity).Id;
             }
-            
+
             return new Response<Guid>
             {
                 Data = savedId,
                 StatusMessage = "Created successfully",
-                StatusCode = HttpStatusCode.Created
+                StatusCode = HttpStatusCode.OK
             };
         }
         catch (Exception e)

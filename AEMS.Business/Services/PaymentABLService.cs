@@ -38,6 +38,100 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
     }
 
 
+    public async override Task<Response<PaymentABLRes>> Update(PaymentABLReq reqModel)
+    {
+        try
+        {
+            // Adapt request model to entity
+            var entity = reqModel.Adapt<PaymentABL>();
+
+            // Get the existing payment with its items
+            var existingEntity = await Repository.Get(entity.Id, query=> query.Include(p=> p.PaymentABLItem));
+            if (existingEntity == null)
+            {
+                return new Response<PaymentABLRes>
+                {
+                    StatusMessage = "Payment record not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+            // Handle child items (PaymentABLItem)
+            if (reqModel.PaymentABLItem != null && reqModel.PaymentABLItem.Any())
+            {
+                // Get IDs of incoming items
+                var incomingItemIds = reqModel.PaymentABLItem
+                    .Where(x => x.Id.HasValue && x.Id != Guid.Empty)
+                    .Select(x => x.Id.Value)
+                    .ToList();
+
+                // Remove items that are not in the incoming request
+                var itemsToRemove = existingEntity.PaymentABLItem
+                    ?.Where(x => !incomingItemIds.Contains((Guid)x.Id))
+                    .ToList() ?? new List<PaymentABLItem>();
+
+                foreach (var item in itemsToRemove)
+                {
+                    existingEntity.PaymentABLItem?.Remove(item);
+                }
+
+                // Add or update items
+                foreach (var itemReq in reqModel.PaymentABLItem)
+                {
+                    if (!itemReq.Id.HasValue || itemReq.Id == Guid.Empty)
+                    {
+                        // New item
+                        var newItem = itemReq.Adapt<PaymentABLItem>();
+                        existingEntity.PaymentABLItem?.Add(newItem);
+                    }
+                    else
+                    {
+                        // Update existing item
+                        var existingItem = existingEntity.PaymentABLItem?
+                            .FirstOrDefault(x => x.Id == itemReq.Id);
+
+                        if (existingItem != null)
+                        {
+                            // Map fields from request to existing item
+                            existingItem.VehicleNo = itemReq.VehicleNo;
+                            existingItem.OrderNo = itemReq.OrderNo;
+                            existingItem.Charges = itemReq.Charges;
+                            existingItem.OrderDate = itemReq.OrderDate;
+                            existingItem.DueDate = itemReq.DueDate;
+                            existingItem.ExpenseAmount = itemReq.ExpenseAmount;
+                            existingItem.Balance = itemReq.Balance;
+                            existingItem.PaidAmount = itemReq.PaidAmount;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // No items provided - clear all
+                existingEntity.PaymentABLItem?.Clear();
+            }
+
+            // Update the main entity
+            var res = await Repository.Update(existingEntity, null);
+            await UnitOfWork.SaveAsync();
+
+            return new Response<PaymentABLRes>
+            {
+                Data = res.Adapt<PaymentABLRes>(),
+                StatusMessage = "Updated successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<PaymentABLRes>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
     public async override Task<Response<IList<PaymentABLRes>>> GetAllByUser(Pagination pagination, Guid userId, bool onlyusers = true)
     {
         try

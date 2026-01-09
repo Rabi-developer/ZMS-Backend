@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using ZMS.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using ZMS.API.Middleware;
+using System.Net;
 /*using IMS.Domain.Migrations;
 */
 namespace ZMS.API.Controllers;
@@ -46,6 +47,25 @@ public class ReceiptController : BaseController<ReceiptController, IReceiptServi
         catch (Exception ex)
         {
             return StatusCode(500, "An error occurred while updating the contract status.");
+        }
+    }
+
+    [HttpGet("bilty-balance/{biltyNo}")]
+    [Permission("Organization", "View")]
+    public async Task<IActionResult> GetBiltyBalance(string biltyNo)
+    {
+        try
+        {
+            var result = await Service.GetBiltyBalance(biltyNo);
+            if (result.StatusCode == HttpStatusCode.OK)
+                return Ok(result.Data);
+            if (result.StatusCode == HttpStatusCode.BadRequest)
+                return BadRequest(result.StatusMessage);
+            return StatusCode(500, result.StatusMessage);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
         }
     }
 }

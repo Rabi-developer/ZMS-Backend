@@ -21,12 +21,13 @@ namespace IMS.Business.Services;
 public interface IReceiptService : IBaseService<ReceiptReq, ReceiptRes, Receipt>
 {
     public Task<ReceiptStatus> UpdateStatusAsync(Guid id, string status);
+    public Task<Response<BiltyBalanceRes>> GetBiltyBalance(string biltyNo);
 
 }
 
 public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptRepository, Receipt>, IReceiptService
 {
-    private readonly IReceiptRepository _repository;
+    private readonly IReceiptRepository _repository; 
     private readonly IHttpContextAccessor _context;
     private readonly ApplicationDbContext _DbContext;
 
@@ -181,6 +182,148 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
             Id = id,
             Status = status,
         };
+    }
+    public async Task<Response<BiltyBalanceRes>> GetBiltyBalance(string biltyNo)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(biltyNo))
+            {
+                return new Response<BiltyBalanceRes>
+                {
+                    StatusMessage = "Bilty number is required",
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+            }
+
+            var cons = await _DbContext.Consignment.FirstOrDefaultAsync(c => c.BiltyNo == biltyNo);
+            decimal totalAmount = 0;
+            if (cons != null)
+                totalAmount = Convert.ToDecimal(cons.TotalAmount ?? 0);
+
+            if (totalAmount == 0)
+            {
+                var firstItem = await _DbContext.Receipt
+                    .SelectMany(r => r.Items)
+                    .FirstOrDefaultAsync(i => i.BiltyNo == biltyNo && i.TotalAmount != null);
+                if (firstItem != null)
+                    totalAmount = firstItem.TotalAmount ?? 0;
+            }
+
+            var totalReceived = await _DbContext.Receipt
+                .SelectMany(r => r.Items)
+                .Where(i => i.BiltyNo == biltyNo)
+                .SumAsync(i => (decimal?)(i.ReceiptAmount ?? 0)) ?? 0;
+
+            var balance = totalAmount - totalReceived;
+
+            var res = new BiltyBalanceRes
+            {
+                BiltyNo = biltyNo,
+                TotalAmount = totalAmount,
+                ReceivedAmount = totalReceived,
+                Balance = balance
+            };
+
+            return new Response<BiltyBalanceRes>
+            {
+                Data = res,
+                StatusMessage = "Fetched successfully",
+                StatusCode = System.Net.HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<BiltyBalanceRes>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = System.Net.HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
+    public async override Task<Response<Guid>> Add(ReceiptReq reqModel)
+    {
+        try
+        {
+            if (reqModel.Items != null && reqModel.Items.Count > 0)
+            {
+                foreach (var it in reqModel.Items)
+                {
+                    var biltyNo = it.BiltyNo;
+                    if (string.IsNullOrWhiteSpace(biltyNo))
+                        continue;
+
+                    var cons = await _DbContext.Consignment.FirstOrDefaultAsync(c => c.BiltyNo == biltyNo);
+                    decimal totalAmount = 0;
+                    if (cons != null)
+                        totalAmount = Convert.ToDecimal(cons.TotalAmount ?? 0);
+
+                    if (totalAmount == 0 && it.TotalAmount != null)
+                        totalAmount = it.TotalAmount ?? 0;
+
+                    var existingReceived = await _DbContext.Receipt
+                        .SelectMany(r => r.Items)
+                        .Where(i => i.BiltyNo == biltyNo)
+                        .SumAsync(i => (decimal?)(i.ReceiptAmount ?? 0)) ?? 0;
+
+                    var remainingBefore = totalAmount - existingReceived;
+
+                    if (remainingBefore <= 0)
+                    {
+                        return new Response<Guid>
+                        {
+                            StatusMessage = $"Bilty {biltyNo} has zero remaining balance",
+                            StatusCode = System.Net.HttpStatusCode.BadRequest
+                        };
+                    }
+
+                    var receiptAmt = it.ReceiptAmount ?? 0;
+                    if (receiptAmt > remainingBefore)
+                    {
+                        return new Response<Guid>
+                        {
+                            StatusMessage = $"Receipt amount {receiptAmt} exceeds remaining balance {remainingBefore} for bilty {biltyNo}",
+                            StatusCode = System.Net.HttpStatusCode.BadRequest
+                        };
+                    }
+
+                    it.TotalAmount = totalAmount;
+                    it.Balance = remainingBefore - receiptAmt;
+                   
+                }
+            }
+
+            var entity = reqModel.Adapt<Receipt>();
+            var entityAsBase = entity as IMinBase ??
+                throw new InvalidOperationException(
+                    "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.");
+
+            var addedEntity = await Repository.Add((Receipt)entityAsBase);
+            await UnitOfWork.SaveAsync();
+
+            var savedId = ((IMinBase)addedEntity).Id;
+            if (savedId == Guid.Empty)
+            {
+                await UnitOfWork._context.Entry(addedEntity).ReloadAsync();
+                savedId = ((IMinBase)addedEntity).Id;
+            }
+
+            return new Response<Guid>
+            {
+                Data = savedId,
+                StatusMessage = "Created successfully",
+                StatusCode = System.Net.HttpStatusCode.Created
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<Guid>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = System.Net.HttpStatusCode.InternalServerError
+            };
+        }
     }
     public async Task<Response<ReceiptRes>> Update(ReceiptReq reqModel, int maxRetries = 3)
     {

@@ -121,7 +121,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
           }
       }*/
 
-    public async virtual Task<Response<PaymentABLRes>> Get(Guid id)
+    public async override Task<Response<PaymentABLRes>> Get(Guid id)
     {
         try
         {

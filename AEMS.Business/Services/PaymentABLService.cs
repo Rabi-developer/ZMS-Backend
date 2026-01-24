@@ -280,6 +280,11 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
 
     Task<PaymentABLService> IPaymentABLService.UpdateStatusAsync(Guid id, string status)
     {
-        throw new NotImplementedException();
+        var getStatus = UnitOfWork._context.PaymentABL.Where(p => p.Id == id).FirstOrDefault();
+
+        getStatus.Status = status;
+      
+        UnitOfWork.SaveAsync();
+        return Task.FromResult(this);
     }
 }

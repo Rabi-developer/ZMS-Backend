@@ -21,6 +21,7 @@ namespace IMS.Business.Services;
 public interface IPaymentABLService : IBaseService<PaymentABLReq, PaymentABLRes, PaymentABL>
 {
     public Task<PaymentABLService> UpdateStatusAsync(Guid id, string status);
+    public Task<ChargeHistory> HistoryPayment (string VehicleNo, string OrderNo , string Charges);
 
 }
 
@@ -286,5 +287,25 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
       
         UnitOfWork.SaveAsync();
         return Task.FromResult(this);
+    }
+
+    public Task<ChargeHistory> HistoryPayment(string VehicleNo, string OrderNo , string Charges)
+    {
+       var history = (from p in _DbContext.PaymentABL.Where(p => p.PaymentABLItem.Any(i => i.VehicleNo == VehicleNo && i.OrderNo == OrderNo && i.Charges == Charges))
+                                                                   from i in p.PaymentABLItem
+                      where i.VehicleNo == VehicleNo && i.OrderNo == OrderNo && i.Charges == Charges
+                                                                  select new ChargeHistory
+                                                                  {
+                           Id = p.Id,
+                           VehicleNo = i.VehicleNo,
+                           OrderNo = i.OrderNo,
+                           Charges = i.Charges,
+                           Balance = i.Balance,
+                           PaidAmount = i.PaidAmount
+                       }).ToList();
+
+        var result = history.LastOrDefault();
+
+        return Task.FromResult(result);
     }
 }

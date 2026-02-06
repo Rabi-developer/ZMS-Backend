@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using ZMS.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using ZMS.API.Middleware;
+using System.Net;
 /*using IMS.Domain.Migrations;
 */
 namespace ZMS.API.Controllers;
@@ -47,4 +48,16 @@ public class PaymentABLController : BaseController<PaymentABLController, IPaymen
             return StatusCode(500, "An error occurred while updating the contract status.");
         }
     }
+    [HttpGet("History")]
+    [Permission("Organization", "Read")]
+
+    public async Task<IActionResult> GetHistory(string VehicleNo, string OrderNo, string Charges) 
+    {
+        var result = await Service.HistoryPayment(VehicleNo , OrderNo, Charges);
+       
+            return Ok(result);
+       
+    }
+
+   
 }

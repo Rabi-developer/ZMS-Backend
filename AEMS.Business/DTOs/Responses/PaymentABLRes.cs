@@ -49,3 +49,13 @@ public class PaymentAblStatus
     public Guid? Id { get; set; }
     public string? Status { get; set; }
 }
+public class  ChargeHistory
+{
+    public Guid? Id { get; set; }
+    public string? VehicleNo { get; set; }
+    public string? OrderNo { get; set; }
+    public string? Charges { get; set; }
+    public float? Balance { get; set; }
+    public float? PaidAmount { get; set; }
+    
+}

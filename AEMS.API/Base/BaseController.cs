@@ -139,6 +139,7 @@ public class BaseController<TController, TService, TReq, TRes, T> : ControllerBa
     [Permission("Role", "Delete")]
     public virtual async Task<IActionResult> Delete(Guid id)
     {
+        return BadRequest();
         var result = await Service.Delete(id);
         if (result.StatusCode == HttpStatusCode.OK || result.StatusCode == HttpStatusCode.Created)
         {

@@ -523,13 +523,14 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
             }
 
             // get related consignments
-            var related = await _DbContext.RelatedConsignments.Where(r => r.BookingOrderId == bookingOrderId).ToListAsync();
+            var related = await _DbContext.RelatedConsignments
+                .Where(r => r.BookingOrderId == bookingOrderId)
+                .ToListAsync();
 
             var results = new List<OrderProgressRes>();
 
             // Preload payments and charges for order matching
             var orderNoStr = bookingOrder.OrderNo.ToString();
-
             var payments = await _DbContext.PaymentABL
                 .Include(p => p.PaymentABLItem)
                 .Where(p => p.PaymentABLItem.Any(i => i.OrderNo == orderNoStr))
@@ -542,9 +543,10 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
                 .ToListAsync();
 
             // sum of paid amounts from charges payments
-            var totalPaidFromCharges = chargesForOrder.SelectMany(c => c.Payments ?? new List<ChargesPayments>())
+            var totalPaidFromCharges = chargesForOrder
+                .SelectMany(c => c.Payments ?? new List<ChargesPayments>())
                 .Where(p => p.PaidAmount.HasValue)
-                .Sum(p => p.PaidAmount) ;
+                .Sum(p => p.PaidAmount);
 
             // preload lookup tables
             var parties = await _DbContext.Party.ToListAsync();
@@ -562,15 +564,24 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
                 Consignment? cons = null;
                 if (!string.IsNullOrWhiteSpace(rel.ReceiptNo) && int.TryParse(rel.ReceiptNo, out var recNo))
                 {
-                    cons = await _DbContext.Consignment.Include(c => c.Items).FirstOrDefaultAsync(c => c.ReceiptNo == recNo);
+                    cons = await _DbContext.Consignment
+                        .Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.ReceiptNo == recNo);
                 }
+
                 if (cons == null && !string.IsNullOrWhiteSpace(rel.BiltyNo))
                 {
-                    cons = await _DbContext.Consignment.Include(c => c.Items).FirstOrDefaultAsync(c => c.BiltyNo == rel.BiltyNo);
+                    cons = await _DbContext.Consignment
+                        .Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.BiltyNo == rel.BiltyNo);
                 }
+
                 if (cons == null)
                 {
-                    cons = await _DbContext.Consignment.Include(c => c.Items).FirstOrDefaultAsync(c => c.OrderNo == orderNoStr && (string.IsNullOrWhiteSpace(rel.BiltyNo) || c.BiltyNo == rel.BiltyNo));
+                    cons = await _DbContext.Consignment
+                        .Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.OrderNo == orderNoStr &&
+                            (string.IsNullOrWhiteSpace(rel.BiltyNo) || c.BiltyNo == rel.BiltyNo));
                 }
 
                 // Fill basic fields from related record and consignment
@@ -580,22 +591,31 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
                 op.orderDate = bookingOrder.OrderDate;
                 op.vehicleNo = bookingOrder.VehicleNo;
 
+                // Add Freight and FreightFrom from consignment
+                op.freight = cons?.Freight?.ToString() ?? string.Empty;
+                op.freightFrom = cons?.FreightFrom ?? string.Empty;
+
                 // resolve consignor/consignee names if values are GUIDs referencing Party or BusinessAssociate or Vendor/Transporter
                 string ResolveEntityName(string? idOrValue)
                 {
                     if (string.IsNullOrWhiteSpace(idOrValue)) return string.Empty;
+
                     // if looks like GUID, try lookups
                     if (Guid.TryParse(idOrValue, out var gid))
                     {
                         var p = parties.FirstOrDefault(x => x.Id == gid);
                         if (p != null && !string.IsNullOrWhiteSpace(p.Name)) return p.Name;
+
                         var ba = businessAssociates.FirstOrDefault(x => x.Id == gid);
                         if (ba != null && !string.IsNullOrWhiteSpace(ba.Name)) return ba.Name;
+
                         var t = transporters.FirstOrDefault(x => x.Id == gid);
                         if (t != null && !string.IsNullOrWhiteSpace(t.Name)) return t.Name;
+
                         var v = vendors.FirstOrDefault(x => x.Id == gid);
                         if (v != null && !string.IsNullOrWhiteSpace(v.Name)) return v.Name;
                     }
+
                     return idOrValue;
                 }
 
@@ -624,8 +644,10 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
                 op.paidAmount = (totalPaidFromCharges != null ? totalPaidFromCharges.ToString() : "0");
 
                 // Charges and Amount - filter lines that match this consignment biltyNo
-                var matchingChargeLines = chargesForOrder.SelectMany(c => c.Lines ?? new List<ChargeLine>())
-                    .Where(l => string.IsNullOrWhiteSpace(l.BiltyNo) || (!string.IsNullOrWhiteSpace(op.biltyNo) && l.BiltyNo == op.biltyNo))
+                var matchingChargeLines = chargesForOrder
+                    .SelectMany(c => c.Lines ?? new List<ChargeLine>())
+                    .Where(l => string.IsNullOrWhiteSpace(l.BiltyNo) ||
+                        (!string.IsNullOrWhiteSpace(op.biltyNo) && l.BiltyNo == op.biltyNo))
                     .ToList();
 
                 if (matchingChargeLines.Any())
@@ -633,16 +655,18 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
                     // map charge id -> Munshyana.ChargesDesc when possible, and collect amounts
                     var chargeNames = new List<string>();
                     var chargeAmounts = new List<string>();
+
                     foreach (var cl in matchingChargeLines)
                     {
                         string chargeName = cl.Charge ?? string.Empty;
                         if (!string.IsNullOrWhiteSpace(cl.Charge) && Guid.TryParse(cl.Charge, out var chargeGuid))
                         {
                             var m = munshyana.FirstOrDefault(x => x.Id == chargeGuid);
-                            if (m != null && !string.IsNullOrWhiteSpace(m.ChargesDesc)) chargeName = m.ChargesDesc;
+                            if (m != null && !string.IsNullOrWhiteSpace(m.ChargesDesc))
+                                chargeName = m.ChargesDesc;
                         }
-                        chargeNames.Add(chargeName);
 
+                        chargeNames.Add(chargeName);
                         var amt = cl.Amount.HasValue ? cl.Amount.Value.ToString("0.##") : "0";
                         chargeAmounts.Add(amt);
                     }
@@ -651,14 +675,20 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
                     op.amount = string.Join(", ", chargeAmounts);
 
                     // determine paidToPerson: prefer PaidTo from charge lines, resolve name
-                    var paidToId = matchingChargeLines.Select(l => l.PaidTo).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+                    var paidToId = matchingChargeLines
+                        .Select(l => l.PaidTo)
+                        .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+
                     if (!string.IsNullOrWhiteSpace(paidToId))
                         op.paidToPerson = ResolveEntityName(paidToId);
                 }
                 else
                 {
                     // fallback: first charge line across all charges for order
-                    var firstChargeLine = chargesForOrder.SelectMany(c => c.Lines ?? new List<ChargeLine>()).FirstOrDefault();
+                    var firstChargeLine = chargesForOrder
+                        .SelectMany(c => c.Lines ?? new List<ChargeLine>())
+                        .FirstOrDefault();
+
                     if (firstChargeLine != null)
                     {
                         op.paidToPerson = ResolveEntityName(firstChargeLine.PaidTo);
@@ -666,11 +696,17 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
                 }
 
                 // PaymentNo - find PaymentABL that has an item with same orderNo
-                var payment = payments.SelectMany(p => p.PaymentABLItem ?? new List<PaymentABLItem>())
-                    .FirstOrDefault(i => i.OrderNo == orderNoStr || (!string.IsNullOrWhiteSpace(op.biltyNo) && i.OrderNo == op.biltyNo));
+                var payment = payments
+                    .SelectMany(p => p.PaymentABLItem ?? new List<PaymentABLItem>())
+                    .FirstOrDefault(i => i.OrderNo == orderNoStr ||
+                        (!string.IsNullOrWhiteSpace(op.biltyNo) && i.OrderNo == op.biltyNo));
+
                 if (payment != null)
                 {
-                    var parentPayment = payments.FirstOrDefault(p => p.PaymentABLItem != null && p.PaymentABLItem.Any(it => it.OrderNo == payment.OrderNo));
+                    var parentPayment = payments.FirstOrDefault(p =>
+                        p.PaymentABLItem != null &&
+                        p.PaymentABLItem.Any(it => it.OrderNo == payment.OrderNo));
+
                     if (parentPayment != null)
                         op.paymentNo = parentPayment.PaymentNo.ToString();
                 }
@@ -694,6 +730,7 @@ public async override Task<Response<IList<BookingOrderRes>>> GetAll(Pagination? 
             };
         }
     }
+
 
 
 }

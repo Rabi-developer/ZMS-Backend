@@ -79,6 +79,8 @@ public class OrderProgressRes
     public string? orderDate { get; set; }
     public string? vehicleNo { get; set; }
     public string? consignor { get; set; }
+    public string? freight { get; set; }
+    public string? freightFrom { get; set; }
     public string? consignee { get; set; }
     public string? items { get; set; }
     public string? qty { get; set; }

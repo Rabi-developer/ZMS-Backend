@@ -10,6 +10,7 @@ using IMS.Domain.Utilities;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -149,6 +150,98 @@ public class ChargesService : BaseService<ChargesReq, ChargesRes, ChargesReposit
             };
         }
     }
+    public async override Task<Response<ChargesRes>> Update(ChargesReq reqModel)
+    {
+        try
+        {
+            // 1. Load existing entity with related Lines
+            var existingEntity = await Repository.Get((Guid)reqModel.Id, query => query.Include(p => p.Lines));
+          
+            if (existingEntity == null)
+            {
+                return new Response<ChargesRes>
+                {
+                    StatusMessage = "Charges not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+            // 2. Update main entity properties
+            existingEntity.ChargeDate = reqModel.ChargeDate;
+            existingEntity.OrderNo = reqModel.OrderNo;
+            existingEntity.Status = reqModel.Status;
+           
+            // ... update other properties
+
+            // 3. Handle Lines collection
+            var existingLineIds = existingEntity.Lines.Select(l => l.Id).ToList();
+            var requestLineIds = reqModel.Lines.Where(l => !string.IsNullOrEmpty(l.Id.ToString()))
+                                               .Select(l => l.Id).ToList();
+
+            // Remove lines that are no longer in the request
+            var linesToRemove = existingEntity.Lines
+                .Where(l => !requestLineIds.Contains(l.Id))
+                .ToList();
+
+            foreach (var line in linesToRemove)
+            {
+                existingEntity.Lines.Remove(line);
+            }
+
+            // Update existing lines or add new ones
+            foreach (var reqLine in reqModel.Lines)
+            {
+                if (!string.IsNullOrEmpty(reqLine.Id.ToString()))
+                {
+                    // Update existing line
+                    var existingLine = existingEntity.Lines
+                        .FirstOrDefault(l => l.Id == reqLine.Id);
+
+                    if (existingLine != null)
+                    {
+                        existingLine.Charge = reqLine.Charge;
+                        existingLine.BiltyNo = reqLine.BiltyNo;
+                        existingLine.Date = reqLine.Date;
+                        existingLine.Vehicle = reqLine.Vehicle;
+                        existingLine.PaidTo = reqLine.PaidTo;
+                        existingLine.Contact = reqLine.Contact;
+                        existingLine.Remarks = reqLine.Remarks;
+                        existingLine.Amount = reqLine.Amount;
+                    }
+                }
+                else
+                {
+                    // Add new line
+                    var newLine = reqLine.Adapt<ChargeLine>();
+                    newLine.Id = Guid.NewGuid(); // Generate new ID
+                    existingEntity.Lines.Add(newLine);
+                }
+            }
+
+            // 4. Save changes
+            await Repository.Update(existingEntity, null);
+            await UnitOfWork.SaveAsync();
+
+            return new Response<ChargesRes>
+            {
+                Data = existingEntity.Adapt<ChargesRes>(),
+                StatusMessage = "Updated successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<ChargesRes>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
+
+
+
 
     public async Task<ChargesStatus> UpdateStatusAsync(Guid id, string status)
     {

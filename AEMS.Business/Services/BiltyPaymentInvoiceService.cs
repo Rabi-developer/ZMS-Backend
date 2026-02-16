@@ -79,6 +79,105 @@ public class BiltyPaymentInvoiceService : BaseService<BiltyPaymentInvoiceReq, Bi
         }
     }
 
+    public async override Task<Response<BiltyPaymentInvoiceRes>> Update(BiltyPaymentInvoiceReq reqModel)
+    {
+        try
+        {
+            // Get the existing entity from database with its lines
+            var existingEntity = await Repository.Get((Guid)reqModel.Id, null);
+            if (existingEntity == null)
+            {
+                return new Response<BiltyPaymentInvoiceRes>
+                {
+                    StatusMessage = "Bill Payment Invoice not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+
+            existingEntity.PaymentDate = reqModel.PaymentDate;
+            existingEntity.UpdatedBy = reqModel.UpdatedBy;
+           
+            existingEntity.Status = reqModel.Status;
+
+            // Handle Lines update
+            if (reqModel.Lines != null)
+            {
+                // Get existing line IDs
+                var existingLineIds = existingEntity.Lines?.Select(l => l.Id).ToHashSet();
+                var incomingLineIds = reqModel.Lines.Where(l => l.Id.HasValue && l.Id != Guid.Empty).Select(l => l.Id.Value).ToHashSet();
+
+                // Remove lines that are no longer in the request
+                var linesToRemove = existingEntity.Lines?.Where(l => !incomingLineIds.Contains((Guid)l.Id)).ToList();
+                if (linesToRemove != null && linesToRemove.Any())
+                {
+                    foreach (var lineToRemove in linesToRemove)
+                    {
+                        existingEntity.Lines.Remove(lineToRemove);
+                        
+                    }
+                }
+
+                // Update existing lines and add new ones
+                foreach (var reqLine in reqModel.Lines)
+                {
+                    if (reqLine.Id.HasValue && reqLine.Id != Guid.Empty)
+                    {
+                        // Update existing line
+                        var existingLine = existingEntity.Lines?.FirstOrDefault(l => l.Id == reqLine.Id.Value);
+                        if (existingLine != null)
+                        {
+                            existingLine.IsAdditionalLine = reqLine.IsAdditionalLine;
+                            existingLine.VehicleNo = reqLine.VehicleNo;
+                            existingLine.OrderNo = reqLine.OrderNo;
+                            existingLine.Amount = reqLine.Amount;
+                            existingLine.Munshayana = reqLine.Munshayana;
+                            existingLine.Broker = reqLine.Broker;
+                            existingLine.DueDate = reqLine.DueDate;
+                            existingLine.Remarks = reqLine.Remarks;
+                            existingLine.NameCharges = reqLine.NameCharges;
+                            existingLine.AmountCharges = reqLine.AmountCharges;
+                        }
+                    }
+                    else
+                    {
+                        // Add new line
+                        var newLine = reqLine.Adapt<BiltyPaymentInvoiceLine>();
+                        newLine.Id = Guid.NewGuid();
+                       
+
+                        if (existingEntity.Lines == null)
+                        {
+                            existingEntity.Lines = new List<BiltyPaymentInvoiceLine>();
+                        }
+                        existingEntity.Lines.Add(newLine);
+                    }
+                }
+            }
+
+            // Update the entity
+            var res = await Repository.Update((BiltyPaymentInvoice)(existingEntity as IMinBase ??
+                throw new InvalidOperationException("Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")), null);
+
+            await UnitOfWork.SaveAsync();
+
+            return new Response<BiltyPaymentInvoiceRes>
+            {
+                Data = res.Adapt<BiltyPaymentInvoiceRes>(),
+                StatusMessage = "Updated successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (Exception e)
+        {
+            return new Response<BiltyPaymentInvoiceRes>
+            {
+                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
+
     public async override Task<Response<IList<BiltyPaymentInvoiceRes>>> GetAll(Pagination? paginate)
     {
         try

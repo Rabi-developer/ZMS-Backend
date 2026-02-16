@@ -112,6 +112,8 @@ public static class ServicesInjector
         builder.Services.AddTransient<IPaymentABLService, PaymentABLService>();
         builder.Services.AddTransient<IBiltyPaymentInvoiceService, BiltyPaymentInvoiceService>();
         builder.Services.AddTransient<IEntryVoucherService, EntryVoucherService>();
+        builder.Services.AddTransient<IOpeningBalanceService, OpeningBalanceService>();
+        builder.Services.AddTransient<IAccountOpeningBalanceService, AccountOpeningBalanceService>();
 
 
 

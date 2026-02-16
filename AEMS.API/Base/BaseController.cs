@@ -136,7 +136,7 @@ public class BaseController<TController, TService, TReq, TRes, T> : ControllerBa
     }
 
     [HttpDelete("{id:guid}")]
-    [Permission("Role", "Delete")]
+    [Permission("Role", "Delete")]  
     public virtual async Task<IActionResult> Delete(Guid id)
     {
         var result = await Service.Delete(id);

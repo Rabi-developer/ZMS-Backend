@@ -7,6 +7,7 @@ namespace ZMS.Domain.Entities
 {
     public class AccountOpeningBalanceRes
     {
+        public Guid? Id { get; set; }
         public int AccountOpeningNo { get; set; }
         public string AccountOpeningDate { get; set; }
         public string? CreatedBy { get; set; }

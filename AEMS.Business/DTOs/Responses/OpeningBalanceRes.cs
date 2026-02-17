@@ -8,6 +8,8 @@ namespace ZMS.Domain.Entities
 {
     public class OpeningBalanceRes
     {
+        public Guid? Id { get; set; }
+
         public int OpeningNo { get; set; }
         public string? OpeningDate { get; set; }
         public string? CreatedBy { get; set; }
@@ -33,4 +35,10 @@ namespace ZMS.Domain.Entities
 
 
     }
+}
+public class OpeningBalanceStatus
+
+{
+    public Guid? Id { get; set; }
+    public string? Status { get; set; }
 }

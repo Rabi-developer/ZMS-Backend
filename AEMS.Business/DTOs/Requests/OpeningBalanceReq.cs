@@ -8,7 +8,9 @@ namespace ZMS.Domain.Entities
 {
     public class OpeningBalanceReq
     {
-        public int OpeningNo { get; set; }
+        public Guid? Id { get; set; }
+
+
         public string? OpeningDate { get; set; }
         public string? CreatedBy { get; set; }
         public string? CreationDate { get; set; }

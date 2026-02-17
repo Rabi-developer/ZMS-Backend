@@ -25,5 +25,27 @@ public class AccountOpeningBalanceController : BaseController<AccountOpeningBala
     {
 
     }
-    
+    [HttpPost("status")]
+    [Permission("Organization", "Update")]
+    public async Task<IActionResult> UpdateStatus([FromBody] AccountOpeningBalanceStatus contractstatus)
+    {
+        try
+        {
+            var result = await Service.UpdateStatusAsync((Guid)contractstatus.Id, contractstatus.Status);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while updating the contract status.");
+        }
+    }
+
 }

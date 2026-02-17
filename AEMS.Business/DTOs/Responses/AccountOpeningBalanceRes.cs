@@ -27,3 +27,9 @@ namespace ZMS.Domain.Entities
 
     }
 }
+public class AccountOpeningBalanceStatus
+
+{
+    public Guid? Id { get; set; }
+    public string? Status { get; set; }
+}

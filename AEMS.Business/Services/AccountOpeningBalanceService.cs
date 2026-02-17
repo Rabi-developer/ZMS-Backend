@@ -24,6 +24,8 @@ namespace IMS.Business.Services
     {
         Task<Response<IList<AccountOpeningBalanceRes>>> GetAll(Pagination? paginate);
         Task<Response<AccountOpeningBalanceRes>> Update(int accountOpeningNo, AccountOpeningBalanceReq reqModel);
+        Task<AccountOpeningBalanceStatus> UpdateStatusAsync(Guid id, string status);
+
         // Optional status update - uncomment if needed
         // Task<AccountOpeningBalanceStatus> UpdateStatusAsync(int accountOpeningNo, string status);
     }
@@ -84,7 +86,7 @@ namespace IMS.Business.Services
                 /*// Auto-increment AccountOpeningNo
                 var lastNo = await _dbContext.AccountOpennigBalances
                     .MaxAsync(x => (int?)x.AccountOpeningNo) ?? 0;*/
-               /* entity.AccountOpeningNo = lastNo + 1;*/
+                /* entity.AccountOpeningNo = lastNo + 1;*/
 
                 entity.CreatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
                 entity.CreationDate = DateTime.UtcNow.ToString("o");
@@ -147,6 +149,71 @@ namespace IMS.Business.Services
                 return new Response<AccountOpeningBalanceRes>
                 {
                     StatusMessage = ex.InnerException?.Message ?? ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async override Task<Response<AccountOpeningBalanceRes>> Update(AccountOpeningBalanceReq reqModel)
+        {
+
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                var existing = await _dbContext.AccountOpennigBalances
+                    .Include(x => x.AccountOpeningBalanceEntrys)
+                    .FirstOrDefaultAsync(x => x.Id == reqModel.Id);
+
+                if (existing == null)
+                {
+                    return new Response<AccountOpeningBalanceRes>
+                    {
+                        StatusMessage = "Account opening balance not found",
+                        StatusCode = HttpStatusCode.NotFound
+                    };
+                }
+
+                reqModel.Adapt(existing);
+
+                existing.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
+                existing.UpdationDate = DateTime.UtcNow.ToString("o");
+
+                // Replace all entries (simplest & safest)
+                _dbContext.Set<AccountOpeningBalanceEntry>().RemoveRange(existing.AccountOpeningBalanceEntrys);
+                existing.AccountOpeningBalanceEntrys.Clear();
+
+                if (reqModel.AccountOpeningBalanceEntrys != null)
+                {
+                    foreach (var entryDto in reqModel.AccountOpeningBalanceEntrys)
+                    {
+                        existing.AccountOpeningBalanceEntrys.Add(new AccountOpeningBalanceEntry
+                        {
+                            Id = Guid.NewGuid(),
+                            Account = entryDto.Account,
+                            Debit = entryDto.Debit,
+                            Credit = entryDto.Credit,
+                            Narration = entryDto.Narration
+                        });
+                    }
+                }
+
+                await Repository.Update(existing, _ => existing);
+                await UnitOfWork.SaveAsync();
+                await transaction.CommitAsync();
+
+
+                return new Response<AccountOpeningBalanceRes>
+                {
+                    Data = existing.Adapt<AccountOpeningBalanceRes>(),
+                    StatusMessage = "Account opening balance updated successfully",
+                    StatusCode = HttpStatusCode.OK
+                };  
+            }
+            catch (Exception e)
+            {
+                return new Response<AccountOpeningBalanceRes>
+                {
+                    StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
                     StatusCode = HttpStatusCode.InternalServerError
                 };
             }
@@ -216,36 +283,39 @@ namespace IMS.Business.Services
             }
         }
 
-        // Optional: Status update (uncomment if you want to use Status field)
-        /*
-        public async Task<AccountOpeningBalanceStatus> UpdateStatusAsync(int accountOpeningNo, string status)
+     
+        public async Task<AccountOpeningBalanceStatus> UpdateStatusAsync(Guid id, string status)
         {
+            if (status == null || id == Guid.Empty)
+            {
+                throw new ArgumentException("Contract ID and Status are required.");
+            }
+
             var validStatuses = new[] { "Prepared", "Approved", "Canceled", "Closed", "UnApproved" };
-            if (string.IsNullOrWhiteSpace(status) || !validStatuses.Contains(status))
+            if (!validStatuses.Contains(status))
             {
-                throw new ArgumentException($"Invalid status. Allowed: {string.Join(", ", validStatuses)}");
+                throw new ArgumentException($"Status must be one of: {string.Join(", ", validStatuses)}");
             }
 
-            var entity = await _dbContext.AccountOpeningBalance
-                .FirstOrDefaultAsync(x => x.AccountOpeningNo == accountOpeningNo);
+            var accountOpennigBalances = await UnitOfWork._context.AccountOpennigBalances.Where(p => p.Id == id).FirstOrDefaultAsync();
 
-            if (entity == null)
+            if (accountOpennigBalances == null)
             {
-                throw new KeyNotFoundException($"AccountOpeningBalance #{accountOpeningNo} not found.");
+                throw new KeyNotFoundException($"EntryVoucher with ID {id} not found.");
             }
 
-            entity.Status = status;
-            entity.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
-            entity.UpdationDate = DateTime.UtcNow.ToString("o");
+            accountOpennigBalances.Status = status;
+            accountOpennigBalances.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
+            accountOpennigBalances.UpdationDate = DateTime.UtcNow.ToString("o");
 
             await UnitOfWork.SaveAsync();
 
             return new AccountOpeningBalanceStatus
             {
-                AccountOpeningNo = accountOpeningNo,
+                Id = id,
                 Status = status
             };
+
         }
-        */
     }
 }

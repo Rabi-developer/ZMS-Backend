@@ -22,6 +22,7 @@ namespace ZMS.Domain.Entities
     public class OpeningBalanceEntry
     {
         public Guid? Id { get; set; }
+        public Guid OpeningBalanceId { get; set; }
         public string? BiltyNo { get; set; }
         public string? BiltyDate { get; set; }
         public string? VehicleNo { get; set; }

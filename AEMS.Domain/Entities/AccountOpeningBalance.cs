@@ -20,6 +20,7 @@ namespace ZMS.Domain.Entities
     public class AccountOpeningBalanceEntry
     {
         public Guid? Id { get; set; }
+        public Guid? AccountOpeningBalanceId { get; set; }
         public string? Account { get; set; }
         public float? Debit { get; set; }
         public float? Credit { get; set; }

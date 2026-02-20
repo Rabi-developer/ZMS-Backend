@@ -159,12 +159,14 @@ namespace IMS.Business.Services
             }
         }
 
-        public async override Task<Response<OpeningBalanceRes>> Update(OpeningBalanceReq reqModel)
+        public override async Task<Response<OpeningBalanceRes>> Update(OpeningBalanceReq reqModel)
         {
-           
             try
             {
-                var existing = await _dbContext.OpeningBalances
+                var context = UnitOfWork._context;
+
+               
+                var existing = await context.Set<OpeningBalance>()
                     .Include(x => x.OpeningBalanceEntrys)
                     .FirstOrDefaultAsync(x => x.Id == reqModel.Id);
 
@@ -177,32 +179,78 @@ namespace IMS.Business.Services
                     };
                 }
 
-                // Map scalar properties (this modifies the tracked entity)
-                reqModel.Adapt(existing);
-
-                existing.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
+          
                 existing.UpdationDate = DateTime.UtcNow.ToString("o");
 
-                // Remove old children (they are already tracked)
-                _dbContext.Set<OpeningBalanceEntry>().RemoveRange(existing.OpeningBalanceEntrys);
-                _dbContext.SaveChangesAsync();
+               
+                context.Attach(existing);
+                context.Entry(existing).Property(x => x.UpdationDate).IsModified = true;
 
-                // Assign brand new children (they get Added state automatically)
-                existing.OpeningBalanceEntrys = reqModel.OpeningBalanceEntrys?.Select(e => new OpeningBalanceEntry
+               
+                var incomingIds = reqModel.OpeningBalanceEntrys?
+                    .Where(x => x.Id.HasValue && x.Id.Value != Guid.Empty)
+                    .Select(x => x.Id.Value)
+                    .ToHashSet()
+                    ?? new HashSet<Guid>();
+
+
+             
+                var toDelete = existing.OpeningBalanceEntrys
+                    .Where(db => !incomingIds.Contains((Guid)db.Id))
+                    .ToList();
+
+                context.Set<OpeningBalanceEntry>().RemoveRange(toDelete);
+
+
+              
+                foreach (var item in reqModel.OpeningBalanceEntrys ?? new List<OpeningBalanceEntryReq>())
                 {
-                    // Id = Guid.NewGuid(),           ← usually NOT needed – let DB generate or configure as ValueGeneratedOnAdd()
-                    BiltyNo = e.BiltyNo,
-                    BiltyDate = e.BiltyDate,
-                    VehicleNo = e.VehicleNo,
-                    City = e.City,
-                    Customer = e.Customer,
-                    Broker = e.Broker,
-                    ChargeType = e.ChargeType,
-                    Debit = e.Debit,
-                    Credit = e.Credit
-                }).ToList() ?? new List<OpeningBalanceEntry>();
+                    OpeningBalanceEntry dbItem = null;
 
-                await _dbContext.SaveChangesAsync();           
+                    if (item.Id.HasValue && item.Id.Value != Guid.Empty)
+                    {
+                        dbItem = existing.OpeningBalanceEntrys
+                            .FirstOrDefault(x => x.Id == item.Id.Value);
+                    }
+
+                
+                    if (dbItem != null)
+                    {
+                        context.Entry(dbItem).State = EntityState.Modified;
+
+                        dbItem.BiltyNo = item.BiltyNo;
+                        dbItem.BiltyDate = item.BiltyDate;
+                        dbItem.VehicleNo = item.VehicleNo;
+                        dbItem.City = item.City;
+                        dbItem.Customer = item.Customer;
+                        dbItem.Broker = item.Broker;
+                        dbItem.ChargeType = item.ChargeType;
+                        dbItem.Debit = item.Debit;
+                        dbItem.Credit = item.Credit;
+                    }
+                    else
+                    {
+                        // INSERT
+                        var newEntry = new OpeningBalanceEntry
+                        {
+                            Id = Guid.NewGuid(),
+                            OpeningBalanceId = existing.Id,
+                            BiltyNo = item.BiltyNo,
+                            BiltyDate = item.BiltyDate,
+                            VehicleNo = item.VehicleNo,
+                            City = item.City,
+                            Customer = item.Customer,
+                            Broker = item.Broker,
+                            ChargeType = item.ChargeType,
+                            Debit = item.Debit,
+                            Credit = item.Credit
+                        };
+
+                        await context.Set<OpeningBalanceEntry>().AddAsync(newEntry);
+                    }
+                }
+
+                await context.SaveChangesAsync();
 
                 return new Response<OpeningBalanceRes>
                 {

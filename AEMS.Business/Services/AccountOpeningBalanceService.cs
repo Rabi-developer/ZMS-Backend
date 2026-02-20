@@ -154,10 +154,10 @@ namespace IMS.Business.Services
             }
         }
 
-        public async override Task<Response<AccountOpeningBalanceRes>> Update(AccountOpeningBalanceReq reqModel)
+        public override async Task<Response<AccountOpeningBalanceRes>> Update(AccountOpeningBalanceReq reqModel)
         {
-
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
             try
             {
                 var existing = await _dbContext.AccountOpennigBalances
@@ -173,47 +173,87 @@ namespace IMS.Business.Services
                     };
                 }
 
-                reqModel.Adapt(existing);
-
+                // ✅ Update only allowed parent fields (NOT whole entity)
                 existing.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
                 existing.UpdationDate = DateTime.UtcNow.ToString("o");
 
-                // Replace all entries (simplest & safest)
-                _dbContext.Set<AccountOpeningBalanceEntry>().RemoveRange(existing.AccountOpeningBalanceEntrys);
-                existing.AccountOpeningBalanceEntrys.Clear();
+                _dbContext.Attach(existing);
+                _dbContext.Entry(existing).Property(x => x.UpdatedBy).IsModified = true;
+                _dbContext.Entry(existing).Property(x => x.UpdationDate).IsModified = true;
 
-                if (reqModel.AccountOpeningBalanceEntrys != null)
+
+                // ✅ Prepare incoming ids
+                var incomingIds = reqModel.AccountOpeningBalanceEntrys?
+                    .Where(x => x.Id.HasValue && x.Id.Value != Guid.Empty)
+                    .Select(x => x.Id.Value)
+                    .ToHashSet()
+                    ?? new HashSet<Guid>();
+
+
+                // ✅ DELETE removed entries
+                var toDelete = existing.AccountOpeningBalanceEntrys
+                    .Where(db => !incomingIds.Contains((Guid)db.Id))
+                    .ToList();
+
+                _dbContext.Set<AccountOpeningBalanceEntry>().RemoveRange(toDelete);
+
+
+                // ✅ UPDATE + INSERT
+                foreach (var entryDto in reqModel.AccountOpeningBalanceEntrys ?? new List<AccountOpeningBalanceEntryReq>())
                 {
-                    foreach (var entryDto in reqModel.AccountOpeningBalanceEntrys)
+                    AccountOpeningBalanceEntry dbItem = null;
+
+                    if (entryDto.Id.HasValue && entryDto.Id.Value != Guid.Empty)
                     {
-                        existing.AccountOpeningBalanceEntrys.Add(new AccountOpeningBalanceEntry
-                        {
-                            Id = Guid.NewGuid(),
-                            Account = entryDto.Account,
-                            Debit = entryDto.Debit,
-                            Credit = entryDto.Credit,
-                            Narration = entryDto.Narration
-                        });
+                        dbItem = existing.AccountOpeningBalanceEntrys
+                            .FirstOrDefault(x => x.Id == entryDto.Id.Value);
+                    }
+
+                    if (dbItem != null)
+                    {
+                        // UPDATE existing
+                        dbItem.Account = entryDto.Account;
+                        dbItem.Debit = entryDto.Debit;
+                        dbItem.Credit = entryDto.Credit;
+                        dbItem.Narration = entryDto.Narration;
+
+                        _dbContext.Entry(dbItem).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        // INSERT new
+                        await _dbContext.Set<AccountOpeningBalanceEntry>().AddAsync(
+                            new AccountOpeningBalanceEntry
+                            {
+                                Id = Guid.NewGuid(),
+                                AccountOpeningBalanceId = existing.Id,
+
+                                Account = entryDto.Account,
+                                Debit = entryDto.Debit,
+                                Credit = entryDto.Credit,
+                                Narration = entryDto.Narration
+                            });
                     }
                 }
 
-                await Repository.Update(existing, _ => existing);
-                await UnitOfWork.SaveAsync();
+                // ✅ Single save
+                await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-
 
                 return new Response<AccountOpeningBalanceRes>
                 {
                     Data = existing.Adapt<AccountOpeningBalanceRes>(),
                     StatusMessage = "Account opening balance updated successfully",
                     StatusCode = HttpStatusCode.OK
-                };  
+                };
             }
             catch (Exception e)
             {
+                await transaction.RollbackAsync();
+
                 return new Response<AccountOpeningBalanceRes>
                 {
-                    StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                    StatusMessage = e.InnerException?.Message ?? e.Message,
                     StatusCode = HttpStatusCode.InternalServerError
                 };
             }

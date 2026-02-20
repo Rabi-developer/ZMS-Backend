@@ -28,6 +28,7 @@ namespace ZMS.Domain.Entities
     public class ReceiptItemReq
     {
         public Guid? Id { get; set; }
+        public Guid? ReceiptId { get; set; }
         public string? BiltyNo { get; set; }
         public string? VehicleNo { get; set; }
         public string? BiltyDate { get; set; }

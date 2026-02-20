@@ -331,176 +331,130 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
             };
         }
     }
-    public async Task<Response<ReceiptRes>> Update(ReceiptReq reqModel, int maxRetries = 3)
+
+    public async override Task<Response<ReceiptRes>> Update(ReceiptReq reqModel)
     {
-        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        try
         {
-            try
-            {
-                var existingEntity = await UnitOfWork._context.Receipt
-                    .Include(r => r.Items)
-                    .FirstOrDefaultAsync(p => p.Id == reqModel.Id);
+         
+            var existing = await UnitOfWork._context.Receipt
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == reqModel.Id);
 
-                if (existingEntity == null)
-                {
-                    return new Response<ReceiptRes>
-                    {
-                        StatusMessage = "Receipt not found",
-                        StatusCode = HttpStatusCode.NotFound
-                    };
-                }
-
-                // Validate input for duplicate item IDs
-                if (reqModel.Items != null)
-                {
-                    var duplicateIds = reqModel.Items
-                        .Where(i => i.Id.HasValue)
-                        .GroupBy(i => i.Id.Value)
-                        .Where(g => g.Count() > 1)
-                        .Select(g => g.Key)
-                        .ToList();
-
-                    if (duplicateIds.Any())
-                    {
-                        return new Response<ReceiptRes>
-                        {
-                            StatusMessage = $"Duplicate item IDs detected: {string.Join(", ", duplicateIds)}",
-                            StatusCode = HttpStatusCode.BadRequest
-                        };
-                    }
-                }
-
-                // Update main entity fields
-/*                existingEntity.ReceiptNo = reqModel.ReceiptNo;
-*/                existingEntity.ReceiptDate = reqModel.ReceiptDate;
-                existingEntity.PaymentMode = reqModel.PaymentMode;
-                existingEntity.BankName = reqModel.BankName;
-                existingEntity.ChequeNo = reqModel.ChequeNo;
-                existingEntity.ChequeDate = reqModel.ChequeDate;
-                existingEntity.Party = reqModel.Party;
-                existingEntity.ReceiptAmount = reqModel.ReceiptAmount;
-                existingEntity.Remarks = reqModel.Remarks;
-                existingEntity.SalesTaxOption = reqModel.SalesTaxOption;
-                existingEntity.SalesTaxRate = reqModel.SalesTaxRate;
-                existingEntity.WhtOnSbr = reqModel.WhtOnSbr;
-                existingEntity.UpdatedBy = reqModel.UpdatedBy;
-                existingEntity.UpdationDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                existingEntity.Status = reqModel.Status;
-
-                // Handle Items
-                if (reqModel.Items != null)
-                {
-                    // 1. Update existing + add new
-                    foreach (var reqItem in reqModel.Items)
-                    {
-                        if (reqItem.Id.HasValue)
-                        {
-                            var existingItem = existingEntity.Items
-                                .FirstOrDefault(x => x.Id == reqItem.Id.Value);
-
-                            if (existingItem != null)
-                            {
-                                // Update tracked entity
-                                existingItem.BiltyNo = reqItem.BiltyNo;
-                                existingItem.VehicleNo = reqItem.VehicleNo;
-                                existingItem.BiltyDate = reqItem.BiltyDate;
-                                existingItem.BiltyAmount = reqItem.BiltyAmount;
-                                existingItem.SrbAmount = reqItem.SrbAmount;
-                                existingItem.TotalAmount = reqItem.TotalAmount;
-                                existingItem.Balance = reqItem.Balance;
-                                existingItem.ReceiptAmount = reqItem.ReceiptAmount;
-                            }
-                            else
-                            {
-                                // Id provided but not in DB → add as new
-                                existingEntity.Items.Add(new ReceiptItem
-                                {
-                                    Id = reqItem.Id.Value,
-                                    BiltyNo = reqItem.BiltyNo,
-                                    VehicleNo = reqItem.VehicleNo,
-                                    BiltyDate = reqItem.BiltyDate,
-                                    BiltyAmount = reqItem.BiltyAmount,
-                                    SrbAmount = reqItem.SrbAmount,
-                                    TotalAmount = reqItem.TotalAmount,
-                                    Balance = reqItem.Balance,
-                                    ReceiptAmount = reqItem.ReceiptAmount
-                                });
-                            }
-                        }
-                        else
-                        {
-                            // New item (no Id)
-                            existingEntity.Items.Add(new ReceiptItem
-                            {
-                                Id = Guid.NewGuid(),
-                                BiltyNo = reqItem.BiltyNo,
-                                VehicleNo = reqItem.VehicleNo,
-                                BiltyDate = reqItem.BiltyDate,
-                                BiltyAmount = reqItem.BiltyAmount,
-                                SrbAmount = reqItem.SrbAmount,
-                                TotalAmount = reqItem.TotalAmount,
-                                Balance = reqItem.Balance,
-                                ReceiptAmount = reqItem.ReceiptAmount
-                            });
-                        }
-                    }
-
-                    // 2. Remove deleted items
-                    var reqItemIds = reqModel.Items
-                        .Where(i => i.Id.HasValue)
-                        .Select(i => i.Id.Value)
-                        .ToList();
-
-                    var toRemove = existingEntity.Items
-                        .Where(x => !reqItemIds.Contains((Guid)x.Id))
-                        .ToList();
-
-                    foreach (var removeItem in toRemove)
-                    {
-                        // Verify item exists before removing
-                        if (await UnitOfWork._context.Receipt.AnyAsync(ri => ri.Id == removeItem.Id))
-                        {
-                            UnitOfWork._context.Remove(removeItem);
-                        }
-                    }
-                }
-
-                await UnitOfWork.SaveAsync();
-
-                return new Response<ReceiptRes>
-                {
-                    Data = existingEntity.Adapt<ReceiptRes>(),
-                    StatusMessage = "Updated successfully",
-                    StatusCode = HttpStatusCode.OK
-                };
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (attempt == maxRetries)
-                {
-                    return new Response<ReceiptRes>
-                    {
-                        StatusMessage = "Failed to update due to concurrent modifications after multiple attempts. Please refresh and try again.",
-                        StatusCode = HttpStatusCode.Conflict
-                    };
-                }
-                // Wait before retrying to reduce contention
-                await Task.Delay(100 * attempt);
-            }
-            catch (Exception e)
+            if (existing == null)
             {
                 return new Response<ReceiptRes>
                 {
-                    StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
-                    StatusCode = HttpStatusCode.InternalServerError
+                    StatusMessage = "Receipt not found",
+                    StatusCode = HttpStatusCode.NotFound
                 };
             }
+
+          
+            UnitOfWork._context.Receipt.Attach(existing);
+            UnitOfWork._context.Entry(existing).State = EntityState.Modified;
+
+         
+            var originalReceiptNo = existing.ReceiptNo;
+
+         
+            existing.ReceiptDate = reqModel.ReceiptDate;
+            existing.PaymentMode = reqModel.PaymentMode;
+            existing.BankName = reqModel.BankName;
+            existing.ChequeNo = reqModel.ChequeNo;
+            existing.ChequeDate = reqModel.ChequeDate;
+            existing.Party = reqModel.Party;
+            existing.ReceiptAmount = reqModel.ReceiptAmount;
+            existing.Remarks = reqModel.Remarks;
+            existing.SalesTaxOption = reqModel.SalesTaxOption;
+            existing.SalesTaxRate = reqModel.SalesTaxRate;
+            existing.WhtOnSbr = reqModel.WhtOnSbr;
+            existing.UpdatedBy = reqModel.UpdatedBy;
+            existing.UpdationDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            existing.Status = reqModel.Status;
+
+           
+            existing.ReceiptNo = originalReceiptNo;
+            UnitOfWork._context.Entry(existing).Property(e => e.ReceiptNo).IsModified = false;
+
+            if (reqModel.Items?.Any() == true)
+            {
+                var duplicateIds = reqModel.Items
+                    .Where(i => i.Id.HasValue)
+                    .GroupBy(i => i.Id.Value)
+                    .Where(g => g.Count() > 1)
+                    .Select(g => g.Key)
+                    .ToList();
+
+                if (duplicateIds.Any())
+                {
+                    return new Response<ReceiptRes>
+                    {
+                        StatusMessage = $"Duplicate item IDs detected: {string.Join(", ", duplicateIds)}",
+                        StatusCode = HttpStatusCode.BadRequest
+                    };
+                }
+            }
+
+           
+            await UnitOfWork._context.Set<ReceiptItem>()
+                .Where(i => i.ReceiptId == reqModel.Id)
+                .ExecuteDeleteAsync();
+
+          
+            if (reqModel.Items?.Any() == true)
+            {
+                foreach (var reqItem in reqModel.Items)
+                {
+                    var newItem = new ReceiptItem
+                    {
+                        Id = Guid.NewGuid(),
+                        ReceiptId = reqModel.Id,                   
+                        BiltyNo = reqItem.BiltyNo,
+                        VehicleNo = reqItem.VehicleNo,
+                        BiltyDate = reqItem.BiltyDate,
+                        BiltyAmount = reqItem.BiltyAmount,
+                        SrbAmount = reqItem.SrbAmount,
+                        TotalAmount = reqItem.TotalAmount,
+                        Balance = reqItem.Balance,
+                        ReceiptAmount = reqItem.ReceiptAmount
+                    };
+
+                    UnitOfWork._context.Set<ReceiptItem>().Add(newItem);
+                }
+            }
+
+         
+            await UnitOfWork.SaveAsync();
+
+          
+            var refreshed = await UnitOfWork._context.Receipt
+                .Include(r => r.Items)
+                .FirstOrDefaultAsync(r => r.Id == reqModel.Id);
+
+            return new Response<ReceiptRes>
+            {
+                Data = refreshed?.Adapt<ReceiptRes>(),
+                StatusMessage = "Updated successfully",
+                StatusCode = HttpStatusCode.OK
+            };
         }
-
-        return new Response<ReceiptRes>
+        catch (DbUpdateConcurrencyException)
         {
-            StatusMessage = "Unexpected error occurred after multiple retry attempts.",
-            StatusCode = HttpStatusCode.InternalServerError
-        };
+            return new Response<ReceiptRes>
+            {
+                StatusMessage = "Update failed due to concurrent modification or deletion. Please refresh the receipt and try again.",
+                StatusCode = HttpStatusCode.Conflict
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Response<ReceiptRes>
+            {
+                Data = null,
+                StatusMessage = ex.InnerException?.Message ?? ex.Message,
+                StatusCode = HttpStatusCode.InternalServerError
+            };
+        }
     }
 }

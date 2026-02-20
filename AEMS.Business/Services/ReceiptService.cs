@@ -254,14 +254,31 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
                     if (string.IsNullOrWhiteSpace(biltyNo))
                         continue;
 
+                    // First, try to get from Consignment
                     var cons = await _DbContext.Consignment.FirstOrDefaultAsync(c => c.BiltyNo == biltyNo);
                     decimal totalAmount = 0;
-                    if (cons != null)
-                        totalAmount = Convert.ToDecimal(cons.TotalAmount ?? 0);
 
+                    if (cons != null)
+                    {
+                        totalAmount = Convert.ToDecimal(cons.TotalAmount ?? 0);
+                    }
+
+                    // If not found or zero in Consignment, check OpeningBalance
+                    if (totalAmount == 0)
+                    {
+                        var obEntry = await _DbContext.OpeningBalances
+                            .SelectMany(ob => ob.OpeningBalanceEntrys)
+                            .FirstOrDefaultAsync(e => e.BiltyNo == biltyNo);
+
+                        if (obEntry != null)
+                            totalAmount = Convert.ToDecimal(obEntry.Debit ?? 0); // Or Debit-Credit depending on your logic
+                    }
+
+                    // If the user provided amount, override totalAmount if still zero
                     if (totalAmount == 0 && it.TotalAmount != null)
                         totalAmount = it.TotalAmount ?? 0;
 
+                    // Check existing receipts for this bilty
                     var existingReceived = await _DbContext.Receipt
                         .SelectMany(r => r.Items)
                         .Where(i => i.BiltyNo == biltyNo)
@@ -290,37 +307,26 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
 
                     it.TotalAmount = totalAmount;
                     it.Balance = remainingBefore - receiptAmt;
-                   
+
                 }
+               
             }
 
-            var entity = reqModel.Adapt<Receipt>();
-            var entityAsBase = entity as IMinBase ??
-                throw new InvalidOperationException(
-                    "Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.");
-
-            var addedEntity = await Repository.Add((Receipt)entityAsBase);
+        var entity = reqModel.Adapt<Receipt>();
+            var GetlastNo = await UnitOfWork._context.Receipt.AddAsync(entity);
             await UnitOfWork.SaveAsync();
-
-            var savedId = ((IMinBase)addedEntity).Id;
-            if (savedId == Guid.Empty)
-            {
-                await UnitOfWork._context.Entry(addedEntity).ReloadAsync();
-                savedId = ((IMinBase)addedEntity).Id;
-            }
-
             return new Response<Guid>
             {
-                Data = savedId,
-                StatusMessage = "Created successfully",
-                StatusCode = System.Net.HttpStatusCode.Created
+
+                StatusMessage = "Added successfully",
+                StatusCode = HttpStatusCode.OK
             };
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             return new Response<Guid>
             {
-                StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                StatusMessage = ex.Message,
                 StatusCode = System.Net.HttpStatusCode.InternalServerError
             };
         }

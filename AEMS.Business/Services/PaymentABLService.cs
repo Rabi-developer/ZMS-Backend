@@ -20,7 +20,7 @@ namespace IMS.Business.Services;
 
 public interface IPaymentABLService : IBaseService<PaymentABLReq, PaymentABLRes, PaymentABL>
 {
-    public Task<PaymentABLService> UpdateStatusAsync(Guid id, string status);
+    public Task<PaymentAblStatus> UpdateStatusAsync(Guid id, string status);
     public Task<ChargeHistory> HistoryPayment (string VehicleNo, string OrderNo , string Charges);
 
 }
@@ -277,16 +277,6 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
             Id = id,
             Status = status,
         };
-    }
-
-    Task<PaymentABLService> IPaymentABLService.UpdateStatusAsync(Guid id, string status)
-    {
-        var getStatus = UnitOfWork._context.PaymentABL.Where(p => p.Id == id).FirstOrDefault();
-
-        getStatus.Status = status;
-      
-        UnitOfWork.SaveAsync();
-        return Task.FromResult(this);
     }
 
     public Task<ChargeHistory> HistoryPayment(string VehicleNo, string OrderNo , string Charges)

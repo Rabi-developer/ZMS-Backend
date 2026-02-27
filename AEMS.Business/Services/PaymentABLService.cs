@@ -308,10 +308,11 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
         var history = new ChargeHistory();
         if (IsOpeningBalance == false) { 
             history = await (
-                from p in _DbContext.PaymentABL
+                from p in _DbContext.PaymentABL where 
+                p.IsDeleted != true
                 from i in p.PaymentABLItem
                 where i.VehicleNo == VehicleNo
-                      && i.OrderNo == OrderNo && p.IsDeleted != true
+                      && i.OrderNo == OrderNo
                       && i.Charges == chargeGuidString
                 orderby p.CreatedDateTime descending
                 select new ChargeHistory
@@ -329,6 +330,8 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
         {
             history = await (
                from p in _DbContext.PaymentABL
+               where
+                p.IsDeleted != true
                from i in p.PaymentABLItem
                where i.VehicleNo == VehicleNo
                      && i.OrderNo == OrderNo && p.IsDeleted != true

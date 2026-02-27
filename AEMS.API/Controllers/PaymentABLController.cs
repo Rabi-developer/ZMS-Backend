@@ -51,9 +51,9 @@ public class PaymentABLController : BaseController<PaymentABLController, IPaymen
     [HttpGet("History")]
     [Permission("Organization", "Read")]
 
-    public async Task<IActionResult> GetHistory(string VehicleNo, string OrderNo, string Charges) 
+    public async Task<IActionResult> GetHistory(string VehicleNo, string OrderNo, string Charges, bool IsOpeningBalance = false) 
     {
-        var result = await Service.HistoryPayment(VehicleNo , OrderNo, Charges);
+        var result = await Service.HistoryPayment(VehicleNo , OrderNo, Charges, IsOpeningBalance);
        
             return Ok(result);
        

@@ -21,7 +21,7 @@ namespace IMS.Business.Services;
 public interface IPaymentABLService : IBaseService<PaymentABLReq, PaymentABLRes, PaymentABL>
 {
     public Task<PaymentAblStatus> UpdateStatusAsync(Guid id, string status);
-    public Task<Response<ChargeHistory>> HistoryPayment (string VehicleNo, string OrderNo , string Charges);
+    public Task<Response<ChargeHistory>> HistoryPayment (string VehicleNo, string OrderNo , string Charges, bool IsOpeningBalance = false);
 
 }
 
@@ -279,7 +279,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
         };
     }
 
-    public async Task<Response<ChargeHistory>> HistoryPayment(string VehicleNo, string OrderNo, string Charges)
+    public async Task<Response<ChargeHistory>> HistoryPayment(string VehicleNo, string OrderNo, string Charges, bool IsOpeningBalance = false)
     {
         string? chargeGuidString = null;
 
@@ -305,24 +305,47 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
                 StatusCode = HttpStatusCode.OK
             };
         }
+        var history = new ChargeHistory();
+        if (IsOpeningBalance == false) { 
+            history = await (
+                from p in _DbContext.PaymentABL
+                from i in p.PaymentABLItem
+                where i.VehicleNo == VehicleNo
+                      && i.OrderNo == OrderNo
+                      && i.Charges == chargeGuidString
+                orderby p.CreatedDateTime descending
+                select new ChargeHistory
+                {
+                    Id = p.Id,
+                    VehicleNo = i.VehicleNo,
+                    OrderNo = i.OrderNo,
+                    Charges = Charges,
+                    Balance = i.Balance,
+                    PaidAmount = i.PaidAmount
+                }
+            ).FirstOrDefaultAsync(); }
 
-        var history = await (
-            from p in _DbContext.PaymentABL
-            from i in p.PaymentABLItem
-            where i.VehicleNo == VehicleNo
-                  && i.OrderNo == OrderNo
-                  && i.Charges == chargeGuidString
-            orderby p.CreatedDateTime descending
-            select new ChargeHistory
-            {
-                Id = p.Id,
-                VehicleNo = i.VehicleNo,
-                OrderNo = i.OrderNo,
-                Charges = Charges,
-                Balance = i.Balance,
-                PaidAmount = i.PaidAmount
-            }
-        ).FirstOrDefaultAsync();
+        else
+        {
+            history = await (
+               from p in _DbContext.PaymentABL
+               from i in p.PaymentABLItem
+               where i.VehicleNo == VehicleNo
+                     && i.OrderNo == OrderNo
+               orderby p.CreatedDateTime descending
+               select new ChargeHistory
+               {
+                   Id = p.Id,
+                   VehicleNo = i.VehicleNo,
+                   OrderNo = i.OrderNo,
+                   Charges = Charges,
+                   Balance = i.Balance,
+                   PaidAmount = i.PaidAmount
+               }
+           ).FirstOrDefaultAsync();
+        }
+   
+                                                                                  
 
         return new Response<ChargeHistory>
         {

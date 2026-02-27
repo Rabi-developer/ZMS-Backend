@@ -41,6 +41,7 @@ namespace ZMS.Domain.Entities
         public float? ExpenseAmount { get; set; }
         public float? Balance { get; set; }
         public float? PaidAmount { get; set; }
+
     }
 }
 

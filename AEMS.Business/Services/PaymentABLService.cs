@@ -21,7 +21,7 @@ namespace IMS.Business.Services;
 public interface IPaymentABLService : IBaseService<PaymentABLReq, PaymentABLRes, PaymentABL>
 {
     public Task<PaymentAblStatus> UpdateStatusAsync(Guid id, string status);
-    public Task<ChargeHistory> HistoryPayment (string VehicleNo, string OrderNo , string Charges);
+    public Task<Response<ChargeHistory>> HistoryPayment (string VehicleNo, string OrderNo , string Charges);
 
 }
 
@@ -279,23 +279,56 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
         };
     }
 
-    public Task<ChargeHistory> HistoryPayment(string VehicleNo, string OrderNo , string Charges)
+    public async Task<Response<ChargeHistory>> HistoryPayment(string VehicleNo, string OrderNo, string Charges)
     {
-       var history = (from p in _DbContext.PaymentABL.Where(p => p.PaymentABLItem.Any(i => i.VehicleNo == VehicleNo && i.OrderNo == OrderNo && i.Charges == Charges))
-                                                                   from i in p.PaymentABLItem
-                      where i.VehicleNo == VehicleNo && i.OrderNo == OrderNo && i.Charges == Charges
-                                                                  select new ChargeHistory
-                                                                  {
-                           Id = p.Id,
-                           VehicleNo = i.VehicleNo,
-                           OrderNo = i.OrderNo,
-                           Charges = i.Charges,
-                           Balance = i.Balance,
-                           PaidAmount = i.PaidAmount
-                       }).ToList();
+        string? chargeGuidString = null;
 
-        var result = history.LastOrDefault();
+        if (int.TryParse(Charges, out int chargeNo))
+        {
+            chargeGuidString = await _DbContext.Charges
+                .Where(c => c.ChargeNo == chargeNo)
+                .SelectMany(c => c.Lines)
+                .Select(l => l.Charge)
+                .FirstOrDefaultAsync();
+        }
+        else if (Guid.TryParse(Charges, out Guid parsedGuid))
+        {
+            chargeGuidString = parsedGuid.ToString();
+        }
 
-        return Task.FromResult(result);
+        if (string.IsNullOrEmpty(chargeGuidString))
+        {
+            return new Response<ChargeHistory>
+            {
+                Data = null,
+                StatusMessage = "Charge line not found",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+
+        var history = await (
+            from p in _DbContext.PaymentABL
+            from i in p.PaymentABLItem
+            where i.VehicleNo == VehicleNo
+                  && i.OrderNo == OrderNo
+                  && i.Charges == chargeGuidString
+            orderby p.CreatedDateTime descending
+            select new ChargeHistory
+            {
+                Id = p.Id,
+                VehicleNo = i.VehicleNo,
+                OrderNo = i.OrderNo,
+                Charges = Charges,
+                Balance = i.Balance,
+                PaidAmount = i.PaidAmount
+            }
+        ).FirstOrDefaultAsync();
+
+        return new Response<ChargeHistory>
+        {
+            Data = history,
+            StatusMessage = "Fetch successfully",
+            StatusCode = HttpStatusCode.OK
+        };
     }
 }

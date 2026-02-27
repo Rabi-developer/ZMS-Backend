@@ -197,12 +197,17 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
             }
 
             var cons = await _DbContext.Consignment.FirstOrDefaultAsync(c => c.BiltyNo == biltyNo);
+            var obEntry = await _DbContext.OpeningBalances
+                .SelectMany(ob => ob.OpeningBalanceEntrys)
+                .FirstOrDefaultAsync(e => e.BiltyNo == biltyNo);
             decimal totalAmount = 0;
 
            
             if (cons != null)
                 totalAmount = Convert.ToDecimal(cons.TotalAmount ?? 0);
 
+            if (totalAmount == 0 && obEntry != null)
+                totalAmount = Convert.ToDecimal(obEntry.Debit ?? 0); 
             if (totalAmount == 0)
             {
                 var firstItem = await _DbContext.Receipt.Where(i => i.IsDeleted != true)

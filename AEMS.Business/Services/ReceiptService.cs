@@ -339,7 +339,7 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
          
             var existing = await UnitOfWork._context.Receipt
                 .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Id == reqModel.Id);
+                .FirstOrDefaultAsync(r => r.Id == reqModel.Id && r.IsDeleted != true);
 
             if (existing == null)
             {

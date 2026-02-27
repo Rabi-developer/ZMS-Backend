@@ -311,7 +311,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
                 from p in _DbContext.PaymentABL
                 from i in p.PaymentABLItem
                 where i.VehicleNo == VehicleNo
-                      && i.OrderNo == OrderNo
+                      && i.OrderNo == OrderNo && p.IsDeleted != true
                       && i.Charges == chargeGuidString
                 orderby p.CreatedDateTime descending
                 select new ChargeHistory
@@ -331,9 +331,9 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
                from p in _DbContext.PaymentABL
                from i in p.PaymentABLItem
                where i.VehicleNo == VehicleNo
-                     && i.OrderNo == OrderNo
+                     && i.OrderNo == OrderNo && p.IsDeleted != true
                orderby p.CreatedDateTime descending
-               select new ChargeHistory
+               select new ChargeHistory 
                {
                    Id = p.Id,
                    VehicleNo = i.VehicleNo,

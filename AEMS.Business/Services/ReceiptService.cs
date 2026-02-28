@@ -286,7 +286,7 @@ public class ReceiptService : BaseService<ReceiptReq, ReceiptRes, ReceiptReposit
                         totalAmount = it.TotalAmount ?? 0;
 
                     // Check existing receipts for this bilty
-                    var existingReceived = await _DbContext.Receipt
+                    var existingReceived = await _DbContext.Receipt.Where(p => p.IsDeleted != true)
                         .SelectMany(r => r.Items)
                         .Where(i => i.BiltyNo == biltyNo)
                         .SumAsync(i => (decimal?)(i.ReceiptAmount ?? 0)) ?? 0;

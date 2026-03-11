@@ -95,120 +95,7 @@ namespace IMS.Business.Services
             }
         }
 
-        public override async Task<Response<Guid>> Add(EntryVoucherReq reqModel)
-        {
-            using var transaction = await _DbContext.Database.BeginTransactionAsync();
-            try
-            {
-                var entity = reqModel.Adapt<EntryVoucher>();
-                entity.Id = Guid.NewGuid();
 
-                var lastVoucher = await UnitOfWork._context.EntryVoucher
-                    .OrderByDescending(p => p.Id)
-                    .FirstOrDefaultAsync();
-
-                /*
-                if (lastVoucher == null || string.IsNullOrWhiteSpace(lastVoucher.VoucherNo))
-                {
-                    entity.VoucherNo = "1";
-                }
-                else
-                {
-                    int newNo = int.Parse(lastVoucher.VoucherNo) + 1;
-                    entity.VoucherNo = newNo.ToString();
-                }*/
-
-                entity.CreatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
-                entity.CreationDate = DateTime.UtcNow.ToString("o");
-
-                // Collect unique accounts and simulate balances in memory
-                var accountBalances = new Dictionary<Guid, float>(); // Changed to float
-                var deltaFixed = new Dictionary<Guid, float>(); // Changed to float
-                var deltaPaid = new Dictionary<Guid, float>(); // Changed to float
-                var uniqueAccountIds = reqModel.VoucherDetails?.SelectMany(d => new[] { d.Account1, d.Account2 })
-                    .Where(id => !string.IsNullOrWhiteSpace(id) && Guid.TryParse(id, out _))
-                    .Distinct()
-                    .Select(Guid.Parse)
-                    .ToHashSet() ?? new HashSet<Guid>();
-
-                // Load initial balances for all unique accounts
-                foreach (var guidId in uniqueAccountIds)
-                {
-                    var account = await GetAccountById(guidId.ToString());
-                    if (account == null) throw new Exception($"Account {guidId} not found.");
-                    var balance = (float)(account.FixedAmount - account.Paid); // Cast to float
-                    accountBalances[guidId] = balance;
-                    deltaFixed[guidId] = 0;
-                    deltaPaid[guidId] = 0;
-                }
-
-                // Process details: set balances using simulation, accumulate deltas
-                entity.VoucherDetails = new List<VoucherDetail>();
-                if (reqModel.VoucherDetails != null)
-                {
-                    foreach (var detailReq in reqModel.VoucherDetails)
-                    {
-                        var detail = detailReq.Adapt<VoucherDetail>();
-                        detail.Id = Guid.NewGuid();
-
-                        var account1Id = Guid.Parse(detail.Account1);
-                        var account2Id = Guid.Parse(detail.Account2);
-
-                        detail.CurrentBalance1 = accountBalances[account1Id];
-                        var delta1 = (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0); // float - float
-                        detail.ProjectedBalance1 = detail.CurrentBalance1 + delta1;
-                        accountBalances[account1Id] += delta1; // float += float
-                        deltaFixed[account1Id] += (float)(detail.Debit1 ?? 0);
-                        deltaPaid[account1Id] += (float)(detail.Credit1 ?? 0);
-
-                        detail.CurrentBalance2 = accountBalances[account2Id];
-                        var delta2 = (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0); // float - float
-                        detail.ProjectedBalance2 = detail.CurrentBalance2 + delta2;
-                        accountBalances[account2Id] += delta2; // float += float
-                        deltaFixed[account2Id] += (float)(detail.Debit2 ?? 0);
-                        deltaPaid[account2Id] += (float)(detail.Credit2 ?? 0);
-
-                        // Uncomment to check insufficient balance
-                        // if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
-                        // {
-                        //     throw new Exception($"Insufficient balance for account(s).");
-                        // }
-
-                        entity.VoucherDetails.Add(detail);
-                    }
-                }
-
-                // Apply all deltas to accounts once at the end
-                foreach (var guidId in uniqueAccountIds)
-                {
-                    var account = await GetAccountById(guidId.ToString());
-                    account.FixedAmount += deltaFixed[guidId];
-                    account.Paid += deltaPaid[guidId];
-                    await UpdateAccount(account); // Updates in memory; SaveAsync commits all
-                }
-
-                var savedEntity = await Repository.Add((EntryVoucher)(entity as IMinBase ??
-                    throw new InvalidOperationException("Conversion to IMinBase Failed. Make sure there's Id and CreatedDate properties.")));
-                await UnitOfWork.SaveAsync();
-                await transaction.CommitAsync();
-
-                return new Response<Guid>
-                {
-                    Data = entity.Id,
-                    StatusMessage = "Created successfully",
-                    StatusCode = HttpStatusCode.Created
-                };
-            }
-            catch (Exception e)
-            {
-                await transaction.RollbackAsync();
-                return new Response<Guid>
-                {
-                    StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
-                    StatusCode = HttpStatusCode.InternalServerError
-                };
-            }
-        }
 
         public override async Task<Response<EntryVoucherRes>> Get(Guid id)
         {
@@ -259,6 +146,113 @@ namespace IMS.Business.Services
             }
         }
 
+        public override async Task<Response<Guid>> Add(EntryVoucherReq reqModel)
+        {
+            using var transaction = await _DbContext.Database.BeginTransactionAsync();
+            try
+            {
+                var entity = reqModel.Adapt<EntryVoucher>();
+                entity.Id = Guid.NewGuid();
+
+                entity.CreatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
+                entity.CreationDate = DateTime.UtcNow.ToString("o");
+
+                // Process each VoucherDetail (each row)
+                entity.VoucherDetails = new List<VoucherDetail>();
+
+                if (reqModel.VoucherDetails != null)
+                {
+                    foreach (var detailReq in reqModel.VoucherDetails)
+                    {
+                        var detail = new VoucherDetail
+                        {
+                            Id = Guid.NewGuid(),
+                            Account1 = detailReq.Account1,
+                            Debit1 = detailReq.Debit1,
+                            Credit1 = detailReq.Credit1,
+                            Account2 = detailReq.Account2,
+                            Debit2 = detailReq.Debit2,
+                            Credit2 = detailReq.Credit2,
+                            Narration = detailReq.Narration,
+                            CurrentBalance1 = "0",
+                            ProjectedBalance1 = "0",
+                            CurrentBalance2 = "0",
+                            ProjectedBalance2 = "0"
+                        };
+
+                        // Parse comma-separated values and update accounts
+                        var account1Ids = detail.Account1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var debit1Values = detail.Debit1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var credit1Values = detail.Credit1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+
+                        for (int i = 0; i < account1Ids.Length; i++)
+                        {
+                            var accountId = account1Ids[i].Trim();
+                            var debit = i < debit1Values.Length ? float.Parse(debit1Values[i]) : 0f;
+                            var credit = i < credit1Values.Length ? float.Parse(credit1Values[i]) : 0f;
+
+                            if (Guid.TryParse(accountId, out var guidId))
+                            {
+                                var account = await GetAccountById(accountId);
+                                if (account != null)
+                                {
+                                    account.FixedAmount += debit;
+                                    account.Paid += credit;
+                                    await UpdateAccount(account);
+                                }
+                            }
+                        }
+
+                        var account2Ids = detail.Account2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var debit2Values = detail.Debit2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var credit2Values = detail.Credit2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+
+                        for (int i = 0; i < account2Ids.Length; i++)
+                        {
+                            var accountId = account2Ids[i].Trim();
+                            var debit = i < debit2Values.Length ? float.Parse(debit2Values[i]) : 0f;
+                            var credit = i < credit2Values.Length ? float.Parse(credit2Values[i]) : 0f;
+
+                            if (Guid.TryParse(accountId, out var guidId))
+                            {
+                                var account = await GetAccountById(accountId);
+                                if (account != null)
+                                {
+                                    account.FixedAmount += debit;
+                                    account.Paid += credit;
+                                    await UpdateAccount(account);
+                                }
+                            }
+                        }
+
+                        entity.VoucherDetails.Add(detail);
+                    }
+                }
+
+                var savedEntity = await Repository.Add((EntryVoucher)(entity as IMinBase ??
+                    throw new InvalidOperationException("Conversion to IMinBase Failed.")));
+
+                await UnitOfWork.SaveAsync();
+                await transaction.CommitAsync();
+
+                return new Response<Guid>
+                {
+                    Data = entity.Id,
+                    StatusMessage = "Created successfully",
+                    StatusCode = HttpStatusCode.Created
+                };
+            }
+            catch (Exception e)
+            {
+                await transaction.RollbackAsync();
+                return new Response<Guid>
+                {
+                    StatusMessage = e.InnerException != null ? e.InnerException.Message : e.Message,
+                    StatusCode = HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
         public async Task<Response<EntryVoucherRes>> Update(Guid id, EntryVoucherReq reqModel)
         {
             using var transaction = await _DbContext.Database.BeginTransactionAsync();
@@ -269,131 +263,162 @@ namespace IMS.Business.Services
                 {
                     return new Response<EntryVoucherRes>
                     {
-                        StatusMessage = $"{typeof(EntryVoucher).Name} Not found",
+                        StatusMessage = "Entry Voucher not found",
                         StatusCode = HttpStatusCode.NotFound
                     };
                 }
 
-                // Revert old details' effects on accounts
-                foreach (var oldDetail in existingEntity.VoucherDetails)
+                // Reverse old VoucherDetails effects
+                if (existingEntity.VoucherDetails != null)
                 {
-                    if (!string.IsNullOrWhiteSpace(oldDetail.Account1) && Guid.TryParse(oldDetail.Account1, out var guid1))
+                    foreach (var oldDetail in existingEntity.VoucherDetails)
                     {
-                        var account1 = await GetAccountById(oldDetail.Account1);
-                        if (account1 != null)
+                        // Reverse Account 1
+                        var account1Ids = oldDetail.Account1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var debit1Values = oldDetail.Debit1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var credit1Values = oldDetail.Credit1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+
+                        for (int i = 0; i < account1Ids.Length; i++)
                         {
-                            account1.FixedAmount -= (float)(oldDetail.Debit1 ?? 0); // Cast to float
-                            account1.Paid -= (float)(oldDetail.Credit1 ?? 0); // Cast to float
-                            await UpdateAccount(account1);
+                            var accountId = account1Ids[i].Trim();
+                            var debit = i < debit1Values.Length ? float.Parse(debit1Values[i]) : 0f;
+                            var credit = i < credit1Values.Length ? float.Parse(credit1Values[i]) : 0f;
+
+                            if (Guid.TryParse(accountId, out var guidId))
+                            {
+                                var account = await GetAccountById(accountId);
+                                if (account != null)
+                                {
+                                    account.FixedAmount -= debit;
+                                    account.Paid -= credit;
+                                    await UpdateAccount(account);
+                                }
+                            }
                         }
-                    }
-                    if (!string.IsNullOrWhiteSpace(oldDetail.Account2) && Guid.TryParse(oldDetail.Account2, out var guid2))
-                    {
-                        var account2 = await GetAccountById(oldDetail.Account2);
-                        if (account2 != null)
+
+                        // Reverse Account 2
+                        var account2Ids = oldDetail.Account2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var debit2Values = oldDetail.Debit2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var credit2Values = oldDetail.Credit2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+
+                        for (int i = 0; i < account2Ids.Length; i++)
                         {
-                            account2.FixedAmount -= (float)(oldDetail.Debit2 ?? 0); // Cast to float
-                            account2.Paid -= (float)(oldDetail.Credit2 ?? 0); // Cast to float
-                            await UpdateAccount(account2);
+                            var accountId = account2Ids[i].Trim();
+                            var debit = i < debit2Values.Length ? float.Parse(debit2Values[i]) : 0f;
+                            var credit = i < credit2Values.Length ? float.Parse(credit2Values[i]) : 0f;
+
+                            if (Guid.TryParse(accountId, out var guidId))
+                            {
+                                var account = await GetAccountById(accountId);
+                                if (account != null)
+                                {
+                                    account.FixedAmount -= debit;
+                                    account.Paid -= credit;
+                                    await UpdateAccount(account);
+                                }
+                            }
                         }
                     }
                 }
 
-                // Map updated fields from request to existing entity
-                reqModel.Adapt(existingEntity);
-                existingEntity.Id = id;
+                // Update main voucher properties
+                existingEntity.VoucherDate = reqModel.VoucherDate;
+                existingEntity.ReferenceNo = reqModel.ReferenceNo;
+                existingEntity.ChequeNo = reqModel.ChequeNo;
+                existingEntity.DepositSlipNo = reqModel.DepositSlipNo;
+                existingEntity.PaymentMode = reqModel.PaymentMode;
+                existingEntity.BankName = reqModel.BankName;
+                existingEntity.ChequeDate = reqModel.ChequeDate;
+                existingEntity.PaidTo = reqModel.PaidTo;
+                existingEntity.Narration = reqModel.Narration;
+                existingEntity.Description = reqModel.Description;
                 existingEntity.UpdatedBy = _context.HttpContext?.User.Identity?.Name ?? "System";
                 existingEntity.UpdationDate = DateTime.UtcNow.ToString("o");
 
-                // Remove existing VoucherDetails
-                _DbContext.Set<VoucherDetail>().RemoveRange(existingEntity.VoucherDetails);
-                existingEntity.VoucherDetails = new List<VoucherDetail>();
-
-                // Same as Add: simulate balances and accumulate deltas for new details
-                var accountBalances = new Dictionary<Guid, float>(); // Changed to float
-                var deltaFixed = new Dictionary<Guid, float>(); // Changed to float
-                var deltaPaid = new Dictionary<Guid, float>(); // Changed to float
-                var uniqueAccountIds = reqModel.VoucherDetails?.SelectMany(d => new[] { d.Account1, d.Account2 })
-                    .Where(id => !string.IsNullOrWhiteSpace(id) && Guid.TryParse(id, out _))
-                    .Distinct()
-                    .Select(Guid.Parse)
-                    .ToHashSet() ?? new HashSet<Guid>();
-
-                foreach (var guidId in uniqueAccountIds)
+                // Remove old details
+                if (existingEntity.VoucherDetails != null)
                 {
-                    var account = await GetAccountById(guidId.ToString());
-                    if (account == null) throw new Exception($"Account {guidId} not found.");
-                    var balance = (float)(account.FixedAmount - account.Paid); // Cast to float
-                    accountBalances[guidId] = balance;
-                    deltaFixed[guidId] = 0;
-                    deltaPaid[guidId] = 0;
+                    _DbContext.Set<VoucherDetail>().RemoveRange(existingEntity.VoucherDetails);
                 }
+
+                // Add new details
+                existingEntity.VoucherDetails = new List<VoucherDetail>();
 
                 if (reqModel.VoucherDetails != null)
                 {
                     foreach (var detailReq in reqModel.VoucherDetails)
                     {
-                        var detail = detailReq.Adapt<VoucherDetail>();
-                        detail.Id = Guid.NewGuid();
+                        var detail = new VoucherDetail
+                        {
+                            Id = Guid.NewGuid(),
+                            Account1 = detailReq.Account1,
+                            Debit1 = detailReq.Debit1,
+                            Credit1 = detailReq.Credit1,
+                            Account2 = detailReq.Account2,
+                            Debit2 = detailReq.Debit2,
+                            Credit2 = detailReq.Credit2,
+                            Narration = detailReq.Narration,
+                            CurrentBalance1 = "0",
+                            ProjectedBalance1 = "0",
+                            CurrentBalance2 = "0",
+                            ProjectedBalance2 = "0"
+                        };
 
-                        var account1Id = Guid.Parse(detail.Account1);
-                        var account2Id = Guid.Parse(detail.Account2);
+                        // Parse and apply Account 1
+                        var account1Ids = detail.Account1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var debit1Values = detail.Debit1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var credit1Values = detail.Credit1?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 
-                        detail.CurrentBalance1 = accountBalances[account1Id];
-                        var delta1 = (detail.Debit1 ?? 0) - (detail.Credit1 ?? 0); // float - float
-                        detail.ProjectedBalance1 = detail.CurrentBalance1 + delta1;
-                        accountBalances[account1Id] += delta1; // float += float
-                        deltaFixed[account1Id] += (float)(detail.Debit1 ?? 0);
-                        deltaPaid[account1Id] += (float)(detail.Credit1 ?? 0);
+                        for (int i = 0; i < account1Ids.Length; i++)
+                        {
+                            var accountId = account1Ids[i].Trim();
+                            var debit = i < debit1Values.Length ? float.Parse(debit1Values[i]) : 0f;
+                            var credit = i < credit1Values.Length ? float.Parse(credit1Values[i]) : 0f;
 
-                        detail.CurrentBalance2 = accountBalances[account2Id];
-                        var delta2 = (detail.Debit2 ?? 0) - (detail.Credit2 ?? 0); // float - float
-                        detail.ProjectedBalance2 = detail.CurrentBalance2 + delta2;
-                        accountBalances[account2Id] += delta2; // float += float
-                        deltaFixed[account2Id] += (float)(detail.Debit2 ?? 0);
-                        deltaPaid[account2Id] += (float)(detail.Credit2 ?? 0);
+                            if (Guid.TryParse(accountId, out var guidId))
+                            {
+                                var account = await GetAccountById(accountId);
+                                if (account != null)
+                                {
+                                    account.FixedAmount += debit;
+                                    account.Paid += credit;
+                                    await UpdateAccount(account);
+                                }
+                            }
+                        }
 
-                        // Uncomment to check insufficient balance
-                        // if (detail.ProjectedBalance1 < 0 || detail.ProjectedBalance2 < 0)
-                        // {
-                        //     throw new Exception($"Insufficient balance for account(s).");
-                        // }
+                        // Parse and apply Account 2
+                        var account2Ids = detail.Account2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var debit2Values = detail.Debit2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                        var credit2Values = detail.Credit2?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+
+                        for (int i = 0; i < account2Ids.Length; i++)
+                        {
+                            var accountId = account2Ids[i].Trim();
+                            var debit = i < debit2Values.Length ? float.Parse(debit2Values[i]) : 0f;
+                            var credit = i < credit2Values.Length ? float.Parse(credit2Values[i]) : 0f;
+
+                            if (Guid.TryParse(accountId, out var guidId))
+                            {
+                                var account = await GetAccountById(accountId);
+                                if (account != null)
+                                {
+                                    account.FixedAmount += debit;
+                                    account.Paid += credit;
+                                    await UpdateAccount(account);
+                                }
+                            }
+                        }
 
                         existingEntity.VoucherDetails.Add(detail);
                     }
-                }
-
-                // Apply deltas
-                foreach (var guidId in uniqueAccountIds)
-                {
-                    var account = await GetAccountById(guidId.ToString());
-                    account.FixedAmount += deltaFixed[guidId];
-                    account.Paid += deltaPaid[guidId];
-                    await UpdateAccount(account);
                 }
 
                 await Repository.Update(existingEntity, e => existingEntity);
                 await UnitOfWork.SaveAsync();
                 await transaction.CommitAsync();
 
-                // Map to response DTO and enrich account names
                 var result = existingEntity.Adapt<EntryVoucherRes>();
-                if (result.VoucherDetails != null)
-                {
-                    foreach (var detail in result.VoucherDetails)
-                    {
-                        if (!string.IsNullOrWhiteSpace(detail.Account1))
-                        {
-                            var account1 = await GetAccountById(detail.Account1);
-                            detail.Account1 = account1?.Description ?? detail.Account1;
-                        }
-                        if (!string.IsNullOrWhiteSpace(detail.Account2))
-                        {
-                            var account2 = await GetAccountById(detail.Account2);
-                            detail.Account2 = account2?.Description ?? detail.Account2;
-                        }
-                    }
-                }
 
                 return new Response<EntryVoucherRes>
                 {
@@ -412,6 +437,7 @@ namespace IMS.Business.Services
                 };
             }
         }
+
 
         public async Task<EntryVoucherStatus> UpdateStatusAsync(Guid id, string status)
         {

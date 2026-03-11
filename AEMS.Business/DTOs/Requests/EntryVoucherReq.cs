@@ -30,15 +30,15 @@ public class VoucherDetailReq
 {
     public Guid? Id { get; set; }
     public string? Account1 { get; set; }
-    public float? Debit1 { get; set; }
-    public float? Credit1 { get; set; }
-    public float? CurrentBalance1 { get; set; }
-    public float? ProjectedBalance1 { get; set; }
+    public string? Debit1 { get; set; }
+    public string? Credit1 { get; set; }
+    public string? CurrentBalance1 { get; set; }
+    public string? ProjectedBalance1 { get; set; }
     public string? Narration { get; set; }
     public string? Account2 { get; set; }
-    public float? Debit2 { get; set; }
-    public float? Credit2 { get; set; }
-    public float? CurrentBalance2 { get; set; }
-    public float? ProjectedBalance2 { get; set; }
+    public string? Debit2 { get; set; }
+    public string? Credit2 { get; set; }
+    public string? CurrentBalance2 { get; set; }
+    public string? ProjectedBalance2 { get; set; }
 }
 }

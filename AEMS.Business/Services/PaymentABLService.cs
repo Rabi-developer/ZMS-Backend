@@ -57,6 +57,15 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
                 };
             }
 
+
+            existingEntity.BankName = reqModel.BankName;
+            existingEntity.PaymentDate = reqModel.PaymentDate;
+            existingEntity.PaymentMode = reqModel.PaymentMode;
+            existingEntity.ChequeNo = reqModel.ChequeNo;
+            existingEntity.ChequeDate = reqModel.ChequeDate;
+            existingEntity.PaidTo = reqModel.PaidTo;
+            existingEntity.PaidAmount = reqModel.PaidAmount;
+            existingEntity.Remarks = reqModel.Remarks;
             // Handle child items (PaymentABLItem)
             if (reqModel.PaymentABLItem != null && reqModel.PaymentABLItem.Any())
             {
@@ -110,6 +119,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
             {
                 // No items provided - clear all
                 existingEntity.PaymentABLItem?.Clear();
+                existingEntity.BankName = reqModel.BankName;
             }
 
             // Update the main entity

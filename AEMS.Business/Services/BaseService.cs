@@ -69,7 +69,12 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
         if (get != null)
         {
             get.Files = reqModel.Files;
-            UnitOfWork.SaveAsync();
+            // set modified date if entity supports it
+            if (get is IGeneralBase gen)
+            {
+                gen.ModifiedDateTime = DateTime.UtcNow;
+            }
+            await UnitOfWork.SaveAsync();
 
             var data = get.Adapt<TRes>();
 
@@ -83,7 +88,7 @@ public class BaseService<TReq, TRes, TRepository, T> : IBaseService<TReq, TRes, 
         return new Response<TRes>
         {
             StatusMessage = "Not Found",
-            StatusCode = HttpStatusCode.InternalServerError
+            StatusCode = HttpStatusCode.NotFound
         };
     }
     public async virtual Task<Response<IList<TRes>>> GetAll(Pagination? paginate)

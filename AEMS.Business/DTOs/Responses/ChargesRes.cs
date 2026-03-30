@@ -49,3 +49,16 @@ public class ChargesStatus
     public Guid? Id { get; set; }
     public string? Status { get; set; }
 }
+public class ChargePaymentRes
+{
+    public string ChargeNo { get; set; }
+    public string OrderNo { get; set; }
+    public string VehicleNo { get; set; }
+    public string Charge { get; set; }
+    public decimal ChargeAmount { get; set; }
+    public string PaymentNo { get; set; }
+    public decimal PaidAmount { get; set; }
+    public decimal TotalPaid { get; set; }
+    public decimal RemainingBalance { get; set; }
+    public string RefDate { get; set; }   // NEW
+}

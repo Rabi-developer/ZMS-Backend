@@ -126,7 +126,7 @@ FROM (
     -----------------------------------------
     UNION ALL
     SELECT 
-        NULL AS ChargeNo,
+        CAST(ob.OpeningNo AS NVARCHAR(50)) AS ChargeNo,
         obe.BiltyNo AS OrderNo,
         obe.VehicleNo,
         m.ChargesDesc AS Charge,
@@ -141,6 +141,8 @@ FROM (
         END AS RemainingBalance,
         CONVERT(VARCHAR(10), obe.BiltyDate, 23) AS RefDate
     FROM OpeningBalanceEntry obe
+    LEFT JOIN OpeningBalances ob
+        ON obe.OpeningBalanceId = ob.Id
     LEFT JOIN (
         SELECT 
             CAST(OrderNo AS NVARCHAR(50)) AS OrderNo,
@@ -155,12 +157,8 @@ FROM (
 
 ) AS FinalData
 
-ORDER BY 
-    RefDate,
-    TRY_CONVERT(INT, OrderNo),
-    OrderNo,
-    ChargeNo"
-        ;
+ORDER BY RefDate, OrderNo, ChargeNo;
+";
 
         using SqlConnection conn = new SqlConnection(
             _configuration.GetConnectionString("AEMSConnection"));
@@ -189,7 +187,8 @@ ORDER BY
 
         return Ok(list);
     }
-
 }
+
+
 
 

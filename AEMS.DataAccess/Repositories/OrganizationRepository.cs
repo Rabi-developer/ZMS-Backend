@@ -18,6 +18,8 @@ public class OrganizationRepository : BaseRepository<Organization>, IOrganizatio
     {
     }
 
+
+
     public async Task<(Pagination, IList<Organization>)> GetAll(Pagination pagination, bool onlyUsers)
     {
         var total = 0;
@@ -35,7 +37,7 @@ public class OrganizationRepository : BaseRepository<Organization>, IOrganizatio
 
             res = await DbSet
                 .Include(x => x.OrganizationUsers)
-                .Where(f => f.IsDeleted != true && f.OrganizationUsers.Any(x => x.UserId == userGuid))
+                .Where(f => f.IsDeleted != true)
                 .Paginate((int)pagination.PageIndex, (int)pagination.PageSize, ref total, ref totalPages)
                 .ToListAsync();
         }

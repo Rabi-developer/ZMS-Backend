@@ -90,14 +90,14 @@ public class OrganizationService : BaseService<SignUpReq, object, OrganizationRe
     {
         try
         {
-            var (pag, data) = await Repository.GetAll(pagination, onlyusers);
+            var data = await UnitOfWork._context.Organizations.ToListAsync();
 
             var res = data.Adapt<List<OrganizationRes>>();
 
             return new Response<IList<OrganizationRes>>
             {
                 Data = res,
-                Misc = pag,
+               
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
             };

@@ -24,7 +24,7 @@ public class OrganizationController : BaseMinController<OrganizationController, 
     public async Task<IActionResult> Post([FromBody] OrganizationReq req)
     {
         string name = User.Identity.Name ?? "";
-        string Id = new Guid().ToString();
+        string Id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier || x.Type == "Id")?.Value;
         var result = await Service.Add(req, Id);
         if (result.StatusCode == HttpStatusCode.OK || result.StatusCode == HttpStatusCode.Created)
         {

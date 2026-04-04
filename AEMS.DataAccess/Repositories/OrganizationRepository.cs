@@ -2,6 +2,8 @@
 using IMS.Domain.Entities;
 using IMS.Domain.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 
 namespace IMS.DataAccess.Repositories;
 
@@ -23,8 +25,19 @@ public class OrganizationRepository : BaseRepository<Organization>, IOrganizatio
         IList<Organization> res = null;
         if (onlyUsers)
         {
-            res = await DbSet.Include(x => x.OrganizationUsers).Where(f => f.IsDeleted != true && f.OrganizationUsers.Any(x => x.UserId == Guid.Parse(pagination.RefId)))
-            .Paginate((int)pagination.PageIndex, (int)pagination.PageSize, ref total, ref totalPages).ToListAsync();
+            // Parse the RefId outside the LINQ expression so EF doesn't attempt to translate Guid.Parse
+            if (string.IsNullOrWhiteSpace(pagination.RefId) || !Guid.TryParse(pagination.RefId, out var userGuid))
+            {
+                // Invalid or missing RefId: return empty result set
+                pagination = pagination.Combine(0, 0);
+                return (pagination, new List<Organization>());
+            }
+
+            res = await DbSet
+                .Include(x => x.OrganizationUsers)
+                .Where(f => f.IsDeleted != true && f.OrganizationUsers.Any(x => x.UserId == userGuid))
+                .Paginate((int)pagination.PageIndex, (int)pagination.PageSize, ref total, ref totalPages)
+                .ToListAsync();
         }
         else
         {

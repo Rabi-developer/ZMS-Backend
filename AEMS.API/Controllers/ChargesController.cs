@@ -57,135 +57,121 @@ public class ChargesController : BaseController<ChargesController, IChargesServi
         var list = new List<ChargePaymentRes>();
 
         string query = @"
-SELECT *
-FROM (
-    -----------------------------------------
-    -- Charges + Payments
-    -----------------------------------------
-    SELECT 
-        ch.ChargeNo,
-        ch.OrderNo,
-        bo.VehicleNo,
-        m.ChargesDesc AS Charge,
-        ISNULL(cl.Amount, 0) AS ChargeAmount,
-        p.PaymentNo,
-        ISNULL(pai.PaidAmount, 0) AS PaidAmount,
-        ISNULL(pay.TotalPaid, 0) AS TotalPaid,
-        CASE 
-            WHEN ISNULL(cl.Amount, 0) - ISNULL(pay.TotalPaid, 0) < 0 
-                THEN 0
-            ELSE ISNULL(cl.Amount, 0) - ISNULL(pay.TotalPaid, 0)
-        END AS RemainingBalance,
-        CONVERT(VARCHAR(10), ch.ChargeDate, 23) AS RefDate
-    FROM Charges ch
-    LEFT JOIN BookingOrder bo 
-        ON CAST(ch.OrderNo AS NVARCHAR(50)) = CAST(bo.OrderNo AS NVARCHAR(50))
-    LEFT JOIN ChargeLine cl 
-        ON ch.Id = cl.ChargesId
-    LEFT JOIN Munshyana m 
-        ON TRY_CONVERT(UNIQUEIDENTIFIER, cl.Charge) = m.Id
-    LEFT JOIN PaymentABLItem pai 
-        ON CAST(ch.OrderNo AS NVARCHAR(50)) = CAST(pai.OrderNo AS NVARCHAR(50))
-    LEFT JOIN PaymentABL p 
-        ON pai.PaymentABLId = p.Id
-    LEFT JOIN (
-        SELECT 
-            CAST(OrderNo AS NVARCHAR(50)) AS OrderNo,
-            SUM(PaidAmount) AS TotalPaid
-        FROM PaymentABLItem
-        GROUP BY CAST(OrderNo AS NVARCHAR(50))
-    ) pay 
-        ON CAST(ch.OrderNo AS NVARCHAR(50)) = pay.OrderNo
+        SELECT *
+        FROM (
+            -- 1. Charges + Their Payments
+            SELECT
+                ch.ChargeNo,
+                COALESCE(TRY_CAST(ch.OrderNo AS NVARCHAR(50)), '') AS OrderNo,
+                bo.VehicleNo,
+                m.ChargesDesc AS Charge,
+                ISNULL(cl.Amount, 0) AS ChargeAmount,
+                p.PaymentNo,
+                ISNULL(pai.PaidAmount, 0) AS PaidAmount,
+                ISNULL(pay.TotalPaid, 0) AS TotalPaid,
+                CASE 
+                    WHEN ISNULL(cl.Amount, 0) - ISNULL(pay.TotalPaid, 0) < 0 THEN 0 
+                    ELSE ISNULL(cl.Amount, 0) - ISNULL(pay.TotalPaid, 0) 
+                END AS RemainingBalance,
+                CONVERT(VARCHAR(10), COALESCE(ch.ChargeDate, p.PaymentDate), 23) AS RefDate
+            FROM Charges ch
+            LEFT JOIN BookingOrder bo ON TRY_CAST(ch.OrderNo AS NVARCHAR(50)) = TRY_CAST(bo.OrderNo AS NVARCHAR(50))
+            LEFT JOIN ChargeLine cl ON ch.Id = cl.ChargesId
+            LEFT JOIN Munshyana m ON TRY_CONVERT(UNIQUEIDENTIFIER, cl.Charge) = m.Id
+            LEFT JOIN PaymentABLItem pai ON TRY_CAST(ch.OrderNo AS NVARCHAR(50)) = TRY_CAST(pai.OrderNo AS NVARCHAR(50))
+            LEFT JOIN PaymentABL p ON pai.PaymentABLId = p.Id
+            LEFT JOIN (
+                SELECT 
+                    CAST(OrderNo AS NVARCHAR(50)) AS OrderNo,
+                    SUM(PaidAmount) AS TotalPaid
+                FROM PaymentABLItem 
+                GROUP BY CAST(OrderNo AS NVARCHAR(50))
+            ) pay ON TRY_CAST(ch.OrderNo AS NVARCHAR(50)) = pay.OrderNo
 
-    -----------------------------------------
-    -- Standalone Payments
-    -----------------------------------------
-    UNION ALL
-    SELECT 
-        NULL AS ChargeNo,
-        pai.OrderNo,
-        bo.VehicleNo,
-        NULL AS Charge,
-        0 AS ChargeAmount,
-        p.PaymentNo,
-        ISNULL(pai.PaidAmount, 0) AS PaidAmount,
-        ISNULL(pai.PaidAmount, 0) AS TotalPaid,
-        0 AS RemainingBalance,
-        CONVERT(VARCHAR(10), p.PaymentDate, 23) AS RefDate
-    FROM PaymentABLItem pai
-    LEFT JOIN PaymentABL p 
-        ON pai.PaymentABLId = p.Id
-    LEFT JOIN BookingOrder bo 
-        ON CAST(pai.OrderNo AS NVARCHAR(50)) = CAST(bo.OrderNo AS NVARCHAR(50))
-    LEFT JOIN Charges ch 
-        ON CAST(pai.OrderNo AS NVARCHAR(50)) = CAST(ch.OrderNo AS NVARCHAR(50))
-    WHERE ch.OrderNo IS NULL
+            UNION ALL
 
-    -----------------------------------------
-    -- Opening Balance
-    -----------------------------------------
-    UNION ALL
-    SELECT 
-        CAST(ob.OpeningNo AS NVARCHAR(50)) AS ChargeNo,
-        obe.BiltyNo AS OrderNo,
-        obe.VehicleNo,
-        m.ChargesDesc AS Charge,
-        ISNULL(obe.Debit, 0) AS ChargeAmount,
-        NULL AS PaymentNo,
-        ISNULL(obe.Credit, 0) AS PaidAmount,
-        ISNULL(pay2.TotalPaid, ISNULL(obe.Credit, 0)) AS TotalPaid,
-        CASE 
-            WHEN ISNULL(obe.Debit, 0) - ISNULL(pay2.TotalPaid, ISNULL(obe.Credit, 0)) < 0 
-                THEN 0
-            ELSE ISNULL(obe.Debit, 0) - ISNULL(pay2.TotalPaid, ISNULL(obe.Credit, 0))
-        END AS RemainingBalance,
-        CONVERT(VARCHAR(10), obe.BiltyDate, 23) AS RefDate
-    FROM OpeningBalanceEntry obe
-    LEFT JOIN OpeningBalances ob
-        ON obe.OpeningBalanceId = ob.Id
-    LEFT JOIN (
-        SELECT 
-            CAST(OrderNo AS NVARCHAR(50)) AS OrderNo,
-            SUM(PaidAmount) AS TotalPaid
-        FROM PaymentABLItem
-        GROUP BY CAST(OrderNo AS NVARCHAR(50))
-    ) pay2 
-        ON CAST(obe.BiltyNo AS NVARCHAR(50)) = pay2.OrderNo
-    LEFT JOIN Munshyana m
-        ON TRY_CONVERT(UNIQUEIDENTIFIER, obe.ChargeType) = m.Id
-    WHERE obe.ChargeType IS NOT NULL
+            -- 2. Standalone Payments (No Charge)
+            SELECT
+                NULL AS ChargeNo,
+                COALESCE(TRY_CAST(pai.OrderNo AS NVARCHAR(50)), '') AS OrderNo,
+                bo.VehicleNo,
+                NULL AS Charge,
+                0 AS ChargeAmount,
+                p.PaymentNo,
+                ISNULL(pai.PaidAmount, 0) AS PaidAmount,
+                ISNULL(pai.PaidAmount, 0) AS TotalPaid,
+                0 AS RemainingBalance,
+                CONVERT(VARCHAR(10), p.PaymentDate, 23) AS RefDate
+            FROM PaymentABLItem pai
+            LEFT JOIN PaymentABL p ON pai.PaymentABLId = p.Id
+            LEFT JOIN BookingOrder bo ON TRY_CAST(pai.OrderNo AS NVARCHAR(50)) = TRY_CAST(bo.OrderNo AS NVARCHAR(50))
+            LEFT JOIN Charges ch ON TRY_CAST(pai.OrderNo AS NVARCHAR(50)) = TRY_CAST(ch.OrderNo AS NVARCHAR(50))
+            WHERE ch.Id IS NULL   -- More reliable than checking OrderNo
 
-) AS FinalData
+            UNION ALL
 
-ORDER BY RefDate, OrderNo, ChargeNo;
-";
+            -- 3. Opening Balance
+            SELECT
+                CAST(ob.OpeningNo AS NVARCHAR(50)) AS ChargeNo,
+                COALESCE(TRY_CAST(obe.BiltyNo AS NVARCHAR(50)), '') AS OrderNo,
+                obe.VehicleNo,
+                m.ChargesDesc AS Charge,
+                ISNULL(obe.Debit, 0) AS ChargeAmount,
+                NULL AS PaymentNo,
+                ISNULL(obe.Credit, 0) AS PaidAmount,
+                ISNULL(pay2.TotalPaid, ISNULL(obe.Credit, 0)) AS TotalPaid,
+                CASE 
+                    WHEN ISNULL(obe.Debit, 0) - ISNULL(pay2.TotalPaid, ISNULL(obe.Credit, 0)) < 0 THEN 0 
+                    ELSE ISNULL(obe.Debit, 0) - ISNULL(pay2.TotalPaid, ISNULL(obe.Credit, 0)) 
+                END AS RemainingBalance,
+                CONVERT(VARCHAR(10), obe.BiltyDate, 23) AS RefDate
+            FROM OpeningBalanceEntry obe
+            LEFT JOIN OpeningBalances ob ON obe.OpeningBalanceId = ob.Id
+            LEFT JOIN (
+                SELECT 
+                    CAST(OrderNo AS NVARCHAR(50)) AS OrderNo,
+                    SUM(PaidAmount) AS TotalPaid
+                FROM PaymentABLItem 
+                GROUP BY CAST(OrderNo AS NVARCHAR(50))
+            ) pay2 ON TRY_CAST(obe.BiltyNo AS NVARCHAR(50)) = pay2.OrderNo
+            LEFT JOIN Munshyana m ON TRY_CONVERT(UNIQUEIDENTIFIER, obe.ChargeType) = m.Id
+            WHERE obe.ChargeType IS NOT NULL
+        ) AS FinalData
+        ORDER BY RefDate, OrderNo, ChargeNo;
+    ";
 
-        using SqlConnection conn = new SqlConnection(
-            _configuration.GetConnectionString("AEMSConnection"));
+        using SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("AEMSConnection"));
 
         using SqlCommand cmd = new SqlCommand(query, conn);
 
-        await conn.OpenAsync();
-        using SqlDataReader reader = await cmd.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
+        try
         {
-            list.Add(new ChargePaymentRes
-            {
-                ChargeNo = reader["ChargeNo"]?.ToString(),
-                OrderNo = reader["OrderNo"]?.ToString(),
-                VehicleNo = reader["VehicleNo"]?.ToString(),
-                Charge = reader["Charge"]?.ToString(),
-                ChargeAmount = reader["ChargeAmount"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["ChargeAmount"]),
-                PaymentNo = reader["PaymentNo"]?.ToString(),
-                PaidAmount = reader["PaidAmount"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["PaidAmount"]),
-                TotalPaid = reader["TotalPaid"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["TotalPaid"]),
-                RemainingBalance = reader["RemainingBalance"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["RemainingBalance"]),
-                RefDate = reader["RefDate"]?.ToString()
-            });
-        }
+            await conn.OpenAsync();
+            using SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
-        return Ok(list);
+            while (await reader.ReadAsync())
+            {
+                list.Add(new ChargePaymentRes
+                {
+                    ChargeNo = reader["ChargeNo"] == DBNull.Value ? null : reader["ChargeNo"].ToString(),
+                    OrderNo = reader["OrderNo"] == DBNull.Value ? null : reader["OrderNo"].ToString(),
+                    VehicleNo = reader["VehicleNo"] == DBNull.Value ? null : reader["VehicleNo"].ToString(),
+                    Charge = reader["Charge"] == DBNull.Value ? null : reader["Charge"].ToString(),
+                    ChargeAmount = reader["ChargeAmount"] == DBNull.Value ? 0m : Convert.ToDecimal(reader["ChargeAmount"]),
+                    PaymentNo = reader["PaymentNo"] == DBNull.Value ? null : reader["PaymentNo"].ToString(),
+                    PaidAmount = reader["PaidAmount"] == DBNull.Value ? 0m : Convert.ToDecimal(reader["PaidAmount"]),
+                    TotalPaid = reader["TotalPaid"] == DBNull.Value ? 0m : Convert.ToDecimal(reader["TotalPaid"]),
+                    RemainingBalance = reader["RemainingBalance"] == DBNull.Value ? 0m : Convert.ToDecimal(reader["RemainingBalance"]),
+                    RefDate = reader["RefDate"] == DBNull.Value ? null : reader["RefDate"].ToString()
+                });
+            }
+
+            return Ok(list);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error fetching charges and payments", error = ex.Message });
+        }
     }
 }
 

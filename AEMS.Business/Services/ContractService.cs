@@ -45,7 +45,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 pagination,
                 query => query
                     .Include(p => p.BuyerDeliveryBreakups)
-                    .Include(p => p.SellerDeliveryBreakups)
+                    // SellerDeliveryBreakups is ignored in the EF model, do not include
                     .Include(p => p.ConversionContractRow)
                         .ThenInclude(p => p.CommisionInfo)
                    .Include(p => p.DietContractRow)
@@ -78,33 +78,15 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             var deliveryterm = await _DbContext.DeliveryTerms.ToListAsync();
             var paymentTerms = await _DbContext.PaymentTerms.ToListAsync();
 
-
-
-
-
-
-
-
             // Map to DTO
             var result = data.Adapt<List<ContractRes>>();
 
-            // Replace listid values with Descriptions
             // Replace listid values with Descriptions
             foreach (var item in result)
             {
                 if (!string.IsNullOrWhiteSpace(item.FabricType))
                     item.FabricType = fabricTypes.FirstOrDefault(f => f.Listid == item.FabricType)?.Descriptions;
 
-             /*   if (!string.IsNullOrWhiteSpace(item.PaymentTermsBuyer))
-                    item.PaymentTermsBuyer = paymentTerms.FirstOrDefault(f => f.Listid == item.PaymentTermsBuyer)?.Descriptions;
-              
-                if (!string.IsNullOrWhiteSpace(item.PaymentTermsSeller))
-                    item.PaymentTermsSeller = paymentTerms.FirstOrDefault(f => f.Listid == item.PaymentTermsSeller)?.Descriptions;
-*/
-
-                /*if (!string.IsNullOrWhiteSpace(item.DeliveryTerms))
-                    item.DeliveryTerms = deliveryterm.FirstOrDefault(f => f.Listid == item.DeliveryTerms)?.Descriptions;
-*/
                 if (!string.IsNullOrWhiteSpace(item.Stuff))
                     item.Stuff = stuffTypes.FirstOrDefault(s => s.Listid == item.Stuff)?.Descriptions;
 
@@ -141,10 +123,8 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 if (!string.IsNullOrWhiteSpace(item.SelvegeThickness))
                     item.SelvegeThickness = selvegeThickness.FirstOrDefault(p => p.Listid == item.SelvegeThickness)?.Descriptions;
 
-
                 if (!string.IsNullOrWhiteSpace(item.InductionThread))
                     item.InductionThread = inductionThread.FirstOrDefault(p => p.Listid == item.InductionThread)?.Descriptions;
-
 
                 if (!string.IsNullOrWhiteSpace(item.Gsm))
                     item.Gsm = gsm.FirstOrDefault(p => p.Listid == item.Gsm)?.Descriptions;
@@ -166,8 +146,6 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
 
                 if (!string.IsNullOrWhiteSpace(item.Buyer))
                     item.Buyer = buyers.FirstOrDefault(b => b.Id.ToString() == item.Buyer)?.BuyerName;
-
-                // Fixed property names and consistency
             }
 
             return new Response<IList<ContractRes>>
@@ -227,7 +205,7 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
         {
             var entity = await Repository.Get(id, query => query
         .Include(p => p.BuyerDeliveryBreakups)
-        .Include(p => p.SellerDeliveryBreakups)
+        // SellerDeliveryBreakups is ignored in the EF model, do not include
         .Include(p => p.ConversionContractRow)
             .ThenInclude(p => p.CommisionInfo)
        .Include(p => p.DietContractRow)
@@ -270,22 +248,19 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                     .ThenInclude(ccr => ccr.CommisionInfo)
                 .Include(c => c.ConversionContractRow)
                     .ThenInclude(ccr => ccr.BuyerDeliveryBreakups)
-                .Include(c => c.ConversionContractRow)
-                    .ThenInclude(ccr => ccr.SellerDeliveryBreakups)
+                // Removed ThenInclude for SellerDeliveryBreakups - ignored in model
                 .Include(c => c.DietContractRow)
                     .ThenInclude(dcr => dcr.CommisionInfo)
                 .Include(c => c.DietContractRow)
                     .ThenInclude(dcr => dcr.BuyerDeliveryBreakups)
-                .Include(c => c.DietContractRow)
-                    .ThenInclude(dcr => dcr.SellerDeliveryBreakups)
+                // Removed ThenInclude for SellerDeliveryBreakups - ignored in model
                 .Include(c => c.MultiWidthContractRow)
                     .ThenInclude(mwcr => mwcr.CommisionInfo)
                 .Include(c => c.MultiWidthContractRow)
                     .ThenInclude(mwcr => mwcr.BuyerDeliveryBreakups)
-                .Include(c => c.MultiWidthContractRow)
-                    .ThenInclude(mwcr => mwcr.SellerDeliveryBreakups)
+                // Removed ThenInclude for SellerDeliveryBreakups - ignored in model
                 .Include(c => c.BuyerDeliveryBreakups)
-                .Include(c => c.SellerDeliveryBreakups)
+                // Do not include c.SellerDeliveryBreakups - ignored in model
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (contract == null)
@@ -303,11 +278,9 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             {
                 foreach (var row in contract.ConversionContractRow)
                 {
-                    // Remove nested BuyerDeliveryBreakups and SellerDeliveryBreakups
+                    // Remove nested BuyerDeliveryBreakups
                     if (row.BuyerDeliveryBreakups != null)
                         UnitOfWork._context.RemoveRange(row.BuyerDeliveryBreakups);
-                    if (row.SellerDeliveryBreakups != null)
-                        UnitOfWork._context.RemoveRange(row.SellerDeliveryBreakups);
                     // Remove CommisionInfo
                     if (row.CommisionInfo != null)
                         UnitOfWork._context.Remove(row.CommisionInfo);
@@ -319,11 +292,9 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             {
                 foreach (var row in contract.DietContractRow)
                 {
-                    // Remove nested BuyerDeliveryBreakups and SellerDeliveryBreakups
+                    // Remove nested BuyerDeliveryBreakups
                     if (row.BuyerDeliveryBreakups != null)
                         UnitOfWork._context.RemoveRange(row.BuyerDeliveryBreakups);
-                    if (row.SellerDeliveryBreakups != null)
-                        UnitOfWork._context.RemoveRange(row.SellerDeliveryBreakups);
                     // Remove CommisionInfo
                     if (row.CommisionInfo != null)
                         UnitOfWork._context.Remove(row.CommisionInfo);
@@ -335,11 +306,9 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
             {
                 foreach (var row in contract.MultiWidthContractRow)
                 {
-                    // Remove nested BuyerDeliveryBreakups and SellerDeliveryBreakups
+                    // Remove nested BuyerDeliveryBreakups
                     if (row.BuyerDeliveryBreakups != null)
                         UnitOfWork._context.RemoveRange(row.BuyerDeliveryBreakups);
-                    if (row.SellerDeliveryBreakups != null)
-                        UnitOfWork._context.RemoveRange(row.SellerDeliveryBreakups);
                     // Remove CommisionInfo
                     if (row.CommisionInfo != null)
                         UnitOfWork._context.Remove(row.CommisionInfo);
@@ -347,11 +316,10 @@ public class ContractService : BaseService<ContractReq, ContractRes, ContractRep
                 UnitOfWork._context.RemoveRange(contract.MultiWidthContractRow);
             }
 
-            // Remove top-level BuyerDeliveryBreakups and SellerDeliveryBreakups
+            // Remove top-level BuyerDeliveryBreakups
             if (contract.BuyerDeliveryBreakups != null)
                 UnitOfWork._context.RemoveRange(contract.BuyerDeliveryBreakups);
-            if (contract.SellerDeliveryBreakups != null)
-                UnitOfWork._context.RemoveRange(contract.SellerDeliveryBreakups);
+            // Do not attempt to remove SellerDeliveryBreakups because they are ignored in the model
 
             // Remove the contract itself
             UnitOfWork._context.contracts.Remove(contract);

@@ -37,14 +37,14 @@ public class BranchService : BaseService<BranchReq, BranchRes, BranchRepository,
     {
         try
         {
-            var (pag, data) = await Repository.GetAll(pagination, onlyusers);
+            var get = await UnitOfWork._context.Branches.ToListAsync();
 
-            var res = data.Adapt<List<BranchRes>>();
+            var res = get.Adapt<List<BranchRes>>();
 
             return new Response<IList<BranchRes>>
             {
                 Data = res,
-                Misc = pag,
+              
                 StatusMessage = "Fetch successfully",
                 StatusCode = HttpStatusCode.OK
             };

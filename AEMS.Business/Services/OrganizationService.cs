@@ -6,6 +6,7 @@ using IMS.DataAccess.UnitOfWork;
 using IMS.Domain.Entities;
 using IMS.Domain.Utilities;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace IMS.Business.Services;
@@ -33,28 +34,38 @@ public class OrganizationService : BaseService<SignUpReq, object, OrganizationRe
         {
             Organization org = new Organization
             {
-                Name = reqModel.Name,
-                Description = reqModel.Description,
-                AddressLine1 = reqModel.AddressLine1,
-                AddressLine2 = reqModel.AddressLine2,
-                City = reqModel.City,
-                State = reqModel.State,
-                Country = reqModel.Country,
-                Zip = reqModel.Zip,
+                Name = reqModel.Name ?? "",
+                Description = reqModel.Description ?? "",
+                AddressLine1 = reqModel.AddressLine1 ?? "",
+                AddressLine2 = reqModel.AddressLine2 ?? "",
+                City = reqModel.City ?? "",
+                State = reqModel.State ?? "",
+                Country = reqModel.Country ?? "",
+                Zip = reqModel.Zip ?? "",
                 CreatedDateTime = DateTime.UtcNow,
-                Email = reqModel.Email,
-                Website = reqModel.Website
+                Email = reqModel.Email ?? "example@gmail.com",
+                Website = reqModel.Website ?? "https://www.example.com"
             };
             await Repository.Add(org);
             await UnitOfWork.SaveAsync();
 
-            OrganizationUser organizationUser = new OrganizationUser
+            var getuser = await UnitOfWork._context.Users.ToListAsync();
+          
+            foreach (var user in getuser)
             {
-                OrganizationId = org.Id,
-                UserId = Guid.Parse(userId)
-            };
-            await UnitOfWork._context.OrganizationUsers.AddAsync(organizationUser);
-            await UnitOfWork.SaveAsync();
+                if (user.Id != null)
+                {
+                    OrganizationUser organizationUser = new OrganizationUser
+                    {
+                        OrganizationId = org.Id,
+                        UserId = user.Id,
+                    };
+                    await UnitOfWork._context.OrganizationUsers.AddAsync(organizationUser);
+                    await UnitOfWork.SaveAsync();
+                }
+            }   
+            
+           
 
             await UnitOfWork.CommitTransactionAsync(trans);
             return new Response<object>

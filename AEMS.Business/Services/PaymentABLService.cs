@@ -291,6 +291,52 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
 
     public async Task<Response<ChargeHistory>> HistoryPayment(string VehicleNo, string OrderNo, string Charges, bool IsOpeningBalance = false)
     {
+        string? chargeLookupValue = null;
+
+        // Handle all three cases: integer ChargeNo, GUID Charge, and string ChargesDesc
+        if (int.TryParse(Charges, out int chargeNo))
+        {
+            // Integer: Look up in Charges table by ChargeNo
+            var charge = await _DbContext.Charges
+                .Where(c => c.ChargeNo == chargeNo)
+                .FirstOrDefaultAsync();
+
+            if (charge != null && charge.Lines != null && charge.Lines.Any())
+            {
+                // Get the first ChargeLine's Charge value for matching
+                chargeLookupValue = charge.Lines.First().Charge;
+            }
+        }
+        else if (Guid.TryParse(Charges, out Guid parsedGuid))
+        {
+            // GUID: Direct match in ChargeLine table
+            chargeLookupValue = Charges;
+        }
+        else
+        {
+            // String: Look up in Munshyana table by ChargesDesc
+            var munshyana = await _DbContext.Munshyana
+                .Where(m => m.ChargesDesc == Charges)
+                .FirstOrDefaultAsync();
+
+            if (munshyana != null)
+            {
+                // Use Munshyana.Id as the lookup value (since Charges column in PaymentABLItem contains IDs)
+                chargeLookupValue = munshyana.Id.ToString();
+            }
+        }
+
+        // If no lookup value found, return error
+        if (string.IsNullOrEmpty(chargeLookupValue))
+        {
+            return new Response<ChargeHistory>
+            {
+                Data = null,
+                StatusMessage = "Charge not found",
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+
         var history = new ChargeHistory();
 
         if (IsOpeningBalance == false)
@@ -301,7 +347,7 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
                 from i in p.PaymentABLItem
                 where i.VehicleNo == VehicleNo
                       && i.OrderNo == OrderNo
-                      && i.Charges == Charges // Direct string comparison - handles all cases
+                      && i.Charges == chargeLookupValue // Use the resolved value
                 orderby p.CreatedDateTime descending
                 select new ChargeHistory
                 {

@@ -22,6 +22,7 @@ namespace ZMS.Domain.Entities
     {
         public Guid? Id { get; set; }
         public bool IsAdditionalLine { get; set; }
+        public string? ChargeNo { get; set; }
         public string? VehicleNo { get; set; }
         public string? OrderNo { get; set; }
         public float? Amount { get; set; }

@@ -26,6 +26,7 @@ namespace ZMS.Domain.Entities
         public string? VehicleNo { get; set; }
         public string? OrderNo { get; set; }
         public float? Amount { get; set; }
+        public string? ChargeNo { get; set; }
         public string? NameCharges { get; set; }
         public float? AmountCharges { get; set; }
         public float? Munshayana { get; set; }

@@ -133,6 +133,7 @@ public class BiltyPaymentInvoiceService : BaseService<BiltyPaymentInvoiceReq, Bi
                             existingLine.Amount = reqLine.Amount;
                             existingLine.Munshayana = reqLine.Munshayana;
                             existingLine.Broker = reqLine.Broker;
+                            existingLine.ChargeNo = reqLine.ChargeNo;
                             existingLine.DueDate = reqLine.DueDate;
                             existingLine.Remarks = reqLine.Remarks;
                             existingLine.NameCharges = reqLine.NameCharges;

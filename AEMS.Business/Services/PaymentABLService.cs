@@ -291,43 +291,77 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
 
     public async Task<Response<ChargeHistory>> HistoryPayment(string VehicleNo, string OrderNo, string Charges, bool IsOpeningBalance = false)
     {
-        string? chargeLookupValue = null;
+        List<string> possibleValues = new List<string>();
 
-        // Handle all three cases: integer ChargeNo, GUID Charge, and string ChargesDesc
         if (int.TryParse(Charges, out int chargeNo))
         {
-            // Integer: Look up in Charges table by ChargeNo
+            // Step 1: Charges table se record dhundo
             var charge = await _DbContext.Charges
+                .Include(c => c.Lines) // ChargeLine
                 .Where(c => c.ChargeNo == chargeNo)
                 .FirstOrDefaultAsync();
 
-            if (charge != null && charge.Lines != null && charge.Lines.Any())
+            if (charge != null)
             {
-                // Get the first ChargeLine's Charge value for matching
-                chargeLookupValue = charge.Lines.First().Charge;
+                // Step 2: ChargeLine.Charge (GUID) se Munshyana dhundo
+                if (charge.Lines != null && charge.Lines.Any())
+                {
+                    foreach (var line in charge.Lines)
+                    {
+                        if (!string.IsNullOrEmpty(line.Charge))
+                        {
+                            // GUID directly add karo (PaymentABLItem mein GUID bhi ho sakta hai)
+                            possibleValues.Add(line.Charge);
+
+                            // Munshyana se ChargesDesc nikalo (string match ke liye)
+                            if (Guid.TryParse(line.Charge, out Guid lineGuid))
+                            {
+                                var munshyana = await _DbContext.Munshyana
+                                    .Where(m => m.Id == lineGuid)
+                                    .FirstOrDefaultAsync();
+
+                                if (munshyana != null && !string.IsNullOrEmpty(munshyana.ChargesDesc))
+                                    possibleValues.Add(munshyana.ChargesDesc); // "Loading Charges"
+                            }
+                        }
+                    }
+                }
+
+                // Step 3: Charges.Id bhi add karo (direct GUID match fallback)
+                possibleValues.Add(charge.Id.ToString());
+
+                // Step 4: ChargeNo as string (legacy fallback)
+                possibleValues.Add(Charges); // "203"
             }
         }
-        else if (Guid.TryParse(Charges, out Guid parsedGuid))
+        else if (Guid.TryParse(Charges, out _))
         {
-            // GUID: Direct match in ChargeLine table
-            chargeLookupValue = Charges;
+            // Direct GUID — Munshyana se ChargesDesc bhi nikalo
+            possibleValues.Add(Charges);
+
+            if (Guid.TryParse(Charges, out Guid parsedGuid))
+            {
+                var munshyana = await _DbContext.Munshyana
+                    .Where(m => m.Id == parsedGuid)
+                    .FirstOrDefaultAsync();
+
+                if (munshyana != null && !string.IsNullOrEmpty(munshyana.ChargesDesc))
+                    possibleValues.Add(munshyana.ChargesDesc);
+            }
         }
         else
         {
-            // String: Look up in Munshyana table by ChargesDesc
-            var munshyana = await _DbContext.Munshyana
-                .Where(m => m.ChargesDesc == Charges)
-                .FirstOrDefaultAsync();
-
-            if (munshyana != null)
-            {
-                // Use Munshyana.Id as the lookup value (since Charges column in PaymentABLItem contains IDs)
-                chargeLookupValue = munshyana.Id.ToString();
-            }
+            // Direct string (e.g. "Loading Charges")
+            possibleValues.Add(Charges);
         }
 
-        // If no lookup value found, return error
-        if (string.IsNullOrEmpty(chargeLookupValue))
+        // Duplicates remove karo
+        possibleValues = possibleValues
+            .Where(v => !string.IsNullOrEmpty(v))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (!possibleValues.Any())
         {
             return new Response<ChargeHistory>
             {
@@ -337,17 +371,17 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
             };
         }
 
-        var history = new ChargeHistory();
+        ChargeHistory? history = null;
 
-        if (IsOpeningBalance == false)
+        if (!IsOpeningBalance)
         {
             history = await (
                 from p in _DbContext.PaymentABL
                 where p.IsDeleted != true
                 from i in p.PaymentABLItem
                 where i.VehicleNo == VehicleNo
-                      && i.OrderNo == OrderNo
-                      && i.Charges == chargeLookupValue // Use the resolved value
+                   && i.OrderNo == OrderNo
+                   && possibleValues.Contains(i.Charges)
                 orderby p.CreatedDateTime descending
                 select new ChargeHistory
                 {
@@ -363,22 +397,22 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
         else
         {
             history = await (
-               from p in _DbContext.PaymentABL
-               where p.IsDeleted != true
-               from i in p.PaymentABLItem
-               where i.VehicleNo == VehicleNo
-                     && i.OrderNo == OrderNo && p.IsDeleted != true
-               orderby p.CreatedDateTime descending
-               select new ChargeHistory
-               {
-                   Id = p.Id,
-                   VehicleNo = i.VehicleNo,
-                   OrderNo = i.OrderNo,
-                   Charges = Charges,
-                   Balance = i.Balance,
-                   PaidAmount = i.PaidAmount
-               }
-           ).FirstOrDefaultAsync();
+                from p in _DbContext.PaymentABL
+                where p.IsDeleted != true
+                from i in p.PaymentABLItem
+                where i.VehicleNo == VehicleNo
+                   && i.OrderNo == OrderNo
+                orderby p.CreatedDateTime descending
+                select new ChargeHistory
+                {
+                    Id = p.Id,
+                    VehicleNo = i.VehicleNo,
+                    OrderNo = i.OrderNo,
+                    Charges = Charges,
+                    Balance = i.Balance,
+                    PaidAmount = i.PaidAmount
+                }
+            ).FirstOrDefaultAsync();
         }
 
         return new Response<ChargeHistory>
@@ -388,5 +422,4 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
             StatusCode = HttpStatusCode.OK
         };
     }
-
 }

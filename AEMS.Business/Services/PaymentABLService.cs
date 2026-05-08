@@ -291,53 +291,9 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
 
     public async Task<Response<ChargeHistory>> HistoryPayment(string VehicleNo, string OrderNo, string Charges, bool IsOpeningBalance = false)
     {
-        // Build a set of possible charge identifiers to match against PaymentABLItem.Charges
-        var possibleCharges = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var history = new ChargeHistory();
 
-        if (!string.IsNullOrWhiteSpace(Charges))
-        {
-            // Always include the raw input value
-            possibleCharges.Add(Charges.Trim());
-
-            // If input is an int (charge number), include all linked charge lines
-            if (int.TryParse(Charges, out int chargeNo))
-            {
-                var chargeLines = await _DbContext.Charges
-                    .Where(c => c.ChargeNo == chargeNo)
-                    .SelectMany(c => c.Lines)
-                    .Select(l => l.Charge)
-                    .Where(x => x != null)
-                    .ToListAsync();
-
-                foreach (var cl in chargeLines)
-                    possibleCharges.Add(cl!);
-
-                // also include the numeric string form
-                possibleCharges.Add(chargeNo.ToString());
-            }
-
-            // If input is a GUID, include its canonical string form
-            if (Guid.TryParse(Charges, out Guid parsedGuid))
-            {
-                possibleCharges.Add(parsedGuid.ToString());
-            }
-        }
-
-        // If no possible charges were determined and not opening balance, return not found
-        if (!possibleCharges.Any() && !IsOpeningBalance)
-        {
-            return new Response<ChargeHistory>
-            {
-                Data = null,
-                StatusMessage = "Charge line not found",
-                StatusCode = HttpStatusCode.OK
-            };
-        }
-
-        // Query for the latest matching payment item
-        ChargeHistory? history = null;
-
-        if (!IsOpeningBalance)
+        if (IsOpeningBalance == false)
         {
             history = await (
                 from p in _DbContext.PaymentABL
@@ -345,14 +301,14 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
                 from i in p.PaymentABLItem
                 where i.VehicleNo == VehicleNo
                       && i.OrderNo == OrderNo
-                      && (i.Charges != null && possibleCharges.Contains(i.Charges))
+                      && i.Charges == Charges // Direct string comparison - handles all cases
                 orderby p.CreatedDateTime descending
                 select new ChargeHistory
                 {
                     Id = p.Id,
                     VehicleNo = i.VehicleNo,
                     OrderNo = i.OrderNo,
-                    Charges = i.Charges,
+                    Charges = Charges,
                     Balance = i.Balance,
                     PaidAmount = i.PaidAmount
                 }
@@ -360,20 +316,19 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
         }
         else
         {
-            // For opening balance, ignore Charges filtering (match by vehicle/order only)
             history = await (
                from p in _DbContext.PaymentABL
                where p.IsDeleted != true
                from i in p.PaymentABLItem
                where i.VehicleNo == VehicleNo
-                     && i.OrderNo == OrderNo
+                     && i.OrderNo == OrderNo && p.IsDeleted != true
                orderby p.CreatedDateTime descending
                select new ChargeHistory
                {
                    Id = p.Id,
                    VehicleNo = i.VehicleNo,
                    OrderNo = i.OrderNo,
-                   Charges = i.Charges,
+                   Charges = Charges,
                    Balance = i.Balance,
                    PaidAmount = i.PaidAmount
                }
@@ -387,6 +342,5 @@ public class PaymentABLService : BaseService<PaymentABLReq, PaymentABLRes, Payme
             StatusCode = HttpStatusCode.OK
         };
     }
-
 
 }
